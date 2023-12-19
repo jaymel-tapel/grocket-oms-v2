@@ -1,4 +1,4 @@
-import SelectSellerForm from "../../components/orders/ordersManager/newOrderForm/SelectSellerForm";
+import SelectSellerForm from "../../components/orders/_ordersManager/newOrderForm/SelectSellerForm";
 
 const CreateAccount = () => {
   return (
