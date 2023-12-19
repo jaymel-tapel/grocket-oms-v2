@@ -1,5 +1,5 @@
 import { Outlet } from "@tanstack/react-router";
-import SelectSellerForm from "../../components/orders/OrdersManager/newOrderForm/SelectSellerForm";
+import SelectSellerForm from "../../components/orders/_ordersManager/newOrderForm/SelectSellerForm";
 
 const AddNewOrderPage = () => {
   return (
