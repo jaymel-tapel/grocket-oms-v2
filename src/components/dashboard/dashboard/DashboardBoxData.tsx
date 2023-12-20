@@ -18,7 +18,7 @@ const data = [
   {
     id: 3,
     title: "Paid Invoice",
-    amount: "$99,999",
+    amount: "$ 9,999",
     status: <GreenSign />,
     sData: "Since last week",
   },
@@ -33,15 +33,15 @@ const DashboardBoxData: React.FC = () => {
             key={item.id}
             className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default shadow"
           >
-            <div className="mt-4 ml-6 items-end">
-              <div>
-                <h4 className="text-title-md font-bold text-black ">
+            <div className=" ml-7 items-end">
+              <div className="mb-2">
+                <h4 className="text-2xl font-bold text-black mb-4">
                   {item.amount}
                 </h4>
-                <span className="text-sm font-medium">{item.title}</span>
+                <span className="text-base font-medium">{item.title}</span>
               </div>
 
-              <span className="flex gap-1 font-medium text-sm">
+              <span className="flex gap-2  font-medium text-sm">
                 {item.status}
                 {item.sData}
               </span>

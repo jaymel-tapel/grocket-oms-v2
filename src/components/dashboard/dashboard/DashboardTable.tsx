@@ -75,8 +75,8 @@ const DashboardTable: React.FC = () => {
                 <tr key={person.email}>
                   <td className="relative py-4 pr-3 text-sm font-medium text-gray-900">
                     {person.name}
-                    <div className="absolute bottom-0 right-full h-px w-screen bg-gray-100" />
-                    <div className="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
+                    <div className="absolute bottom-0 right-full h-px w-screen bg-chatGray-100" />
+                    <div className="absolute bottom-0 left-0 h-px w-screen bg-chatGray-100" />
                   </td>
                   <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
                     {person.email}

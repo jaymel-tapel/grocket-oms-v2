@@ -46,7 +46,7 @@ const options: ApexOptions = {
   ],
   stroke: {
     width: [2, 2],
-    curve: "straight",
+    curve: "smooth",
   },
   // labels: {
   //   show: false,
@@ -55,7 +55,7 @@ const options: ApexOptions = {
   grid: {
     xaxis: {
       lines: {
-        show: true,
+        show: false,
       },
     },
     yaxis: {
@@ -105,6 +105,7 @@ const options: ApexOptions = {
     },
   },
   yaxis: {
+    tickAmount: 5,
     title: {
       style: {
         fontSize: "0px",
@@ -126,12 +127,12 @@ const DashboardChart: React.FC = () => {
   const [state] = useState<ChartOneState>({
     series: [
       {
-        name: "Product One",
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
+        name: "Received Amount",
+        data: [50, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
       },
 
       {
-        name: "Product Two",
+        name: "Unpaid Amount",
         data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
       },
     ],
@@ -141,11 +142,11 @@ const DashboardChart: React.FC = () => {
     <div className="col-span-10 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full flex-wrap gap-3 sm:gap-5">
-          <div className="mt-2 text-xl text-black font-bold">
+          <div className="mt-8 text-xl text-black font-bold">
             Revenues Overview
           </div>
         </div>
-        <div className="flex w-full max-w-45 justify-end"></div>
+        <div className="flex w-full justify-end"></div>
       </div>
 
       <div>
@@ -158,19 +159,15 @@ const DashboardChart: React.FC = () => {
           />
         </div>
 
-        <div className="flex flex-col-1 justify-center gap-12 text-center xsm:flex-row">
+        <div className="flex flex-col-1 justify-center gap-24 text-center xsm:flex-row">
           <div className="border-stroke py-2 dark:border-strokedark xsm:w-1/2 xsm:border-r">
-            <p className="font-medium">Received Amount</p>
-            <h4 className="mt-1 text-title-sm font-bold text-black ">
-              $45,070.00
-            </h4>
+            <p className="font-medium text-base">Received Amount</p>
+            <h4 className="mt-1 text-xl font-bold text-black ">$45,070.00</h4>
           </div>
-          <span className="pb-5 border-l"></span>
+          <span className="mt-2  border-2"></span>
           <div className="py-2 xsm:w-1/2">
-            <p className="font-medium">Due Amount</p>
-            <h4 className="mt-1 text-title-sm font-bold text-black">
-              $32,400.00
-            </h4>
+            <p className="font-medium text-base">Unpaid Amount</p>
+            <h4 className="mt-1 text-xl font-bold text-black ">$32,400.00</h4>
           </div>
         </div>
       </div>
