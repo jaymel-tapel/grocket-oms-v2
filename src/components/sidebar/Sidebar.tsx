@@ -317,7 +317,7 @@ function SidebarComponent(props) {
                         params={null}
                         to={item.to}
                         className={classNames(
-                          isActiveGroup ? "bg-gray-50" : "",
+                          isActiveGroup ? "bg-GrBlue-base" : "",
                           "group hover:bg-gray-50 flex gap-x-3 rounded-md p-2 text-sm leading-6 text-gray-700"
                         )}
                       >

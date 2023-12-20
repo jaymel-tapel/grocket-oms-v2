@@ -4,13 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        GrWhite: {
+        grWhite: {
           light: "#8A99AF",
           base: "#FFFFFF",
         },
-        GrBlue: {
-          light: "#9CA3AF",
-          base: "#1F2937",
+        grBlue: {
+          light: "#41B2E9",
+          base: "#41B2E9",
+        },
+        grText: {
+          gray: "#64748B",
+          dark: "#212B36",
         },
       },
     },
