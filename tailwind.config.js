@@ -12,6 +12,8 @@ export default {
           light: "#9CA3AF",
           base: "#1F2937",
         },
+        chatBlue: "#41B2E9",
+        chatGray: "#EFF4FB",
       },
     },
   },
