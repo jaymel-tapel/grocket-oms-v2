@@ -14,6 +14,7 @@ interface IsProps {
   list?: IsDropDownItem[];
   className?: string;
   disabled?: boolean;
+  removeBorders?: boolean;
 }
 
 function classNames(...classes: string[]) {
@@ -21,7 +22,7 @@ function classNames(...classes: string[]) {
 }
 
 const buttonClassName =
-  "relative w-full cursor-pointer rounded-sm h-10 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset outline-none focus:ring-nextOrange-base sm:text-sm sm:leading-6";
+  "relative w-full cursor-pointer rounded-sm h-10 pl-3 pr-10 text-left text-gray-900 outline-none focus:ring-grBlue-base sm:text-sm sm:leading-6";
 
 const DropdownText: React.FC<IsProps> = ({
   label,
@@ -30,6 +31,7 @@ const DropdownText: React.FC<IsProps> = ({
   list = [{ id: "", label: "None" }],
   className = "w-40",
   disabled = false,
+  removeBorders = false,
 }) => {
   return (
     <Listbox
@@ -50,7 +52,13 @@ const DropdownText: React.FC<IsProps> = ({
             <Listbox.Button
               className={`${buttonClassName} ${
                 disabled ? "pointer-events-none bg-gray-300 text-gray-200" : ""
-              } ${open ? "ring-nextOrange-base" : "ring-gray-300"}`}
+              } ${
+                removeBorders
+                  ? "ring-0 shadow-none focus:ring-0"
+                  : open
+                  ? "shadow-sm ring-1 ring-inset ring-grBlue-base"
+                  : "shadow-sm ring-1 ring-inset ring-gray-300"
+              }`}
             >
               <span className="block truncate">{value.label}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -77,7 +85,7 @@ const DropdownText: React.FC<IsProps> = ({
                     className={({ active, selected }) =>
                       classNames(
                         active || selected
-                          ? "bg-nextOrange-base text-white"
+                          ? "bg-grBlue-base text-white"
                           : "text-gray-900",
                         "relative cursor-pointer select-none py-2 pl-3 pr-9"
                       )
