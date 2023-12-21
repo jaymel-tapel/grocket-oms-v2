@@ -25,19 +25,19 @@ const options: ApexOptions = {
       donut: {
         size: "80%",
         background: "transparent",
-        labels: {
-          show: true,
-          name: {
-            fontSize: "28px",
-            fontWeight: "700",
-            color: "black",
-          },
-          value: {
-            fontSize: "26px",
-            fontWeight: "500",
-            color: "#637381",
-          },
-        },
+        // labels: {
+        //   show: true,
+        //   name: {
+        //     fontSize: "28px",
+        //     fontWeight: "700",
+        //     color: "black",
+        //   },
+        //   value: {
+        //     fontSize: "26px",
+        //     fontWeight: "500",
+        //     color: "#637381",
+        //   },
+        // },
       },
     },
   },
@@ -53,6 +53,7 @@ const options: ApexOptions = {
         chart: {
           width: 400,
           innerHeight: 500,
+          outerHeight: 400,
         },
       },
     },
@@ -73,7 +74,7 @@ const DashboardCircleChart: React.FC = () => {
   });
 
   return (
-    <div className="col-span-10 rounded-sm border border-stroke bg-white  pt-7.5 pb-5 shadow-default sm:px-7.5 xl:col-span-5">
+    <div className=" col-span-10 rounded-sm border border-stroke bg-white  pt-7.5 pb-5 shadow-default sm:px-7.5 xl:col-span-5">
       <div className="mb-3  gap-4 sm:flex">
         <h1 className="pt-8 ml-4 text-xl font-bold text-black ">
           Orders Overview
@@ -81,7 +82,7 @@ const DashboardCircleChart: React.FC = () => {
       </div>
 
       <div className="mb-2">
-        <div className="absolute ml-40 mt-24">
+        <div className="absolute ml-40 mt-24 max-md:ml-36 max-md:mt-20">
           <p className="font-bold text-3xl text-black">2528</p>
           <p className="ml-4 font-semibold text-base">Orders</p>
         </div>
