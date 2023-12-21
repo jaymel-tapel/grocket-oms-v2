@@ -2,11 +2,10 @@ import DashboardCircleChart from "../../components/dashboard/dashboard/Dashboard
 import DashboardTable from "../../components/dashboard/dashboard/DashboardTable";
 import LoggedSection from "../../components/sections/LoggedSection";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
-import { useState } from "react";
 import StatsCards from "../../components/tools/cards/StatsCards";
 
 const Dashboard: React.FC = () => {
-  const [dataCards] = useState([
+  const dataCards = [
     {
       label: "New Orders",
       value: 104,
@@ -31,9 +30,9 @@ const Dashboard: React.FC = () => {
         value: 5,
       },
     },
-  ]);
+  ];
 
-  const [dataBar] = useState([
+  const dataBar = [
     {
       name: "2022",
       data: [
@@ -68,7 +67,7 @@ const Dashboard: React.FC = () => {
         { y: 90, x: "Dec" },
       ],
     },
-  ]);
+  ];
 
   const dataLabel = [
     { label: "Received Amount", value: "$45,070.00" },
@@ -76,6 +75,7 @@ const Dashboard: React.FC = () => {
   ];
 
   const ColorsChart = ["#FF4560", "#00E396", "#3C50E0", "#41B2E9"];
+
   return (
     <LoggedSection>
       <div className="flex justify-between mb-8">
