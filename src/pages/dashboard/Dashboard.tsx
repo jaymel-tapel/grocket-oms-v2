@@ -91,8 +91,8 @@ const Dashboard: React.FC = () => {
         <StatsCards stats={dataCards} />
       </div>
 
-      <div className="flex flex-col-2 md:flex-col-1 max-sm:flex-col md:gap-6 2xl:mt-6.5 2xl:gap-6.5">
-        <div className="w-screen">
+      <div className="flex flex-col-2 max-sm:flex-col md:gap-6 2xl:mt-6.5 2xl:gap-6.5">
+        <div className="w-[670px] md:w-[670px] 2xl:w-screen">
           <BarLineChart
             chartColors={ColorsChart}
             chartData={dataBar}
