@@ -3,6 +3,7 @@ import DashboardTable from "../../components/dashboard/dashboard/DashboardTable"
 import LoggedSection from "../../components/sections/LoggedSection";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import StatsCards from "../../components/tools/cards/StatsCards";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 const Dashboard: React.FC = () => {
   const dataCards = [
@@ -53,7 +54,7 @@ const Dashboard: React.FC = () => {
     {
       name: "2023",
       data: [
-        { y: 88, x: "Jan" },
+        { y: 50, x: "Jan" },
         { y: 77, x: "Feb" },
         { y: 90, x: "Mar" },
         { y: 85, x: "Apr" },
@@ -74,7 +75,7 @@ const Dashboard: React.FC = () => {
     { label: "Unpaid Amount", value: "$32,400.00" },
   ];
 
-  const ColorsChart = ["#FF4560", "#00E396", "#3C50E0", "#41B2E9"];
+  const ColorsChart = ["#3C50E0", "#C7D2E2"];
 
   return (
     <LoggedSection>
@@ -82,11 +83,16 @@ const Dashboard: React.FC = () => {
         <span className="text-2xl text-gray-900 font-bold decoration-black	">
           This Week's Overview
         </span>
-        <span className="text-sm font-medium items-end"> Current Week</span>
+        <span className="flex gap-2 text-base font-medium items-end">
+          Current Week <ChevronDownIcon className="w-5 h-5" />
+        </span>
       </div>
-      <StatsCards stats={dataCards} />
-      <div className="grid grid-cols-2 gap-8 md:mt-4 md:gap-4 2xl:mt-6.5 2xl:gap-6.5">
-        <div className="w-[43rem]">
+      <div className="pb-8">
+        <StatsCards stats={dataCards} />
+      </div>
+
+      <div className="flex flex-col-2 max-sm:flex-col md:gap-6 2xl:mt-6.5 2xl:gap-6.5">
+        <div className="w-[670px] md:w-[670px] 2xl:w-screen">
           <BarLineChart
             chartColors={ColorsChart}
             chartData={dataBar}
@@ -96,11 +102,11 @@ const Dashboard: React.FC = () => {
             chartType="area"
           />
         </div>
-        <div className="ml-auto">
+        <div className="">
           <DashboardCircleChart />
         </div>
       </div>
-      <div className="mt-16">
+      <div className="pt-16">
         <DashboardTable />
       </div>
     </LoggedSection>

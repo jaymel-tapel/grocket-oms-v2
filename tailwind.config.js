@@ -18,6 +18,7 @@ export default {
         },
         chatBlue: "#41B2E9",
         chatGray: "#EFF4FB",
+        buttonBlack: "#1C2434",
       },
     },
   },
