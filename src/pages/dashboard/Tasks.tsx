@@ -1,10 +1,10 @@
-import DashboardTasks from "../../components/dashboard/tasks/DashboardTasks";
+import { Outlet } from "@tanstack/react-router";
 import LoggedSection from "../../components/sections/LoggedSection";
 
 const Tasks: React.FC = () => {
   return (
     <LoggedSection>
-      <DashboardTasks />
+      <Outlet />
     </LoggedSection>
   );
 };
