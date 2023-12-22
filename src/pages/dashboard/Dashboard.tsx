@@ -90,9 +90,8 @@ const Dashboard: React.FC = () => {
       <div className="pb-8">
         <StatsCards stats={dataCards} />
       </div>
-
-      <div className="flex flex-col-2 max-sm:flex-col md:gap-6 2xl:mt-6.5 2xl:gap-6.5">
-        <div className="w-[670px] md:w-[670px] 2xl:w-screen">
+      <div className="flex w-full max-sm:grid max-sm:grid-cols-1 gap-7">
+        <div className="w-3/4 max-sm:w-full">
           <BarLineChart
             chartColors={ColorsChart}
             chartData={dataBar}
@@ -102,10 +101,14 @@ const Dashboard: React.FC = () => {
             chartType="area"
           />
         </div>
-        <div className="">
+        <div className="w-6/12 max-sm:w-full ">
           <DashboardCircleChart />
         </div>
       </div>
+      {/* <div className="flex flex-col-2 max-sm:flex-col md:gap-6 2xl:w-full 2xl:mt-6.5 2xl:gap-6.5">
+        <div className="w-[670px] md:w-[670px] 2xl:w-full"></div>
+        <div className="2xl:w-screen max-lg:gap-2 max-lg:mt-2"></div>
+      </div> */}
       <div className="pt-16">
         <DashboardTable />
       </div>
