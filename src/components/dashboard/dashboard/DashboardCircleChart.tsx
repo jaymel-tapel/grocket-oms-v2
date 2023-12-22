@@ -82,11 +82,11 @@ const DashboardCircleChart: React.FC = () => {
       </div>
 
       <div className="mb-2">
-        <div className="absolute ml-40 mt-24 max-md:ml-36 max-md:mt-20">
+        <div className="absolute ml-40 mt-24 max-md:ml-36 max-md:mt-20 2xl:ml-28 2xl:mt-16">
           <p className="font-bold text-3xl text-black">2528</p>
           <p className="ml-4 font-semibold text-base">Orders</p>
         </div>
-        <div id="chartThree" className=" flex">
+        <div id="chartThree" className=" flex 2xl:flex">
           <ReactApexChart
             options={options}
             series={state.series}
