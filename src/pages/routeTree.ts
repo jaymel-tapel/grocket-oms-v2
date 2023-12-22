@@ -52,7 +52,33 @@ const inboxRoute = new Route({
 const tasksRoute = new Route({
   getParentRoute: () => protectedRoute,
   path: "tasks",
-  component: lazyRouteComponent(() => import("./dashboard/Task")),
+  component: lazyRouteComponent(() => import("./dashboard/Tasks")),
+});
+
+const tasksIndexRoute = new Route({
+  getParentRoute: () => tasksRoute,
+  path: "/",
+  // beforeLoad: async () => {
+  //   throw redirect({ to: "/tasks/all" });
+  // },
+  component: lazyRouteComponent(
+    () => import("../components/dashboard/tasks/DashboardTasks")
+  ),
+});
+
+const taskRoute = new Route({
+  getParentRoute: () => tasksRoute,
+  path: "$taskId",
+  beforeLoad: async ({ params: { taskId } }) => {
+    if (isNaN(+taskId)) throw redirect({ to: "/tasks" });
+  },
+  component: lazyRouteComponent(() => import("./dashboard/NewTask")),
+});
+
+const newTaskRoute = new Route({
+  getParentRoute: () => tasksRoute,
+  path: "new",
+  component: lazyRouteComponent(() => import("./dashboard/NewTask")),
 });
 
 const ordersRoute = new Route({
@@ -81,13 +107,13 @@ const ordersManagerRoute = new Route({
   component: lazyRouteComponent(() => import("./orders/OrdersManager")),
 });
 
-const ordersNewRoute = new Route({
+const newOrderRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./orders/AddNewOrderPage")),
 });
 
-const ordersDeletedRoute = new Route({
+const deletedOrdersRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "deleted",
   component: lazyRouteComponent(() => import("./orders/DeletedOrders")),
@@ -119,7 +145,7 @@ const clientsManagerRoute = new Route({
   component: lazyRouteComponent(() => import("./clients/ClientsManager")),
 });
 
-const clientsNewRoute = new Route({
+const newClientRoute = new Route({
   getParentRoute: () => clientsRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./clients/AddNewClient")),
@@ -151,13 +177,13 @@ const accountsManagerRoute = new Route({
   component: lazyRouteComponent(() => import("./accounts/UsersManager")),
 });
 
-const accountsInactiveUsersRoute = new Route({
+const inactiveUsersRoute = new Route({
   getParentRoute: () => accountsRoute,
   path: "inactive_users",
   component: lazyRouteComponent(() => import("./accounts/InactiveUsers")),
 });
 
-const accountsNewRoute = new Route({
+const newAccountRoute = new Route({
   getParentRoute: () => accountsRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./accounts/CreateAccount")),
@@ -168,29 +194,29 @@ const routeTree = rootRoute.addChildren([
   protectedRoute.addChildren([
     dashboardRoute,
     inboxRoute,
-    tasksRoute,
+    tasksRoute.addChildren([tasksIndexRoute, taskRoute, newTaskRoute]),
 
     ordersRoute.addChildren([
       ordersIndexRoute,
       ordersReportRoute,
       ordersManagerRoute,
-      ordersNewRoute,
-      ordersDeletedRoute,
+      newOrderRoute,
+      deletedOrdersRoute,
     ]),
 
     clientsRoute.addChildren([
       clientsIndexRoute,
       clientsReportRoute,
       clientsManagerRoute,
-      clientsNewRoute,
+      newClientRoute,
     ]),
 
     accountsRoute.addChildren([
       accountsIndexRoute,
       accountsReportRoute,
       accountsManagerRoute,
-      accountsInactiveUsersRoute,
-      accountsNewRoute,
+      inactiveUsersRoute,
+      newAccountRoute,
     ]),
   ]),
 ]);
