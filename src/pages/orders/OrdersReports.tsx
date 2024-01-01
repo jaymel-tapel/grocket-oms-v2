@@ -1,8 +1,3 @@
-import OrdersChartPaymentCount from "../../components/orders/ordersReport/OrdersChartPaymentCount";
-import OrdersChartPaymentAmount from "../../components/orders/ordersReport/OrdersChartPaymentAmount";
-import OrdersCircleChart from "../../components/orders/ordersReport/OrdersCircleChart";
-import OrdersChartStatusCount from "../../components/orders/ordersReport/OrdersChartStatusCount";
-import OrdersChartStatusAmount from "../../components/orders/ordersReport/OrdersChartStatusAmount";
 import { useMemo, useState } from "react";
 import DropdownText from "../../components/tools/dropdowntext/DropdownText";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
@@ -24,6 +19,32 @@ const OrdersReports = () => {
   const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
     setSearchFilter(newFilter);
   };
+
+  const orderStats = useMemo(() => {
+    // temporary data
+    return [
+      {
+        value: 6,
+        label: "Total Orders",
+        percentage: { label: "Since last week", value: 2.5 },
+      },
+      {
+        value: 0,
+        label: "Paid Orders",
+        percentage: { label: "Since last week", value: -1.5 },
+      },
+      {
+        value: 1.25,
+        label: "Average Amount of Reviews",
+        percentage: { label: "Since last week", value: 0.5 },
+      },
+      {
+        value: 27.6,
+        label: "Average Unit Cost",
+        percentage: { label: "Since last week", value: 1.5 },
+      },
+    ];
+  }, []);
 
   const paidOrdersData = useMemo(() => {
     return [
@@ -64,30 +85,68 @@ const OrdersReports = () => {
     ];
   }, []);
 
-  const orderStats = useMemo(() => {
+  const orderPaymentsData = useMemo(() => {
     // temporary data
-    return [
-      {
-        value: 6,
-        label: "Total Orders",
-        percentage: { label: "Since last week", value: 2.5 },
-      },
-      {
-        value: 0,
-        label: "Paid Orders",
-        percentage: { label: "Since last week", value: -1.5 },
-      },
-      {
-        value: 1.25,
-        label: "Average Amount of Reviews",
-        percentage: { label: "Since last week", value: 0.5 },
-      },
-      {
-        value: 27.6,
-        label: "Average Unit Cost",
-        percentage: { label: "Since last week", value: 1.5 },
-      },
-    ];
+    return {
+      statusCount: [
+        {
+          name: "Payment Status Count",
+          data: [
+            { x: "New", y: Math.floor(Math.random() * 101) },
+            { x: "Sent Invoice", y: Math.floor(Math.random() * 101) },
+            { x: "Paid", y: Math.floor(Math.random() * 101) },
+            { x: "Unpaid", y: Math.floor(Math.random() * 101) },
+            { x: "Payment Reminder 1", y: Math.floor(Math.random() * 101) },
+            { x: "Payment Reminder 2", y: Math.floor(Math.random() * 101) },
+          ],
+        },
+      ],
+      statusAmount: [
+        {
+          name: "Payment Status Amount (€)",
+          data: [
+            { x: "New", y: Math.floor(Math.random() * 101) },
+            { x: "Sent Invoice", y: Math.floor(Math.random() * 101) },
+            { x: "Paid", y: Math.floor(Math.random() * 101) },
+            { x: "Unpaid", y: Math.floor(Math.random() * 101) },
+            { x: "Payment Reminder 1", y: Math.floor(Math.random() * 101) },
+            { x: "Payment Reminder 2", y: Math.floor(Math.random() * 101) },
+          ],
+        },
+      ],
+    };
+  }, []);
+
+  const orderReviewsData = useMemo(() => {
+    // temporary data
+    return {
+      statusCount: [
+        {
+          name: "Review Status Count",
+          data: [
+            { x: "Neu", y: Math.floor(Math.random() * 101) },
+            { x: "Beufragt", y: Math.floor(Math.random() * 101) },
+            { x: "Weiterleitung", y: Math.floor(Math.random() * 101) },
+            { x: "Widerspruch", y: Math.floor(Math.random() * 101) },
+            { x: "Geischeitert", y: Math.floor(Math.random() * 101) },
+            { x: "Geloscht", y: Math.floor(Math.random() * 101) },
+          ],
+        },
+      ],
+      statusAmount: [
+        {
+          name: "Review Status Amount (€)",
+          data: [
+            { x: "Neu", y: Math.floor(Math.random() * 101) },
+            { x: "Beufragt", y: Math.floor(Math.random() * 101) },
+            { x: "Weiterleitung", y: Math.floor(Math.random() * 101) },
+            { x: "Widerspruch", y: Math.floor(Math.random() * 101) },
+            { x: "Geischeitert", y: Math.floor(Math.random() * 101) },
+            { x: "Geloscht", y: Math.floor(Math.random() * 101) },
+          ],
+        },
+      ],
+    };
   }, []);
 
   return (
@@ -108,25 +167,43 @@ const OrdersReports = () => {
           chartType="area"
           chartData={paidOrdersData}
           chartColors={["#3C50E0", "#10B981"]}
-          // disableLegends={true}
-          // label="Orders Count"
-          // additionalData={[
-          //   { label: "Paid amount", value: "$39,000.20" },
-          //   { label: "Unpaid amount", value: "$25,000.20" },
-          // ]}
         />
       </div>
 
-      <div
-        className="mt-4 mb-4 grid md:mt-4 md:gap-4 2xl:mt-6.5 2xl:gap-6.5"
-        style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))" }}
-      >
-        <OrdersChartPaymentCount /> <OrdersChartPaymentAmount />
-        <OrdersCircleChart />
-        <OrdersChartStatusCount /> <OrdersChartStatusAmount />
-        <div>
-          <OrdersCircleChart />
-        </div>
+      <div className="mt-6 grid grid-cols-3 gap-4">
+        <BarLineChart
+          key="statusCt"
+          chartType="bar"
+          chartData={orderPaymentsData.statusCount}
+          chartColors={["#3C50E0"]}
+          label="Payment Status Count"
+        />
+
+        <BarLineChart
+          key="statusAmt"
+          chartType="bar"
+          chartData={orderPaymentsData.statusAmount}
+          chartColors={["#3C50E0"]}
+          label="Payment Status Amount (€)"
+        />
+      </div>
+
+      <div className="mt-6 grid grid-cols-3 gap-4">
+        <BarLineChart
+          key="statusCt"
+          chartType="bar"
+          chartData={orderReviewsData.statusCount}
+          chartColors={["#3C50E0"]}
+          label="Review Status Count"
+        />
+
+        <BarLineChart
+          key="statusAmt"
+          chartType="bar"
+          chartData={orderReviewsData.statusAmount}
+          chartColors={["#3C50E0"]}
+          label="Review Status Amount (€)"
+        />
       </div>
     </div>
   );

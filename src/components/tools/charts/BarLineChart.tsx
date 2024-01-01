@@ -4,7 +4,7 @@ import ReactApexChart from "react-apexcharts";
 import Divider from "../divider/Divider";
 
 type Data = {
-  x: string | number;
+  x: string | number | string[];
   y: string | number;
 };
 
@@ -33,6 +33,11 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
   height = 350,
   chartType = "area",
 }) => {
+  const optimalColumnWidthPercent = useMemo(
+    () => 20 + 60 / (1 + 30 * Math.exp(-chartData.length / 3)),
+    [chartData]
+  );
+
   const options: ApexOptions = useMemo(() => {
     return {
       legend: {
@@ -56,7 +61,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
       },
       colors: chartColors,
       chart: {
-        stacked: true,
+        // stacked: true,
         dropShadow: {
           enabled: true,
           color: "#623CEA14",
@@ -89,7 +94,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
       //   },
       // ],
       stroke: {
-        width: [3.5, 3.5],
+        width: chartType === "area" ? [3.5, 3.5] : [0, 0],
         curve: "smooth",
       },
       grid: {
@@ -125,12 +130,23 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
         axisBorder: {
           show: false,
         },
+        // categories: [["t", "asda"], "t", "t", "t", "t", "t"],
         axisTicks: {
           show: false,
         },
+        labels: {
+          // rotate: 0,
+          // trim: true,
+          style: { fontSize: chartType === "bar" && "0.5rem" },
+        },
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: optimalColumnWidthPercent + "%",
+        },
       },
     };
-  }, [disableLegends, chartColors]);
+  }, [disableLegends, chartColors, chartType, optimalColumnWidthPercent]);
 
   return (
     <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md">
