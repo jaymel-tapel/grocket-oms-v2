@@ -142,6 +142,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
       },
       plotOptions: {
         bar: {
+          // distributed: true,
           columnWidth: optimalColumnWidthPercent + "%",
         },
       },
@@ -151,7 +152,11 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
   return (
     <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md">
       {label && (
-        <div className="mb-4 ml-4 text-grText-dark text-[1.375rem] font-bold">
+        <div
+          className={`mb-4 ml-4 text-grText-dark font-bold ${
+            chartType === "area" ? "text-[1.375rem]" : ""
+          }`}
+        >
           {label}
         </div>
       )}
