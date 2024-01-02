@@ -1,61 +1,66 @@
-import { useState } from "react";
-import TextInput from "../../tools/inputForms/TextInput";
 import TextArea from "../../tools/textArea/TextArea";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, SubmitHandler } from "react-hook-form";
 
+const TaskSchema = z.object({
+  date: z.coerce.date(),
+  id: z.coerce.number().nonnegative().gt(0, { message: "ID number required" }),
+  email: z.string().email().min(1, { message: "Invalid Email Address" }),
+  taskName: z.string().min(1, { message: "Task name required" }),
+  remarks: z.string().min(1, { message: "Remarks is Required" }),
+  description: z.string().optional(),
+  note: z.string().optional(),
+});
+
+type taskSchema = z.infer<typeof TaskSchema>;
 const TaskForm = () => {
-  const [date, setDate] = useState("");
-  const [orderId, setOrderId] = useState("");
-  const [clientEmail, setClientEmail] = useState("");
-  const [task, setTask] = useState("");
-  const [remarks, setRemarks] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [personalNote, setPersonalNote] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<taskSchema>({
+    resolver: zodResolver(TaskSchema),
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log({
-      date,
-      orderId,
-      clientEmail,
-      task,
-      remarks,
-      taskDescription,
-      personalNote,
-    });
+  const onSubmit: SubmitHandler<taskSchema> = (data) => {
+    console.log("test", data);
   };
 
   return (
     <div className="rounded-sm w-auto h-auto border bg-white shadow-lg ">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <ul className="flex flex-col mt-14 ml-14">
-          <li className="mb-7 w-5/12  max-sm:w-11/12 ">
-            <TextInput
-              id="date"
+          <div className="mb-7 w-5/12 max-sm:w-11/12">
+            <label className="block text-sm font-medium text-black">Date</label>
+            <input
               type="date"
-              label="Date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              className="mt-1 p-2 border rounded-sm w-full"
+              {...register("date")}
             />
-          </li>
+          </div>
           <li className="flex w-auto gap-20 max-sm:flex-col ">
-            <div className="w-5/12 max-sm:w-11/12">
-              <TextInput
-                type="text"
-                id="order id"
-                label="Order ID"
-                value={orderId}
-                onChange={(e) => setOrderId(e.target.value)}
+            <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <label className="block text-sm font-medium text-black">
+                Order ID
+              </label>
+              <input
+                type="number"
+                className="mt-1 p-2 border rounded-sm w-full"
+                {...register("id")}
               />
+              <span>{errors.id?.message}</span>
             </div>
-            <div className="w-5/12 max-sm:w-11/12">
-              <TextInput
-                type="email"
-                id="client email"
-                label="Client Email Address "
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
+            <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <label className="block text-sm font-medium text-black">
+                Client Email Address
+              </label>
+              <input
+                type="text"
+                className="mt-1 p-2 border rounded-sm w-full"
+                {...register("email")}
               />
+              <span>{errors.email?.message}</span>
             </div>
           </li>
           <li className="border-t mt-12 mr-24 mb-10 max-sm:w-11/12"></li>
@@ -65,44 +70,40 @@ const TaskForm = () => {
           </li>
 
           <li className="flex w-auto gap-20 mb-9 max-sm:flex-col ">
-            <div className="w-5/12 max-sm:w-11/12">
-              <TextInput
+            <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <label className="block text-sm font-medium text-black">
+                Task Name
+              </label>
+              <input
                 type="text"
-                id="task name"
-                label="Task Name"
-                value={task}
-                onChange={(e) => setTask(e.target.value)}
+                className="mt-1 p-2 border rounded-sm w-full"
+                {...register("taskName")}
               />
+              <span>{errors.taskName?.message}</span>
             </div>
-            <div className="w-5/12 max-sm:w-11/12">
-              <TextInput
+            <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <label className="block text-sm font-medium text-black">
+                Remarks
+              </label>
+              <input
                 type="text"
-                id="remarks"
-                label="Remarks"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
+                className="mt-1 p-2 border rounded-sm w-full"
+                {...register("remarks")}
               />
+              {errors.remarks?.message}
             </div>
           </li>
 
           <li className="w-11/12 mb-7">
             <TextArea
-              id="task description"
+              id="description"
               label="Task Description"
-              name="Task description"
-              value={taskDescription}
-              onChange={(e) => setTaskDescription(e.target.value)}
+              {...register("description")}
             />
           </li>
 
           <li className="w-11/12 mb-16">
-            <TextArea
-              id="personal note"
-              name="personal Note"
-              label="Personal note"
-              value={personalNote}
-              onChange={(e) => setPersonalNote(e.target.value)}
-            />
+            <TextArea id="note" label="Personal note" {...register("note")} />
           </li>
           <li className="border-t mt-12 mr-20 mb-8 max-sm:w-11/12"></li>
 
