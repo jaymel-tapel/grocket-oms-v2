@@ -12,6 +12,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@hookform/resolvers": "^3.3.3",
     "@tanstack/react-query": "^5.8.3",
     "@tanstack/react-router": "^0.0.1-beta.279",
     "axios": "^1.6.2",
@@ -19,8 +20,10 @@
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.49.2",
     "react-hot-toast": "^2.4.1",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
