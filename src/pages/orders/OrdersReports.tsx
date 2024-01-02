@@ -319,7 +319,7 @@ const OrdersReports = () => {
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-4 items-center">
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
         <BarLineChart
           key="paymentStatusCt"
           chartType="bar"
@@ -346,7 +346,7 @@ const OrdersReports = () => {
         <DonutChart chartData={orderPaymentsData.percentage} />
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-4 items-center">
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
         <BarLineChart
           key="reviewStatusCt"
           chartType="bar"
