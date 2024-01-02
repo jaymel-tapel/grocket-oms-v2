@@ -1,12 +1,8 @@
-import OrdersChartPaymentCount from "../../components/orders/ordersReport/OrdersChartPaymentCount";
-import OrdersChartPaymentAmount from "../../components/orders/ordersReport/OrdersChartPaymentAmount";
-import OrdersCircleChart from "../../components/orders/ordersReport/OrdersCircleChart";
-import OrdersChartStatusCount from "../../components/orders/ordersReport/OrdersChartStatusCount";
-import OrdersChartStatusAmount from "../../components/orders/ordersReport/OrdersChartStatusAmount";
 import { useMemo, useState } from "react";
 import DropdownText from "../../components/tools/dropdowntext/DropdownText";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import StatsCards from "../../components/tools/cards/StatsCards";
+import DonutChart from "../../components/tools/charts/DonutChart";
 
 const filtersList = [
   { id: "currentWeek", label: "Current Week" },
@@ -24,6 +20,32 @@ const OrdersReports = () => {
   const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
     setSearchFilter(newFilter);
   };
+
+  const orderStats = useMemo(() => {
+    // temporary data
+    return [
+      {
+        value: 6,
+        label: "Total Orders",
+        percentage: { label: "Since last week", value: 2.5 },
+      },
+      {
+        value: 0,
+        label: "Paid Orders",
+        percentage: { label: "Since last week", value: -1.5 },
+      },
+      {
+        value: 1.25,
+        label: "Average Amount of Reviews",
+        percentage: { label: "Since last week", value: 0.5 },
+      },
+      {
+        value: 27.6,
+        label: "Average Unit Cost",
+        percentage: { label: "Since last week", value: 1.5 },
+      },
+    ];
+  }, []);
 
   const paidOrdersData = useMemo(() => {
     return [
@@ -64,30 +86,216 @@ const OrdersReports = () => {
     ];
   }, []);
 
-  const orderStats = useMemo(() => {
+  const orderPaymentsData = useMemo(() => {
     // temporary data
-    return [
-      {
-        value: 6,
-        label: "Total Orders",
-        percentage: { label: "Since last week", value: 2.5 },
+    return {
+      statusCount: [
+        {
+          name: "Payment Status Count",
+          data: [
+            {
+              x: "New",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(217, 217, 217, 1)",
+            },
+            {
+              x: "Sent Invoice",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(242, 199, 68, 1)",
+            },
+            {
+              x: "Paid",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(72, 209, 111, 1)",
+            },
+            {
+              x: "Unpaid",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 102, 0, 1)",
+            },
+            {
+              x: "Payment Reminder 1",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(0, 0, 0, 1)",
+            },
+            {
+              x: "Payment Reminder 2",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 0, 0, 1)",
+            },
+          ],
+        },
+      ],
+      statusAmount: [
+        {
+          name: "Payment Status Amount (€)",
+          data: [
+            {
+              x: "New",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(217, 217, 217, 1)",
+            },
+            {
+              x: "Sent Invoice",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(242, 199, 68, 1)",
+            },
+            {
+              x: "Paid",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(72, 209, 111, 1)",
+            },
+            {
+              x: "Unpaid",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 102, 0, 1)",
+            },
+            {
+              x: "Payment Reminder 1",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(0, 0, 0, 1)",
+            },
+            {
+              x: "Payment Reminder 2",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 0, 0, 1)",
+            },
+          ],
+        },
+      ],
+      percentage: {
+        labels: [
+          "New",
+          "Sent Invoice",
+          "Paid",
+          "Unpaid",
+          "Payment Reminder 1",
+          "Payment Reminder 2",
+        ],
+        values: [
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+        ],
+        colors: [
+          "rgba(217, 217, 217, 1)",
+          "rgba(242, 199, 68, 1)",
+          "rgba(72, 209, 111, 1)",
+          "rgba(255, 102, 0, 1)",
+          "rgba(0, 0, 0, 1)",
+          "rgba(255, 0, 0, 1)",
+        ],
       },
-      {
-        value: 0,
-        label: "Paid Orders",
-        percentage: { label: "Since last week", value: -1.5 },
+    };
+  }, []);
+
+  const orderReviewsData = useMemo(() => {
+    // temporary data
+    return {
+      statusCount: [
+        {
+          name: "Payment Status Count",
+          data: [
+            {
+              x: "Neu",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(134, 48, 255, 1)",
+            },
+            {
+              x: "Beufragt",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 48, 167, 1)",
+            },
+            {
+              x: "Weiterleitung",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 134, 48, 1)",
+            },
+            {
+              x: "Widerspruch",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(168, 255, 48, 1)",
+            },
+            {
+              x: "Geischeitert",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(48, 255, 135, 1)",
+            },
+            {
+              x: "Geloscht",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(48, 168, 255, 1)",
+            },
+          ],
+        },
+      ],
+      statusAmount: [
+        {
+          name: "Payment Status Amount (€)",
+          data: [
+            {
+              x: "Neu",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(134, 48, 255, 1)",
+            },
+            {
+              x: "Beufragt",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 48, 167, 1)",
+            },
+            {
+              x: "Weiterleitung",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(255, 134, 48, 1)",
+            },
+            {
+              x: "Widerspruch",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(168, 255, 48, 1)",
+            },
+            {
+              x: "Geischeitert",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(48, 255, 135, 1)",
+            },
+            {
+              x: "Geloscht",
+              y: Math.floor(Math.random() * 101),
+              fillColor: "rgba(48, 168, 255, 1)",
+            },
+          ],
+        },
+      ],
+      percentage: {
+        labels: [
+          "Neu",
+          "Beufragt",
+          "Weiterleitung",
+          "Widerspruch",
+          "Geischeitert",
+          "Geloscht",
+        ],
+        values: [
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+          Math.floor(Math.random() * 101),
+        ],
+        colors: [
+          "rgba(134, 48, 255, 1)",
+          "rgba(255, 48, 167, 1)",
+          "rgba(255, 134, 48, 1)",
+          "rgba(168, 255, 48, 1)",
+          "rgba(48, 255, 135, 1)",
+          "rgba(48, 168, 255, 1)",
+        ],
       },
-      {
-        value: 1.25,
-        label: "Average Amount of Reviews",
-        percentage: { label: "Since last week", value: 0.5 },
-      },
-      {
-        value: 27.6,
-        label: "Average Unit Cost",
-        percentage: { label: "Since last week", value: 1.5 },
-      },
-    ];
+    };
   }, []);
 
   return (
@@ -108,25 +316,54 @@ const OrdersReports = () => {
           chartType="area"
           chartData={paidOrdersData}
           chartColors={["#3C50E0", "#10B981"]}
-          // disableLegends={true}
-          // label="Orders Count"
-          // additionalData={[
-          //   { label: "Paid amount", value: "$39,000.20" },
-          //   { label: "Unpaid amount", value: "$25,000.20" },
-          // ]}
         />
       </div>
 
-      <div
-        className="mt-4 mb-4 grid md:mt-4 md:gap-4 2xl:mt-6.5 2xl:gap-6.5"
-        style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))" }}
-      >
-        <OrdersChartPaymentCount /> <OrdersChartPaymentAmount />
-        <OrdersCircleChart />
-        <OrdersChartStatusCount /> <OrdersChartStatusAmount />
-        <div>
-          <OrdersCircleChart />
-        </div>
+      <div className="mt-6 grid grid-cols-3 gap-4 items-center">
+        <BarLineChart
+          key="paymentStatusCt"
+          chartType="bar"
+          chartData={orderPaymentsData.statusCount}
+          chartColors={["#3C50E0"]}
+          label="Payment Status Count"
+        />
+
+        <BarLineChart
+          key="paymentStatusAmt"
+          chartType="bar"
+          chartData={orderPaymentsData.statusAmount}
+          chartColors={[
+            "#F44336",
+            "#E91E63",
+            "#9C27B0",
+            "#F44336",
+            "#E91E63",
+            "#9C27B0",
+          ]}
+          label="Payment Status Amount (€)"
+        />
+
+        <DonutChart chartData={orderPaymentsData.percentage} />
+      </div>
+
+      <div className="mt-6 grid grid-cols-3 gap-4 items-center">
+        <BarLineChart
+          key="reviewStatusCt"
+          chartType="bar"
+          chartData={orderReviewsData.statusCount}
+          chartColors={["#3C50E0"]}
+          label="Review Status Count"
+        />
+
+        <BarLineChart
+          key="reviewStatusAmt"
+          chartType="bar"
+          chartData={orderReviewsData.statusAmount}
+          chartColors={["#3C50E0"]}
+          label="Review Status Amount (€)"
+        />
+
+        <DonutChart chartData={orderReviewsData.percentage} />
       </div>
     </div>
   );
