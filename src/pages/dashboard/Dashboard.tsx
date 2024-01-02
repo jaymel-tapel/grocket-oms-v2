@@ -1,9 +1,29 @@
-import DashboardCircleChart from "../../components/dashboard/dashboard/DashboardCircleChart";
 import DashboardTable from "../../components/dashboard/dashboard/DashboardTable";
 import LoggedSection from "../../components/sections/LoggedSection";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import StatsCards from "../../components/tools/cards/StatsCards";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import DonutChart from "../../components/tools/charts/DonutChart";
+
+const donutData = {
+  labels: [
+    "Neu",
+    "Beufragt",
+    "Weiterleitung",
+    "Widerspruch",
+    "Geischeitert",
+    "Geloscht",
+  ],
+  values: [
+    Math.floor(Math.random() * 101),
+    Math.floor(Math.random() * 101),
+    Math.floor(Math.random() * 101),
+    Math.floor(Math.random() * 101),
+    Math.floor(Math.random() * 101),
+    Math.floor(Math.random() * 101),
+  ],
+  colors: ["#27F6C2", "#089063", "#3C50E0", "#6577F3", "#80CAEE", "#0FADCF"],
+};
 
 const Dashboard: React.FC = () => {
   const dataCards = [
@@ -99,10 +119,12 @@ const Dashboard: React.FC = () => {
             disableLegends={true}
             label="Revenue Overview"
             chartType="area"
+            height={450}
           />
         </div>
         <div className="w-6/12 max-sm:w-full ">
-          <DashboardCircleChart />
+          {/* <DashboardCircleChart /> */}
+          <DonutChart chartData={donutData} label="Orders Overview" />
         </div>
       </div>
       {/* <div className="flex flex-col-2 max-sm:flex-col md:gap-6 2xl:w-full 2xl:mt-6.5 2xl:gap-6.5">

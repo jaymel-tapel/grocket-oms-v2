@@ -150,7 +150,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
   }, [disableLegends, chartColors, chartType, optimalColumnWidthPercent]);
 
   return (
-    <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md">
+    <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md h-full">
       {label && (
         <div
           className={`mb-4 ml-4 text-grText-dark font-bold ${
@@ -175,7 +175,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
 
             return (
               <>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center" key={index}>
                   <span className="text-grText-gray">{data.label}</span>
                   <span className="text-grText-dark font-bold text-[1.25rem]">
                     {data.value}
