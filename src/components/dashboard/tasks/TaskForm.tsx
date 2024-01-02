@@ -14,7 +14,18 @@ const TaskSchema = z.object({
 });
 
 type taskSchema = z.infer<typeof TaskSchema>;
+
 const TaskForm = () => {
+  // 1. Add navigate to '/tasks/${task._id}' to the tasks cards (not in this component)
+  // 2. Get task id using taskRoute's params
+  // 3. Use the task id for the useGetTask query
+  // 4. If there is a returned data from the query, use them as values for the form
+  // 5. Make sure that the fields of the temporary API data matches the fields/schema of the form
+
+  // Improvements
+  // * Hide order ID field when adding a new task. Show the field only if we are editing / updating an existing task
+  // * Add navigate to /tasks/new to the Add Task button (not in this component)
+
   const {
     register,
     handleSubmit,

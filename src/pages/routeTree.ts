@@ -9,6 +9,7 @@ import {
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
+import { getTaskQuery } from "../services/queries/taskQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -66,11 +67,15 @@ const tasksIndexRoute = new Route({
   ),
 });
 
-const taskRoute = new Route({
+export const taskRoute = new Route({
   getParentRoute: () => tasksRoute,
   path: "$taskId",
   beforeLoad: async ({ params: { taskId } }) => {
     if (isNaN(+taskId)) throw redirect({ to: "/tasks" });
+    return { queryOptions: getTaskQuery(taskId) };
+  },
+  loader: async ({ context: { queryClient, queryOptions } }) => {
+    queryClient.ensureQueryData(queryOptions).catch(console.log);
   },
   component: lazyRouteComponent(() => import("./dashboard/NewTask")),
 });
