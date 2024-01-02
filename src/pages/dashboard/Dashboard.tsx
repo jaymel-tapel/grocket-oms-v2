@@ -119,7 +119,7 @@ const Dashboard: React.FC = () => {
             disableLegends={true}
             label="Revenue Overview"
             chartType="area"
-            height={450}
+            height={420}
           />
         </div>
         <div className="w-6/12 max-sm:w-full ">
