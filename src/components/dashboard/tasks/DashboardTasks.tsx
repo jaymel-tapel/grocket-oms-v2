@@ -10,53 +10,11 @@ import {
   PhoneIcon,
   TrashIcon,
 } from "../../tools/svg/DashboardTasksLogos";
+import { useGetAllTasks } from "../../../services/queries/taskQueries";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
-  const remindersData = [
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-    {
-      title: "Payment Reminder",
-      description: "This is the description",
-      date: "2023-01-14 4:00:00 PM",
-      type: "Order",
-    },
-  ];
+  const { data: tasks } = useGetAllTasks();
 
   return (
     <>
@@ -101,16 +59,16 @@ const DashboardTasks: React.FC = () => {
         </div>
 
         <div>
-          {remindersData.map((reminder, i) => (
+          {tasks?.map((task, i) => (
             <div
               key={i}
               className="rounded-sm mt-9 border shadow-lg border-stroke bg-white shadow-default max-md:p-6 md:p-6 xl:p-9"
             >
               <div className="flex justify-between">
                 <div>
-                  <p className="text-black text-sm mb-1">{reminder.title}</p>
+                  <p className="text-black text-sm mb-1">{task.title}</p>
                   <p className="text-slate text-sm mb-1 mt-4">
-                    {reminder.description}
+                    {task.description}
                   </p>
                   <div className="flex flex-1 gap-6 mt-4">
                     {[CheckCircle, PencilAlt, TrashIcon].map(
@@ -130,15 +88,15 @@ const DashboardTasks: React.FC = () => {
                 <div>
                   <div className="flex gap-2">
                     <button>{CalendarIcon}</button>
-                    <p className="text-black">{reminder.date}</p>
+                    <p className="text-black">{task.date}</p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button>{LinkIcon}</button>
-                    <p className="text-black">{reminder.type}</p>
+                    <p className="text-black">{task.type}</p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button>{BuildingIcon}</button>
-                    <p className="text-black">{reminder.date}</p>
+                    <p className="text-black">{task.date}</p>
                   </div>
                 </div>
               </div>

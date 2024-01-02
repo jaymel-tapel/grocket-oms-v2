@@ -150,7 +150,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
   }, [disableLegends, chartColors, chartType, optimalColumnWidthPercent]);
 
   return (
-    <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md">
+    <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md h-full">
       {label && (
         <div
           className={`mb-4 ml-4 text-grText-dark font-bold ${
@@ -174,7 +174,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
             const isLast = index + 1 === additionalData.length;
 
             return (
-              <>
+              <React.Fragment key={index}>
                 <div className="flex flex-col items-center">
                   <span className="text-grText-gray">{data.label}</span>
                   <span className="text-grText-dark font-bold text-[1.25rem]">
@@ -183,7 +183,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
                 </div>
 
                 {!isLast && <Divider direction="vertical" />}
-              </>
+              </React.Fragment>
             );
           })}
         </div>
