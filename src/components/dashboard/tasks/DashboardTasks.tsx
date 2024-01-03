@@ -11,10 +11,17 @@ import {
   TrashIcon,
 } from "../../tools/svg/DashboardTasksLogos";
 import { useGetAllTasks } from "../../../services/queries/taskQueries";
+import { useNavigate } from "@tanstack/react-router";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
   const { data: tasks } = useGetAllTasks();
+
+  const navigate = useNavigate();
+
+  const handleTasks = () => {
+    navigate({ to: "/tasks/new" });
+  };
 
   return (
     <>
@@ -52,6 +59,7 @@ const DashboardTasks: React.FC = () => {
             <button
               type="button"
               className="rounded bg-chatBlue px-2 py-2 h-10 w-36 font-medium text-base text-white shadow-sm  hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#41B2E9]"
+              onClick={handleTasks}
             >
               Add Task
             </button>
@@ -73,7 +81,16 @@ const DashboardTasks: React.FC = () => {
                   <div className="flex flex-1 gap-6 mt-4">
                     {[CheckCircle, PencilAlt, TrashIcon].map(
                       (icon, iconIndex) => (
-                        <button key={iconIndex}>{icon}</button>
+                        <button
+                          key={iconIndex}
+                          onClick={() =>
+                            navigate({
+                              to: `/tasks/${task._id}` as "/tasks/$taskId",
+                            })
+                          }
+                        >
+                          {icon}
+                        </button>
                       )
                     )}
                     <span className="border-r-2"></span>
