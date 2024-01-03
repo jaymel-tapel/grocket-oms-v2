@@ -2,13 +2,16 @@ import TextArea from "../../tools/textArea/TextArea";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useParams } from "@tanstack/react-router";
+import { taskRoute } from "../../../pages/routeTree";
+import { useGetTask } from "../../../services/queries/taskQueries";
 
 const TaskSchema = z.object({
   date: z.coerce.date(),
-  id: z.coerce.number().nonnegative().gt(0, { message: "ID number required" }),
+  _id: z.coerce.number(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
-  taskName: z.string().min(1, { message: "Task name required" }),
-  remarks: z.string().min(1, { message: "Remarks is Required" }),
+  title: z.string().min(1, { message: "Task name required" }),
+  type: z.string().min(1, { message: "Remarks is Required" }),
   description: z.string().optional(),
   note: z.string().optional(),
 });
@@ -23,8 +26,10 @@ const TaskForm = () => {
   // 5. Make sure that the fields of the temporary API data matches the fields/schema of the form
 
   // Improvements
-  // * Hide order ID field when adding a new task. Show the field only if we are editing / updating an existing task
   // * Add navigate to /tasks/new to the Add Task button (not in this component)
+  const param = useParams({ from: taskRoute.id });
+  const taskId = param.taskId;
+  const { data: taskData } = useGetTask(taskId ?? "");
 
   const {
     register,
@@ -32,6 +37,11 @@ const TaskForm = () => {
     formState: { errors },
   } = useForm<taskSchema>({
     resolver: zodResolver(TaskSchema),
+    values: taskId ? taskData : undefined,
+    resetOptions: {
+      keepDirtyValues: true,
+      keepErrors: true,
+    },
   });
 
   const onSubmit: SubmitHandler<taskSchema> = (data) => {
@@ -45,7 +55,7 @@ const TaskForm = () => {
           <div className="mb-7 w-5/12 max-sm:w-11/12">
             <label className="block text-sm font-medium text-black">Date</label>
             <input
-              type="date"
+              type="text"
               className="mt-1 p-2 border rounded-sm w-full"
               {...register("date")}
             />
@@ -58,9 +68,10 @@ const TaskForm = () => {
               <input
                 type="number"
                 className="mt-1 p-2 border rounded-sm w-full"
-                {...register("id")}
+                {...register("_id")}
               />
-              <span>{errors.id?.message}</span>
+
+              <span>{errors._id?.message}</span>
             </div>
             <div className="mb-4 w-5/12 max-sm:w-11/12">
               <label className="block text-sm font-medium text-black">
@@ -88,9 +99,9 @@ const TaskForm = () => {
               <input
                 type="text"
                 className="mt-1 p-2 border rounded-sm w-full"
-                {...register("taskName")}
+                {...register("title")}
               />
-              <span>{errors.taskName?.message}</span>
+              <span>{errors.title?.message}</span>
             </div>
             <div className="mb-4 w-5/12 max-sm:w-11/12">
               <label className="block text-sm font-medium text-black">
@@ -99,9 +110,9 @@ const TaskForm = () => {
               <input
                 type="text"
                 className="mt-1 p-2 border rounded-sm w-full"
-                {...register("remarks")}
+                {...register("type")}
               />
-              {errors.remarks?.message}
+              {errors.type?.message}
             </div>
           </li>
 
@@ -125,7 +136,7 @@ const TaskForm = () => {
               </button>
 
               <button className="border rounded-md bg-[#3C50E0] text-white  h-10 px-8">
-                Add Task
+                {taskId ? "Update Tasks" : "Add Tasks"}
               </button>
             </div>
           </li>
