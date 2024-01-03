@@ -83,7 +83,11 @@ const DashboardTasks: React.FC = () => {
                       (icon, iconIndex) => (
                         <button
                           key={iconIndex}
-                          onClick={() => navigate({ to: `/tasks/${task._id}` })}
+                          onClick={() =>
+                            navigate({
+                              to: `/tasks/${task._id}` as "/tasks/$taskId",
+                            })
+                          }
                         >
                           {icon}
                         </button>
