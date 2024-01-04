@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -16,6 +16,18 @@ import { useNavigate } from "@tanstack/react-router";
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
   const { data: tasks } = useGetAllTasks();
+
+  const filterTasks = useMemo(() => {
+    if (!tasks) return [];
+
+    if (activeButton === "currentTasks") {
+      return tasks.filter((task) => task.type === "Order");
+    } else if (activeButton === "completedTasks") {
+      return tasks.filter((task) => task.type === "Completed");
+    } else {
+      return tasks;
+    }
+  }, [tasks, activeButton]);
 
   const navigate = useNavigate();
 
@@ -67,12 +79,13 @@ const DashboardTasks: React.FC = () => {
         </div>
 
         <div>
-          {tasks?.map((task, i) => (
+          {filterTasks?.map((task, i) => (
             <div
               key={i}
-              className="rounded-sm mt-9 border shadow-lg border-stroke bg-white shadow-default max-md:p-6 md:p-6 xl:p-9"
+              className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
+              onClick={null}
             >
-              <div className="flex justify-between">
+              <div className="flex justify-between ">
                 <div>
                   <p className="text-black text-sm mb-1">{task.title}</p>
                   <p className="text-slate text-sm mb-1 mt-4">
@@ -83,10 +96,13 @@ const DashboardTasks: React.FC = () => {
                       (icon, iconIndex) => (
                         <button
                           key={iconIndex}
-                          onClick={() =>
-                            navigate({
-                              to: `/tasks/${task._id}` as "/tasks/$taskId",
-                            })
+                          onClick={
+                            icon === PencilAlt
+                              ? () =>
+                                  navigate({
+                                    to: `/tasks/${task._id}` as "/tasks/$taskId",
+                                  })
+                              : undefined
                           }
                         >
                           {icon}
@@ -109,11 +125,11 @@ const DashboardTasks: React.FC = () => {
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button>{LinkIcon}</button>
-                    <p className="text-black">{task.type}</p>
+                    <p className="text-black">Order {task._id}</p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button>{BuildingIcon}</button>
-                    <p className="text-black">{task.date}</p>
+                    <p className="text-black">{task.name}</p>
                   </div>
                 </div>
               </div>

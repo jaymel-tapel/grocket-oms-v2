@@ -6,7 +6,8 @@ import { useGetTask } from "../../../services/queries/taskQueries";
 
 const TaskSchema = z.object({
   date: z.coerce.date(),
-  _id: z.coerce.number(),
+  _id: z.coerce.number().min(1, { message: "Please enter a correct number" }),
+  name: z.string(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
   title: z.string().min(1, { message: "Task name required" }),
   type: z.string().min(1, { message: "Remarks is Required" }),
@@ -17,16 +18,6 @@ const TaskSchema = z.object({
 type taskSchema = z.infer<typeof TaskSchema>;
 
 const TaskForm = () => {
-  // 1. Add navigate to '/tasks/${task._id}' to the tasks cards (not in this component)
-  // 2. Get task id using taskRoute's params
-  // 3. Use the task id for the useGetTask query
-  // 4. If there is a returned data from the query, use them as values for the form
-  // 5. Make sure that the fields of the temporary API data matches the fields/schema of the form
-
-  // Improvements
-  // * Add navigate to /tasks/new to the Add Task button (not in this component)
-  // const param = useParams({ from: taskRoute.id });
-  // const taskId = param.taskId;
   const { taskId } = taskRoute.useParams();
   const { data: taskData } = useGetTask(taskId ?? "");
 
@@ -55,7 +46,7 @@ const TaskForm = () => {
             <p className="text-black text-base">Dashboard</p> /{" "}
             <p className="text-black text-base">My Task</p> /
             <p className="text-[#41B2E9] text-base">
-              {taskId ? `Tasks #${taskId}` : "Add Tasks"}
+              {taskId ? `Edit Task` : "Add Tasks"}
             </p>
           </span>
         </div>
@@ -63,17 +54,17 @@ const TaskForm = () => {
       <div className="rounded-sm w-auto h-auto border bg-white shadow-lg ">
         <form onSubmit={handleSubmit(onSubmit)}>
           <ul className="flex flex-col mt-14 ml-14">
-            <div className="mb-7 w-5/12 max-sm:w-11/12">
-              <label className="block text-sm font-medium text-black">
-                Date
-              </label>
-              <input
-                type="text"
-                className="mt-1 p-2 border rounded-sm w-full"
-                {...register("date")}
-              />
-            </div>
             <li className="flex w-auto gap-20 max-sm:flex-col ">
+              <div className="mb-4 w-5/12 max-sm:w-11/12">
+                <label className="block text-sm font-medium text-black">
+                  Date
+                </label>
+                <input
+                  type="text"
+                  className="mt-1 p-2 border rounded-sm w-full"
+                  {...register("date")}
+                />
+              </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
                 <label className="block text-sm font-medium text-black">
                   Order ID
@@ -83,8 +74,21 @@ const TaskForm = () => {
                   className="mt-1 p-2 border rounded-sm w-full"
                   {...register("_id")}
                 />
-
                 <span>{errors._id?.message}</span>
+              </div>
+            </li>
+            <li className="flex w-auto gap-20 max-sm:flex-col ">
+              <div className="mb-4 w-5/12 max-sm:w-11/12">
+                <label className="block text-sm font-medium text-black">
+                  Business Name
+                </label>
+                <input
+                  type="text"
+                  className="mt-1 p-2 border rounded-sm w-full"
+                  {...register("name")}
+                />
+
+                <span>{errors.name?.message}</span>
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
                 <label className="block text-sm font-medium text-black">
@@ -167,7 +171,7 @@ const TaskForm = () => {
                 </button>
 
                 <button className="border rounded-md bg-[#3C50E0] text-white  h-10 px-8">
-                  {taskId ? "Update Tasks" : "Add Tasks"}
+                  {taskId ? "Update" : "Add Tasks"}
                 </button>
               </div>
             </li>
