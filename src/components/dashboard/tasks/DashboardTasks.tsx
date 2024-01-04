@@ -35,6 +35,10 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/new" });
   };
 
+  const handleClick = (taskId: string) => {
+    navigate({ to: "/tasks/$taskId", params: { taskId } });
+  };
+
   return (
     <>
       <div>
@@ -98,10 +102,7 @@ const DashboardTasks: React.FC = () => {
                           key={iconIndex}
                           onClick={
                             icon === PencilAlt
-                              ? () =>
-                                  navigate({
-                                    to: `/tasks/${task._id}` as "/tasks/$taskId",
-                                  })
+                              ? () => handleClick(task._id)
                               : undefined
                           }
                         >
