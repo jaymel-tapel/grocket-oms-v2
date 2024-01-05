@@ -10,11 +10,19 @@ export default {
         },
         grBlue: {
           light: "#41B2E9",
+          dark: "#3C50E0",
           base: "#41B2E9",
         },
         grText: {
           gray: "#64748B",
           dark: "#212B36",
+        },
+        grGreen: {
+          base: "#13C296",
+        },
+        grGray: {
+          base: "#EFF4FB",
+          dark: "#E2E8F0",
         },
         chatBlue: "#41B2E9",
         chatGray: "#EFF4FB",

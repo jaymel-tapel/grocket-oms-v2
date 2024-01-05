@@ -129,7 +129,7 @@ export const orderRoute = new Route({
   loader: async ({ context: { queryClient, queryOptions } }) => {
     queryClient.ensureQueryData(queryOptions).catch(console.log);
   },
-  component: lazyRouteComponent(() => import("./orders/AddNewOrderPage")),
+  component: lazyRouteComponent(() => import("./orders/OrderInformation")),
 });
 
 const deletedOrdersRoute = new Route({
