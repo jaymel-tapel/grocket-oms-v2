@@ -10,6 +10,7 @@ import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
 import { getTaskQuery } from "../services/queries/taskQueries";
+import { getOrderQuery } from "../services/queries/orderQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -118,6 +119,19 @@ const newOrderRoute = new Route({
   component: lazyRouteComponent(() => import("./orders/AddNewOrderPage")),
 });
 
+export const orderRoute = new Route({
+  getParentRoute: () => ordersRoute,
+  path: "$orderId",
+  beforeLoad: async ({ params: { orderId } }) => {
+    // if (isNaN(+orderId)) throw redirect({ to: "/orders" });
+    return { queryOptions: getOrderQuery(orderId) };
+  },
+  loader: async ({ context: { queryClient, queryOptions } }) => {
+    queryClient.ensureQueryData(queryOptions).catch(console.log);
+  },
+  component: lazyRouteComponent(() => import("./orders/OrderInformation")),
+});
+
 const deletedOrdersRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "deleted",
@@ -206,6 +220,7 @@ const routeTree = rootRoute.addChildren([
       ordersReportRoute,
       ordersManagerRoute,
       newOrderRoute,
+      orderRoute,
       deletedOrdersRoute,
     ]),
 

@@ -1,3 +1,6 @@
+import clsx, { ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export const isAuth = () => {
   // try {
   //   const access_token = localStorage.getItem("access_token");
@@ -13,4 +16,9 @@ export const isAuth = () => {
   const test = 1 + 1;
   if (test === 2) return true;
   return false;
+};
+
+export const cn = (...inputs: ClassValue[]) => {
+  // return inputs.filter(Boolean).join(" ");
+  return twMerge(clsx(inputs));
 };
