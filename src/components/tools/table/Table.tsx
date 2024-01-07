@@ -7,9 +7,11 @@ interface IsProps {
 
 const Table: React.FC<IsProps> = ({ children, classname = "" }) => {
   return (
-    <div className="mt-8  flow-root overflow-hidden">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <table className={`${classname}min-w-full divide-y divide-gray-300`}>
+    <div className="mt-8 flow-root overflow-hidden">
+      <div className="mx-auto">
+        <table
+          className={`${classname} min-w-full border-y border-y-gray-300 divide-y divide-gray-300`}
+        >
           {children}
         </table>
       </div>
