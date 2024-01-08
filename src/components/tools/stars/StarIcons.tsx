@@ -6,7 +6,7 @@ import React from "react";
 type StarIconsProps = {
   totalStars?: number;
   stars: number;
-  value: number | null;
+  value?: number | null;
   showLabels: boolean;
 };
 
@@ -17,7 +17,11 @@ const StarsIcons: React.FC<StarIconsProps> = ({
   showLabels = true,
 }) => {
   return (
-    <div className="w-fit grid grid-cols-3 gap-4">
+    <div
+      className={`w-fit grid gap-4 ${
+        showLabels ? "grid-cols-3" : "grid-cols-1"
+      }`}
+    >
       <div className="flex items-center gap-2">
         {Array.from({ length: totalStars }, (_, index) => {
           return (

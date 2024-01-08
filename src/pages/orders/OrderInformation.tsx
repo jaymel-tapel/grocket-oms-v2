@@ -6,6 +6,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import OrderInformationCompanies from "../../components/orders/orderInformation/OrderInformationCompanies";
+import OrderInformationReviews from "../../components/orders/orderInformation/OrderInformationReviews";
+import { useNavigate } from "@tanstack/react-router";
 
 const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
 type View = (typeof VIEWS)[number];
@@ -20,6 +22,7 @@ const orderInformationSchema = z.object({
 export type OrderInformationSchema = z.infer<typeof orderInformationSchema>;
 
 const OrderInformation: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<View>("Order Information");
   const {
     control,
@@ -33,13 +36,22 @@ const OrderInformation: React.FC = () => {
     setActiveTab(view);
   };
 
+  const handleBack = () => {
+    navigate({ to: "/orders/orders_manager" });
+  };
+
   const onSubmit: SubmitHandler<OrderInformationSchema> = (data) => {
     console.log(data);
   };
 
   return (
     <div>
-      <span className="text-grBlue-light font-medium">Back</span>
+      <span
+        className="text-grBlue-light font-medium cursor-pointer"
+        onClick={handleBack}
+      >
+        Back
+      </span>
 
       <div className="mt-10 p-10 pt-6 bg-white shadow-md">
         <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
@@ -63,6 +75,8 @@ const OrderInformation: React.FC = () => {
           )}
 
           {activeTab === "Companies" && <OrderInformationCompanies />}
+
+          {activeTab === "Reviews" && <OrderInformationReviews />}
 
           <div className="mt-4 flex gap-4 flex-col md:flex-row justify-between">
             <Button type="button" variant="delete">

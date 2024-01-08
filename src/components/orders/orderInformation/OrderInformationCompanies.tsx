@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../../../public/favicon.png";
+import logo from "../../../assets/grocket.png";
 import StarsIcons from "../../tools/stars/StarIcons";
 import CompanyLinksTable from "./CompanyLinksTable";
 
