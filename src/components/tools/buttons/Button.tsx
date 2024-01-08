@@ -14,6 +14,7 @@ const buttonVariants = cva(
         submit: "text-white bg-grGreen-base",
         delete: "text-[#DC3545] border border-[#DC3545]",
         inactive: "text-grText-dark bg-grGray-base border border-grGray-dark",
+        black: "text-white bg-black",
       },
       size: {
         default: "h-10 ",

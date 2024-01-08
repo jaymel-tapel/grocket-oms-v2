@@ -7,7 +7,7 @@ interface IsProps {
 
 const TableContainer: React.FC<IsProps> = ({ children, className = "" }) => {
   return (
-    <div className={` ${className}border focus:outline-none shadow-md `}>
+    <div className={`${className} border focus:outline-none shadow-md `}>
       {children}
     </div>
   );

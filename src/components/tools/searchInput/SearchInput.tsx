@@ -54,7 +54,7 @@ const SearchInput: React.FC<IsProps> = ({
           aria-label={label}
           // onFocus={() => setFocus(true)}
           // onBlur={() => setFocus(false)}
-          className={`block w-full pl-10 rounded-md border-0 h-10 text-lg shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 outline-none  ${
+          className={`block w-full pl-10 rounded-md border-0 h-10 text-lg ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 sm:text-sm sm:leading-6 outline-none  ${
             disabled
               ? "pointer-events-none bg-gray-100 text-gray-400"
               : "focus:ring-nextOrange-base"

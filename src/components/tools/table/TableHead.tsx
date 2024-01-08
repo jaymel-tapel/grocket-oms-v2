@@ -6,7 +6,7 @@ interface IsProps {
 }
 
 const TableHead: React.FC<IsProps> = ({ children, classname = "" }) => {
-  return <thead className={`${classname}bg-white`}>{children}</thead>;
+  return <thead className={`${classname} bg-white`}>{children}</thead>;
 };
 
 export default TableHead;

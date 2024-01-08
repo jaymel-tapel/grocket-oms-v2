@@ -36,70 +36,68 @@ const OrdersManagerTable: React.FC<OrdersManagerTableProps> = ({
   };
 
   return (
-    <div className="bg-white">
-      <TableContainer>
-        <div className="flex justify-between mt-6 ml-6">
-          <div>
-            <SearchInput
-              className={"w-46 bg-gray-200"}
-              type="text"
-              id="Client Name"
-              placeholder=" Search here..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="mr-[11rem]">
+    <TableContainer className="bg-white">
+      <div className="pt-8 px-8 flex justify-between">
+        <div className="flex gap-4">
+          <SearchInput
+            className={"w-46"}
+            type="text"
+            id="Client Name"
+            placeholder=" Search here..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <div className="">
             <button className="flex border py-2 px-4 rounded-md">
               <span className="mt-1 mr-2">{FilterLogo}</span> Filters
             </button>
           </div>
-          <div className="mr-8 gap-4">
-            <input
-              className="border mr-2 py-2 px-2 rounded-sm"
-              type="date"
-              placeholder="Date Start"
-            />
-            <input
-              className="border py-2 px-2 rounded-sm"
-              type="date"
-              placeholder="End Date"
-            />
-          </div>
         </div>
+        <div className="">
+          <input
+            className="border mr-2 py-2 px-2 rounded-sm"
+            type="date"
+            placeholder="Date Start"
+          />
+          <input
+            className="border py-2 px-2 rounded-sm"
+            type="date"
+            placeholder="End Date"
+          />
+        </div>
+      </div>
 
-        <Table>
-          <TableHead>
-            <TableRow>
-              {DataHead.map((head, i) => (
-                <TableHeadCell key={i}>{head}</TableHeadCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.map((order, i) => (
-              <TableRow
-                key={i}
-                className="cursor-pointer"
-                onClick={() => handleClick(order._id)}
-              >
-                <TableBodyCell>{order.date}</TableBodyCell>
-                <TableBodyCell>{order._id}</TableBodyCell>
-                <TableBodyCell>{order.client}</TableBodyCell>
-                <TableBodyCell>{order.total}</TableBodyCell>
-                <TableBodyCell>{order.reviews.length}</TableBodyCell>
-                <TableBodyCell>
-                  <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    {order.payment_status}
-                  </span>
-                </TableBodyCell>
-                <TableBodyCell>{order.remarks}</TableBodyCell>
-              </TableRow>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {DataHead.map((head, i) => (
+              <TableHeadCell key={i}>{head}</TableHeadCell>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {orders.map((order, i) => (
+            <TableRow
+              key={i}
+              className="cursor-pointer"
+              onClick={() => handleClick(order._id)}
+            >
+              <TableBodyCell>{order.date}</TableBodyCell>
+              <TableBodyCell>{order._id}</TableBodyCell>
+              <TableBodyCell>{order.client}</TableBodyCell>
+              <TableBodyCell>{order.total}</TableBodyCell>
+              <TableBodyCell>{order.reviews.length}</TableBodyCell>
+              <TableBodyCell>
+                <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                  {order.payment_status}
+                </span>
+              </TableBodyCell>
+              <TableBodyCell>{order.remarks}</TableBodyCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

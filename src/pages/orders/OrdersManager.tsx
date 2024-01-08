@@ -1,6 +1,7 @@
 import OrdersManagerTable from "../../components/orders/_ordersManager/OrdersManagerTable";
 import { useNavigate } from "@tanstack/react-router";
 import { useGetAllOrders } from "../../services/queries/orderQueries";
+import { Button } from "../../components/tools/buttons/Button";
 
 const OrdersManager: React.FC = () => {
   const navigate = useNavigate();
@@ -20,13 +21,9 @@ const OrdersManager: React.FC = () => {
           </span>
         </div>
 
-        <button
-          type="button"
-          className="rounded-md bg-[#41B2E9] px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          onClick={handleAddOrder}
-        >
+        <Button type="button" variant="lightBlue" onClick={handleAddOrder}>
           Add Order
-        </button>
+        </Button>
       </div>
       <OrdersManagerTable orders={orders} />
     </div>
