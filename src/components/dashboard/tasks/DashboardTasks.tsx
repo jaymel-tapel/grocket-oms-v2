@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -10,12 +10,31 @@ import {
   PhoneIcon,
   TrashIcon,
 } from "../../tools/svg/DashboardTasksLogos";
-import { useGetAllTasks } from "../../../services/queries/taskQueries";
-import { useNavigate } from "@tanstack/react-router";
+import {
+  useCompleteTask,
+  useDeleteTask,
+  useGetAllTasks,
+} from "../../../services/queries/taskQueries";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Button } from "../../tools/buttons/Button";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
   const { data: tasks } = useGetAllTasks();
+  const { mutateAsync: completeTaskAsync } = useCompleteTask();
+  const { mutate: deleteTask } = useDeleteTask();
+
+  const filterTasks = useMemo(() => {
+    if (!tasks) return [];
+
+    if (activeButton === "currentTasks") {
+      return tasks.filter((task) => task.type === "Order");
+    } else if (activeButton === "completedTasks") {
+      return tasks.filter((task) => task.type === "Completed");
+    } else {
+      return tasks;
+    }
+  }, [tasks, activeButton]);
 
   const navigate = useNavigate();
 
@@ -23,37 +42,51 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/new" });
   };
 
+  const handleClick = (taskId: string) => {
+    navigate({ to: "/tasks/$taskId", params: { taskId } });
+  };
+
+  const handleTaskAction = async (
+    taskId: string,
+    action: "complete" | "delete"
+  ) => {
+    try {
+      if (action === "complete") {
+        await completeTaskAsync(taskId);
+        console.log("Task completed", taskId);
+      } else if (action === "delete") {
+        await deleteTask(taskId);
+        console.log("Task deleted", taskId);
+      }
+    } catch (error) {
+      console.error(
+        `Error ${action === "complete" ? "completing" : "deleting"} task:`,
+        error
+      );
+    }
+  };
+
   return (
     <>
       <div>
         <div className="flex justify-between items-center pt-8 max-md:flex-col max-md:gap-4">
           <div className="flex gap-7 max-md:flex-col">
-            <button
+            <Button
               type="button"
               onClick={() => setActiveButtton("currentTasks")}
-              className={`rounded border  px-2 py-2 h-10 w-36 font-medium text-base 
-              ${
-                activeButton === "currentTasks"
-                  ? "text-white bg-buttonBlack shadow-lg"
-                  : "text-black bg-chatGray shadow-sm"
-              }
-               hover:shadow-lg`}
+              variant={activeButton === "currentTasks" ? "default" : "inactive"}
             >
               Current Tasks
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setActiveButtton("completedTasks")}
-              className={`rounded border  px-2 py-2 h-10 w-44 font-medium text-base 
-              ${
-                activeButton === "completedTasks"
-                  ? "text-white  shadow-sm bg-buttonBlack "
-                  : "text-black shadow-sm bg-chatGray"
+              variant={
+                activeButton === "completedTasks" ? "default" : "inactive"
               }
-               hover:shadow-lg`}
             >
               Completed Tasks
-            </button>
+            </Button>
           </div>
           <div className="">
             <button
@@ -67,12 +100,13 @@ const DashboardTasks: React.FC = () => {
         </div>
 
         <div>
-          {tasks?.map((task, i) => (
+          {filterTasks?.map((task, i) => (
             <div
               key={i}
-              className="rounded-sm mt-9 border shadow-lg border-stroke bg-white shadow-default max-md:p-6 md:p-6 xl:p-9"
+              className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
+              onClick={null}
             >
-              <div className="flex justify-between">
+              <div className="flex justify-between ">
                 <div>
                   <p className="text-black text-sm mb-1">{task.title}</p>
                   <p className="text-slate text-sm mb-1 mt-4">
@@ -83,21 +117,62 @@ const DashboardTasks: React.FC = () => {
                       (icon, iconIndex) => (
                         <button
                           key={iconIndex}
-                          onClick={() =>
-                            navigate({
-                              to: `/tasks/${task._id}` as "/tasks/$taskId",
-                            })
-                          }
+                          onClick={() => {
+                            if (icon === CheckCircle) {
+                              handleTaskAction(task._id, "complete");
+                            } else if (icon === PencilAlt) {
+                              handleClick(task._id);
+                            } else if (icon === TrashIcon) {
+                              handleTaskAction(task._id, "delete");
+                            }
+                          }}
                         >
                           {icon}
                         </button>
                       )
                     )}
                     <span className="border-r-2"></span>
-                    {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
+                    {/* {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
                       (icon, iconIndex) => (
-                        <button key={iconIndex}>{icon}</button>
+                        <Link
+                          key={iconIndex}
+                          to={
+                            icon === EnvelopeIcon
+                              ? "/inbox"
+                              : icon === PhoneIcon
+                              ? "/inbox"
+                              : undefined
+                          }
+                        >
+                          <button>{icon}</button>
+                        </Link>
                       )
+                    )} */}
+                    {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
+                      (icon, iconIndex) => {
+                        if (icon === PhoneIcon) {
+                          return (
+                            <a key={iconIndex} href={`tel:${task.phone}`}>
+                              <button>{icon}</button>
+                            </a>
+                          );
+                        } else {
+                          return (
+                            <Link
+                              key={iconIndex}
+                              to={
+                                icon === EnvelopeIcon
+                                  ? "/inbox"
+                                  : icon === PaperAirplaneIcon
+                                  ? "/inbox"
+                                  : undefined
+                              }
+                            >
+                              <button>{icon}</button>
+                            </Link>
+                          );
+                        }
+                      }
                     )}
                   </div>
                 </div>
@@ -109,11 +184,11 @@ const DashboardTasks: React.FC = () => {
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button>{LinkIcon}</button>
-                    <p className="text-black">{task.type}</p>
+                    <p className="text-black">Order {task._id}</p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button>{BuildingIcon}</button>
-                    <p className="text-black">{task.date}</p>
+                    <p className="text-black">{task.name}</p>
                   </div>
                 </div>
               </div>
