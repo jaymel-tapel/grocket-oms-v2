@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { taskRoute } from "../../../pages/routeTree";
 import { useGetTask } from "../../../services/queries/taskQueries";
+import { useNavigate } from "@tanstack/react-router";
 
 const TaskSchema = z.object({
   date: z.coerce.date(),
@@ -18,6 +19,7 @@ const TaskSchema = z.object({
 type taskSchema = z.infer<typeof TaskSchema>;
 
 const TaskForm = () => {
+  const navigate = useNavigate();
   const { taskId } = taskRoute.useParams();
   const { data: taskData } = useGetTask(taskId ?? "");
 
@@ -38,6 +40,10 @@ const TaskForm = () => {
     console.log("test", data);
   };
 
+  const handleClose = () => {
+    navigate({ to: "/tasks" });
+  };
+
   return (
     <>
       <div className="flex mt-4 mb-6">
@@ -45,7 +51,7 @@ const TaskForm = () => {
           <span className="flex gap-2">
             <p className="text-black text-base">Dashboard</p> /{" "}
             <p className="text-black text-base">My Task</p> /
-            <p className="text-[#41B2E9] text-base">
+            <p className="text-grBlue-light text-base">
               {taskId ? `Edit Task` : "Add Tasks"}
             </p>
           </span>
@@ -141,7 +147,7 @@ const TaskForm = () => {
                 <div className="mt-2">
                   <textarea
                     id="description"
-                    className="block w-full h-[197px] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
+                    className="block w-full h-[197px] rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm"
                     {...register("description")}
                   />
                 </div>
@@ -156,7 +162,8 @@ const TaskForm = () => {
                 <div className="mt-2">
                   <textarea
                     id="note"
-                    className="block w-full h-[197px] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
+                    placeholder=" "
+                    className="block w-full h-[197px] rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
                     {...register("note")}
                   />
                 </div>
@@ -166,11 +173,17 @@ const TaskForm = () => {
 
             <li className="mr-20 mb-12">
               <div className="flex justify-end  mb-4 gap-4 max-sm:justify-center">
-                <button className="border rounded-md bg-white text-black px-8 h-10">
+                <button
+                  onClick={handleClose}
+                  className="border rounded-md bg-white text-black px-8 h-10"
+                >
                   Cancel
                 </button>
 
-                <button className="border rounded-md bg-[#3C50E0] text-white  h-10 px-8">
+                <button
+                  type="submit"
+                  className="border rounded-md bg-[#3C50E0] text-white  h-10 px-8"
+                >
                   {taskId ? "Update" : "Add Tasks"}
                 </button>
               </div>
