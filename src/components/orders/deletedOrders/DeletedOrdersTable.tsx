@@ -2,7 +2,6 @@ import { useState } from "react";
 import Table from "../../tools/table/Table";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
-import TableContainer from "../../tools/table/TableContainer";
 import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
@@ -119,31 +118,31 @@ const DeletedOrdersTable: React.FC = () => {
           </span>
         </div>
       </div>
-      <div className="bg-white">
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {DataHead.map((head, i) => (
-                  <TableHeadCell key={i}>{head}</TableHeadCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tabledata.map((item, i) => (
-                <TableRow key={i}>
-                  <TableBodyCell>{item.Date}</TableBodyCell>
-                  <TableBodyCell>{item.Order_ID}</TableBodyCell>
-                  <TableBodyCell>{item.Client}</TableBodyCell>
-                  <TableBodyCell>{item.Total}</TableBodyCell>
-                  <TableBodyCell>{item.Review}</TableBodyCell>
-                  <TableBodyCell>{item.Payment_status}</TableBodyCell>
-                  <TableBodyCell>{item.Remarks}</TableBodyCell>
-                </TableRow>
+      <div className="bg-white border-x border-x-gray-300 shadow-md">
+        {/* <TableContainer> */}
+        <Table>
+          <TableHead>
+            <TableRow>
+              {DataHead.map((head, i) => (
+                <TableHeadCell key={i}>{head}</TableHeadCell>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tabledata.map((item, i) => (
+              <TableRow key={i}>
+                <TableBodyCell>{item.Date}</TableBodyCell>
+                <TableBodyCell>{item.Order_ID}</TableBodyCell>
+                <TableBodyCell>{item.Client}</TableBodyCell>
+                <TableBodyCell>{item.Total}</TableBodyCell>
+                <TableBodyCell>{item.Review}</TableBodyCell>
+                <TableBodyCell>{item.Payment_status}</TableBodyCell>
+                <TableBodyCell>{item.Remarks}</TableBodyCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {/* </TableContainer> */}
       </div>
     </div>
   );
