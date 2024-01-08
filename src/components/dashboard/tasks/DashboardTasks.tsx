@@ -152,7 +152,7 @@ const DashboardTasks: React.FC = () => {
                       (icon, iconIndex) => {
                         if (icon === PhoneIcon) {
                           return (
-                            <a key={iconIndex} href={`tel:${PhoneIcon}`}>
+                            <a key={iconIndex} href={`tel:${task.phone}`}>
                               <button>{icon}</button>
                             </a>
                           );
