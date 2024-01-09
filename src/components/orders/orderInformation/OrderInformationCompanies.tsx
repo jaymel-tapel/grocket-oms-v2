@@ -22,7 +22,7 @@ const scrapedStats = {
 
 const companyLinks = [
   {
-    id: 1359,
+    _id: "1359",
     status: 1,
     created_at: "2023-03-21T19:38:17.000000Z",
     updated_at: "2023-12-27T02:34:51.000000Z",

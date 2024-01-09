@@ -2,25 +2,36 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { Button } from "../../../tools/buttons/Button";
+import { ReactNode } from "react";
 
-const sellectSellerSchema = z.object({
+const selectSellerSchema = z.object({
   date: z.string(),
   name: z.string(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
 });
 
-type SelectSellerSchema = z.infer<typeof sellectSellerSchema>;
+type SelectSellerSchema = z.infer<typeof selectSellerSchema>;
 
-const SelectSellerForm: React.FC = () => {
+type FormProps = {
+  children: ReactNode;
+};
+
+const SelectSellerForm: React.FC<FormProps> = ({ children }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SelectSellerSchema>({
-    resolver: zodResolver(sellectSellerSchema),
+    resolver: zodResolver(selectSellerSchema),
   });
+
+  const handleChange = (field: keyof typeof seller, value: typeof field) => {
+    setSeller((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
     setSeller(data);
@@ -44,7 +55,9 @@ const SelectSellerForm: React.FC = () => {
               type="date"
               id="orderDate"
               defaultValue={seller.date}
-              {...register("date")}
+              {...register("date", {
+                onChange: (e) => handleChange("date", e.target.value),
+              })}
               className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                 errors.date && "border-red-500"
               }`}
@@ -70,7 +83,9 @@ const SelectSellerForm: React.FC = () => {
               type="text"
               id="sellerName"
               defaultValue={seller.name}
-              {...register("name")}
+              {...register("name", {
+                onChange: (e) => handleChange("name", e.target.value),
+              })}
               className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                 errors.name && "border-red-500"
               }`}
@@ -94,7 +109,9 @@ const SelectSellerForm: React.FC = () => {
               type="email"
               id="sellerEmail"
               defaultValue={seller.email}
-              {...register("email")}
+              {...register("email", {
+                onChange: (e) => handleChange("email", e.target.value),
+              })}
               className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                 errors.email && "border-red-500"
               }`}
@@ -108,12 +125,7 @@ const SelectSellerForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="pt-8 border-t border-t-gray-300 flex justify-between">
-        <Button type="button" variant="delete">
-          Cancel
-        </Button>
-        <Button type="submit">Next</Button>
-      </div>
+      {children}
     </form>
   );
 };
