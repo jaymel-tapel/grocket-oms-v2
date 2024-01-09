@@ -1,84 +1,120 @@
-import { useState } from "react";
-import TextInput from "../../../tools/inputForms/TextInput";
-import { ArrowRight } from "../../../tools/svg/ArrorRight";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
+import { Button } from "../../../tools/buttons/Button";
+
+const sellectSellerSchema = z.object({
+  date: z.string(),
+  name: z.string(),
+  email: z.string().email().min(1, { message: "Invalid Email Address" }),
+});
+
+type SelectSellerSchema = z.infer<typeof sellectSellerSchema>;
 
 const SelectSellerForm: React.FC = () => {
-  const [date, setDate] = useState("");
-  const [email, setEmail] = useState("");
-  const [sellersName, setSellersName] = useState("");
+  const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SelectSellerSchema>({
+    resolver: zodResolver(sellectSellerSchema),
+  });
 
-  const handleNext = () => {
-    // navigate("/orders/new/select_client");
+  const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
+    setSeller(data);
+    setStep(2);
   };
 
   return (
-    <>
-      <div className="pb-4 text-black">Add Order</div>
-      <div className="rounded-sm bg-white border w-full h-[25rem] shadow-lg ">
-        <form>
-          <ul>
-            <li className="flex ml-4 mr-4 mt-10 border-b sm:col-span-4 ">
-              <p className="text-black ml-4">Select Seller </p>
-              {ArrowRight}
-              <p className="ml-2">Select Client </p>
-              {ArrowRight}
-              <p className="ml-2">Select Client Link </p>
-              {ArrowRight}
-              <p className="ml-2">Add Reviews </p>
-            </li>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <span className="font-bold text-sm">Seller Information</span>
 
-            <li className="ml-8 mt-10 w-60  border-b sm:col-span-4 ">
-              <p className="text-black">Sellers Information</p>
-            </li>
+      <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
+        <div>
+          <label
+            htmlFor="orderDate"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Date
+          </label>
+          <div className="w-full">
+            <input
+              type="date"
+              id="orderDate"
+              defaultValue={seller.date}
+              {...register("date")}
+              className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                errors.date && "border-red-500"
+              }`}
+            />
+            {errors.date && (
+              <p className="text-xs italic text-red-500 mt-2">
+                {errors.date?.message}
+              </p>
+            )}
+          </div>
+        </div>
+        <div />
 
-            <li className="ml-8 w-5/12 mt-4 sm:col-span-4 ">
-              <TextInput
-                inputClassName={"bg-gray-200"}
-                type="date"
-                id="date"
-                label="Date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </li>
-            <li className="flex w-full gap-8">
-              <div className="ml-8 w-96 mt-4 sm:col-span-4 ">
-                <TextInput
-                  inputClassName={"bg-gray-200"}
-                  type="text"
-                  id="sellers name"
-                  label="Sellers Name"
-                  value={sellersName}
-                  onChange={(e) => setSellersName(e.target.value)}
-                />
-              </div>
-              <div className="ml-8 w-96  mt-4 sm:col-span-4 ">
-                <TextInput
-                  inputClassName={" bg-gray-200"}
-                  type="email"
-                  id="email"
-                  label="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </li>
-
-            <div className="flex justify-end mr-[3.2rem] gap-2 mt-4">
-              <button className="border rounded-md bg-[#E2E8F0] hover:bg-white text-black px-8 h-10">
-                Cancel
-              </button>
-              <button
-                className="border rounded-md bg-[#3C50E0] text-white px-4 h-10  "
-                onClick={handleNext}
-              >
-                Next
-              </button>
-            </div>
-          </ul>
-        </form>
+        <div>
+          <label
+            htmlFor="sellerName"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Name
+          </label>
+          <div className="w-full">
+            <input
+              type="text"
+              id="sellerName"
+              defaultValue={seller.name}
+              {...register("name")}
+              className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                errors.name && "border-red-500"
+              }`}
+            />
+            {errors.name && (
+              <p className="text-xs italic text-red-500 mt-2">
+                {errors.name?.message}
+              </p>
+            )}
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="sellerEmail"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Email
+          </label>
+          <div className="w-full">
+            <input
+              type="email"
+              id="sellerEmail"
+              defaultValue={seller.email}
+              {...register("email")}
+              className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                errors.email && "border-red-500"
+              }`}
+            />
+            {errors.email && (
+              <p className="text-xs italic text-red-500 mt-2">
+                {errors.email?.message}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
-    </>
+
+      <div className="pt-8 border-t border-t-gray-300 flex justify-between">
+        <Button type="button" variant="delete">
+          Cancel
+        </Button>
+        <Button type="submit">Next</Button>
+      </div>
+    </form>
   );
 };
 

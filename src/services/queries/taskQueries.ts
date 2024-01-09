@@ -114,31 +114,28 @@ export const useGetTask = (taskId: string) => {
   return useQuery(getTaskQuery(taskId));
 };
 
-type Task = {
-  _id: string;
-  type: string;
-};
+export type Task = (typeof temporaryTasks)[number];
 
 export const useCompleteTask = () => {
   const queryClient = useQueryClient();
 
-  const mutationOptions: UseMutationOptions<Task, Error, string> = {
+  return useMutation({
     mutationFn: async (taskId: string) => {
       const updatedTasks = temporaryTasks.map((task) =>
         task._id === taskId ? { ...task, type: "Completed" } : task
       );
-      return updatedTasks.find((task) => task._id === taskId);
-    },
-    onSuccess: (_, variables) => {
+      const foundTask = updatedTasks.find(
+        (task) => task._id === taskId
+      ) as Task;
       queryClient.setQueryData<Task[]>(["tasks"], (oldTasks) => {
-        return oldTasks.map((task) =>
-          task._id === variables ? { ...task, type: "Completed" } : task
-        );
+        return oldTasks
+          ? oldTasks.map((task) =>
+              task._id === foundTask._id ? { ...task, type: "Completed" } : task
+            )
+          : [];
       });
     },
-  };
-
-  return useMutation<Task, Error, string>(mutationOptions);
+  });
 };
 
 export const useDeleteTask = () => {
@@ -149,9 +146,9 @@ export const useDeleteTask = () => {
       return { _id: taskId };
     },
     onSuccess: (data) => {
-      queryClient.setQueryData<Task[]>(["tasks"], (oldTasks) =>
-        oldTasks.filter((task) => task._id !== data._id)
-      );
+      queryClient.setQueryData<Task[]>(["tasks"], (oldTasks) => {
+        return oldTasks ? oldTasks.filter((task) => task._id !== data._id) : [];
+      });
     },
   };
 

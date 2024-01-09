@@ -2,12 +2,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { taskRoute } from "../../../pages/routeTree";
-import { useGetTask } from "../../../services/queries/taskQueries";
+import { Task, useGetTask } from "../../../services/queries/taskQueries";
 import { useNavigate } from "@tanstack/react-router";
 
 const TaskSchema = z.object({
-  date: z.coerce.date(),
-  _id: z.coerce.number().min(1, { message: "Please enter a correct number" }),
+  date: z.string(),
+  _id: z.string(),
   name: z.string(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
   title: z.string().min(1, { message: "Task name required" }),
@@ -29,7 +29,7 @@ const TaskForm = () => {
     formState: { errors },
   } = useForm<taskSchema>({
     resolver: zodResolver(TaskSchema),
-    values: taskId ? taskData : undefined,
+    values: taskId ? (taskData as Task) : undefined,
     resetOptions: {
       keepDirtyValues: true,
       keepErrors: true,
