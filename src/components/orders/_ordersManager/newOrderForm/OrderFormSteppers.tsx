@@ -5,6 +5,8 @@ const steps = [
   { id: 1, name: "Select Seller" },
   { id: 2, name: "Select Client" },
   { id: 3, name: "Select Company" },
+  { id: 4, name: "Add Reviews" },
+  { id: 5, name: "Summary" },
 ] as const;
 
 function isEmpty(obj: object) {
@@ -43,7 +45,7 @@ const OrderFormSteppers = () => {
                   <span className="text-sm font-medium text-grBlue-light group-hover:text-grBlue-base">
                     Step {step.id}
                   </span>
-                  <span className="text-sm font-medium">{step.name}</span>
+                  <span className="text-sm font-bold">{step.name}</span>
                 </div>
               ) : step.id === currentStep ? (
                 <div
@@ -54,14 +56,14 @@ const OrderFormSteppers = () => {
                   <span className="text-sm font-medium text-grBlue-light">
                     Step {step.id}
                   </span>
-                  <span className="text-sm font-medium">{step.name}</span>
+                  <span className="text-sm font-bold">{step.name}</span>
                 </div>
               ) : (
                 <div className="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
                   <span className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
                     Step {step.id}
                   </span>
-                  <span className="text-sm font-medium">{step.name}</span>
+                  <span className="text-sm font-bold">{step.name}</span>
                 </div>
               )}
             </li>

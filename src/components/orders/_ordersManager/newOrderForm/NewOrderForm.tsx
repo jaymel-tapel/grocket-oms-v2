@@ -5,15 +5,16 @@ import SelectClientForm from "./SelectClientForm";
 import SelectSellerForm from "./SelectSellerForm";
 import { Button } from "../../../tools/buttons/Button";
 import SelectCompanyForm from "./SelectCompanyForm";
+import AddReviewsForm from "./AddReviewsForm";
 
 const NewOrderForm = () => {
   const { step } = useOrderForm();
 
   return (
-    <div className="bg-white p-8">
+    <div className="bg-white p-12">
       <OrderFormSteppers />
-      <div className="my-8 border-t border-t-gray-300" />
-      <div className="">
+      <div className="mt-12 mb-8 border-t border-t-gray-300" />
+      <div>
         {step === 1 && (
           <SelectSellerForm>
             <FormNavigation />
@@ -28,6 +29,11 @@ const NewOrderForm = () => {
           <SelectCompanyForm>
             <FormNavigation />
           </SelectCompanyForm>
+        )}
+        {step === 4 && (
+          <AddReviewsForm>
+            <FormNavigation />
+          </AddReviewsForm>
         )}
       </div>
     </div>

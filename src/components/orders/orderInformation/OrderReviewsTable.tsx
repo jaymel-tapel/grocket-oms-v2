@@ -9,36 +9,31 @@ import { Button } from "../../tools/buttons/Button";
 
 const COLUMNS = ["ID", "NAME", "REVIEW STATUS", "ORIGIN", "ACTION"];
 
-const reviews = [
-  {
-    _id: "100",
-    name: "Test 1",
-    rating: 1,
-    review: "Bad review",
-    google_review_id: "111",
-    status: "New",
-  },
-  {
-    _id: "101",
-    name: "Test 2",
-    rating: 2,
-    review: "Another review",
-    google_review_id: "112",
-    status: "New",
-  },
-];
-
 const emailTemplates = [
   { name: "Grocket Template 1", _id: "123" },
   { name: "Grocket Template 2", _id: "124" },
 ];
+
+export type Review = {
+  _id: string;
+  name: string;
+  rating?: number;
+  review?: string;
+  google_review_id?: string;
+  status: number;
+};
 
 type Checkbox = {
   id: string;
   checked: boolean;
 };
 
-const OrderReviewsTable: React.FC = () => {
+type Props = {
+  reviews: Review[];
+  isNewOrder?: boolean;
+};
+
+const OrderReviewsTable: React.FC<Props> = ({ isNewOrder = true, reviews }) => {
   const [checkBoxes, setCheckBoxes] = useState<Checkbox[]>([]);
 
   const isOneReviewChecked = useMemo(() => {
@@ -75,6 +70,8 @@ const OrderReviewsTable: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isNewOrder) return;
+
     if (reviews && reviews.length > 0) {
       const initialBooleans = reviews
         // .slice(currentPage * 5, currentPage * 5 + 5)
@@ -83,46 +80,64 @@ const OrderReviewsTable: React.FC = () => {
         });
       setCheckBoxes(initialBooleans);
     }
-  }, []);
+  }, [isNewOrder, reviews]);
 
   return (
     <div>
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeadCell>
-              <input
-                id={"all"}
-                type="checkbox"
-                className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
-                checked={areAllReviewsChecked}
-                onChange={handleCheckAllReviews}
-              />
-            </TableHeadCell>
-            {COLUMNS.map((col, index) => (
-              <TableHeadCell key={index}>{col}</TableHeadCell>
-            ))}
+            {!isNewOrder && (
+              <TableHeadCell>
+                <input
+                  id={"all"}
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
+                  checked={areAllReviewsChecked}
+                  onChange={handleCheckAllReviews}
+                />
+              </TableHeadCell>
+            )}
+            {COLUMNS.map((col, index) => {
+              if (isNewOrder && index === 0) return;
+              return <TableHeadCell key={index}>{col}</TableHeadCell>;
+            })}
           </TableRow>
         </TableHead>
         <TableBody>
+          {reviews.length === 0 && (
+            <TableRow>
+              <TableBodyCell className="text-center" colSpan={6}>
+                <p className="text-sm text-gray-400">No data found.</p>
+                <p className="text-sm text-gray-400">
+                  Add a review to continue.
+                </p>
+              </TableBodyCell>
+            </TableRow>
+          )}
+
           {reviews.map((review, index) => {
             const isChecked = checkBoxes[index]?.checked || false;
             return (
               <TableRow key={index}>
-                <TableBodyCell>
-                  <input
-                    id={review._id}
-                    type="checkbox"
-                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
-                    checked={isChecked}
-                    onChange={() => handleCheckReview(review._id)}
-                  />
-                </TableBodyCell>
-                <TableBodyCell>{review._id}</TableBodyCell>
+                {!isNewOrder && (
+                  <>
+                    <TableBodyCell>
+                      <input
+                        id={review._id}
+                        type="checkbox"
+                        className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
+                        checked={isChecked}
+                        onChange={() => handleCheckReview(review._id)}
+                      />
+                    </TableBodyCell>
+                    <TableBodyCell>{review._id}</TableBodyCell>
+                  </>
+                )}
                 <TableBodyCell>{review.name}</TableBodyCell>
                 <TableBodyCell>{review.status}</TableBodyCell>
                 <TableBodyCell>
-                  {review?.google_review_id ? "Selected" : "Origin"}
+                  {review?.google_review_id ? "Selected" : "Manual"}
                 </TableBodyCell>
               </TableRow>
             );
