@@ -137,7 +137,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
         labels: {
           // rotate: 0,
           // trim: true,
-          style: { fontSize: chartType === "bar" && "0.5rem" },
+          style: { fontSize: chartType === "bar" ? "0.5rem" : undefined },
         },
       },
       plotOptions: {

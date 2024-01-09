@@ -27,6 +27,69 @@ function classNames(...classes: (string | null)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
+const navigation = [
+  {
+    name: "Dashboard",
+    to: "/dashboard",
+    icon: Squares2X2Icon,
+    children: [
+      { name: "My Dashboard", to: "/dashboard" },
+      { name: "My Inbox", to: "/inbox" },
+      { name: "My Tasks", to: "/tasks" },
+    ],
+  },
+  {
+    name: "Orders",
+    to: "/orders",
+    icon: ClipboardDocumentCheckIcon,
+    children: [
+      { name: "Orders Report", to: "/orders/orders_report" },
+      { name: "Orders Manager", to: "/orders/orders_manager" },
+      { name: "Deleted Orders", to: "/orders/deleted" },
+    ],
+  },
+  {
+    name: "Clients",
+    to: "/clients",
+    icon: UserGroupIcon,
+    children: [
+      { name: "Client Report", to: "/clients/clients_report" },
+      {
+        name: "Clients Manager",
+        to: "/clients/clients_manager",
+      },
+    ],
+  },
+  {
+    name: "Prospects",
+    to: "/clients",
+    icon: MagnifyingGlassIcon,
+    children: [
+      { name: "My Prospects", to: "#" },
+      { name: "Email Templates", to: "#" },
+    ],
+  },
+  {
+    name: "Accounts",
+    to: "/accounts",
+    icon: KeyIcon,
+    children: [
+      { name: "Seller Report", to: "/accounts/sellers_report" },
+      { name: "Users Manager", to: "/accounts/users_manager" },
+      {
+        name: "Inactive Users",
+        to: "/accounts/inactive_users",
+      },
+    ],
+  },
+  {
+    name: "Brands",
+    to: "/clients",
+    icon: GlobeAltIcon,
+    children: [{ name: "Brands Manager", to: "#" }],
+  },
+] as const;
+
 export default function SidebarNavigation() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { location } = useRouterState();
@@ -227,71 +290,6 @@ export default function SidebarNavigation() {
 }
 
 function SidebarComponent(props) {
-  const navigation = useMemo(() => {
-    return [
-      {
-        name: "Dashboard",
-        to: "/dashboard",
-        icon: Squares2X2Icon,
-        children: [
-          { name: "My Dashboard", to: "/dashboard" },
-          { name: "My Inbox", to: "/inbox" },
-          { name: "My Tasks", to: "/tasks" },
-        ],
-      },
-      {
-        name: "Orders",
-        to: "/orders",
-        icon: ClipboardDocumentCheckIcon,
-        children: [
-          { name: "Orders Report", to: "/orders/orders_report" },
-          { name: "Orders Manager", to: "/orders/orders_manager" },
-          { name: "Deleted Orders", to: "/orders/deleted" },
-        ],
-      },
-      {
-        name: "Clients",
-        to: "/clients",
-        icon: UserGroupIcon,
-        children: [
-          { name: "Client Report", to: "/clients/clients_report" },
-          {
-            name: "Clients Manager",
-            to: "/clients/clients_manager",
-          },
-        ],
-      },
-      {
-        name: "Prospects",
-        to: "/prospects",
-        icon: MagnifyingGlassIcon,
-        children: [
-          { name: "My Prospects", to: "#" },
-          { name: "Email Templates", to: "#" },
-        ],
-      },
-      {
-        name: "Accounts",
-        to: "/accounts",
-        icon: KeyIcon,
-        children: [
-          { name: "Seller Report", to: "/accounts/seller_reports" },
-          { name: "Users Manager", to: "/accounts/users_manager" },
-          {
-            name: "Inactive Users",
-            to: "/accounts/inactive_users",
-          },
-        ],
-      },
-      {
-        name: "Brands",
-        to: "/brands",
-        icon: GlobeAltIcon,
-        children: [{ name: "Brands Manager", to: "#" }],
-      },
-    ];
-  }, []);
-
   return (
     <div className="no-scrollbar flex grow flex-col overflow-y-auto bg-[#1C2434] px-6 pb-4 ring-1 ring-white/10">
       <div className="flex items-center justify-center">
@@ -314,7 +312,6 @@ function SidebarComponent(props) {
                   <li key={index}>
                     {!item.children ? (
                       <Link
-                        params={null}
                         to={item.to}
                         className={classNames(
                           isActiveGroup ? "bg-GrBlue-base" : "",
@@ -359,7 +356,6 @@ function SidebarComponent(props) {
                               {item.children?.map((subItem) => (
                                 <li key={subItem.name}>
                                   <Link
-                                    params={null}
                                     to={subItem.to}
                                     className={
                                       "block py-2 pr-2 text-sm leading-6 text-[#8A99AF]"
