@@ -1,4 +1,5 @@
 import React, { ReactNode, createContext, useContext, useState } from "react";
+import { Review } from "../../orderInformation/OrderReviewsTable";
 
 // If you’re familiar with the context API before Hooks,
 // useContext(OrderFormContext) is equivalent to static
@@ -27,15 +28,19 @@ type SelectCompany = {
   url: string;
 };
 
+type Reviews = Review[];
+
 export type OrderFormContext = {
   step: number;
   seller: SelectSeller;
   client: SelectClient;
   company: SelectCompany;
+  reviews: Reviews;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setSeller: React.Dispatch<React.SetStateAction<SelectSeller>>;
   setClient: React.Dispatch<React.SetStateAction<SelectClient>>;
   setCompany: React.Dispatch<React.SetStateAction<SelectCompany>>;
+  setReviews: React.Dispatch<React.SetStateAction<Reviews>>;
 };
 
 export const OrderFormContext = createContext<OrderFormContext>({
@@ -51,10 +56,12 @@ export const OrderFormContext = createContext<OrderFormContext>({
     third_party_id: "",
   },
   company: { name: "", url: "" },
+  reviews: [],
   setStep: () => {},
   setSeller: () => {},
   setClient: () => {},
   setCompany: () => {},
+  setReviews: () => {},
 });
 
 export const useOrderForm = () => useContext(OrderFormContext);
@@ -80,6 +87,7 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
     third_party_id: "",
   });
   const [company, setCompany] = useState<SelectCompany>({ name: "", url: "" });
+  const [reviews, setReviews] = useState<Reviews>([]);
 
   return (
     <OrderFormContext.Provider
@@ -88,10 +96,12 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
         seller,
         client,
         company,
+        reviews,
         setStep,
         setSeller,
         setClient,
         setCompany,
+        setReviews,
       }}
     >
       {children}

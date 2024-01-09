@@ -1,32 +1,8 @@
-import React, { useState } from "react";
-import logo from "../../../assets/grocket.png";
-import { Button } from "../../tools/buttons/Button";
-import ReviewsFromGoogleTable from "./ReviewsFromGoogleTable";
-import OrderReviewsTable from "./OrderReviewsTable";
-
-const company = {
-  name: "Grocket",
-  url: "https://g-rocket.me",
-};
-
-const reviews = [
-  {
-    _id: "100",
-    name: "Test 1",
-    rating: 1,
-    review: "Bad review",
-    google_review_id: "111",
-    status: 5,
-  },
-  {
-    _id: "101",
-    name: "Test 2",
-    rating: 2,
-    review: "Another review",
-    google_review_id: "112",
-    status: 5,
-  },
-];
+import React, { ReactNode, useState } from "react";
+import OrderReviewsTable from "../../orderInformation/OrderReviewsTable";
+import { useOrderForm } from "./NewOrderFormContext";
+import { Button } from "../../../tools/buttons/Button";
+import ReviewsFromGoogleTable from "../../orderInformation/ReviewsFromGoogleTable";
 
 const ADD_REVIEW_METHODS = [
   "Select From Reviews",
@@ -35,26 +11,42 @@ const ADD_REVIEW_METHODS = [
 
 type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
 
-const OrderInformationReviews: React.FC = () => {
+type FormProps = {
+  children: ReactNode;
+};
+
+const AddReviewsForm: React.FC<FormProps> = ({ children }) => {
+  const { reviews, setReviews } = useOrderForm();
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
     "Select From Reviews"
   );
+
+  const [name, setName] = useState("");
 
   const handleTabClick = (method: AddReviewMethods) => {
     setMethod(method);
   };
 
+  const handleAddReview = () => {
+    if (!name) return;
+
+    setReviews([
+      ...reviews,
+      {
+        name,
+        status: 5,
+        _id: "temp",
+      },
+    ]);
+  };
+
   return (
-    <div className="border-b border-grGray-dark">
-      <div className="my-8 flex gap-2 items-center">
-        <img className="object-cover w-20 mr-2" src={logo} />
-        <div className="text-sm flex flex-col">
-          <span className="font-medium">{company.name}</span>
-          <span>{company.url}</span>
-        </div>
+    <form>
+      <div className="-mt-8">
+        <OrderReviewsTable reviews={reviews} />
       </div>
 
-      <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
+      <div className="mt-8 p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
         {ADD_REVIEW_METHODS.map((method, index) => {
           const isActive = selectedMethod === method;
 
@@ -89,7 +81,7 @@ const OrderInformationReviews: React.FC = () => {
         )}
 
         <div
-          className={`mt-4 flex ${
+          className={`mt-4 mb-12 flex ${
             selectedMethod === "Select From Reviews"
               ? "justify-end"
               : "justify-between"
@@ -99,28 +91,23 @@ const OrderInformationReviews: React.FC = () => {
             <div className="flex gap-4 items-end">
               <div className="flex flex-col gap-1">
                 <span className="text-sm font-medium">Name</span>
-                <input type="text" className="border rounded-sm w-[20rem]" />
+                <input
+                  type="text"
+                  className="border rounded-sm w-[20rem]"
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
-              <Button type="button" variant="black">
+              <Button type="button" variant="black" onClick={handleAddReview}>
                 Add Review
               </Button>
             </div>
           )}
-          <div className="flex flex-col items-end">
-            <span className="text-sm font-medium">Total Unit Cost</span>
-            <input
-              type="number"
-              className="mt-2 p-2 border rounded-sm w-[8rem]"
-            />
-          </div>
         </div>
       </div>
 
-      <div className="mt-12">
-        <OrderReviewsTable reviews={reviews} isNewOrder={false} />
-      </div>
-    </div>
+      {children}
+    </form>
   );
 };
 
-export default OrderInformationReviews;
+export default AddReviewsForm;
