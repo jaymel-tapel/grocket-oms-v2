@@ -10,7 +10,7 @@ const COLUMNS = ["ID", "COMPANY NAME", "URL", "ACTION"];
 
 type CompanyLinksTableProps = {
   companies: {
-    id: number;
+    _id: string;
     // status: number,
     // created_at: string,
     // updated_at: string,
@@ -37,7 +37,7 @@ const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({ companies }) => {
         {companies.map((company, index) => {
           return (
             <TableRow key={index}>
-              <TableBodyCell>{company.id}</TableBodyCell>
+              <TableBodyCell>{company._id}</TableBodyCell>
               <TableBodyCell>{company.name}</TableBodyCell>
               <TableBodyCell>{company.url}</TableBodyCell>
               {/* <TableBodyCell></TableBodyCell> */}
