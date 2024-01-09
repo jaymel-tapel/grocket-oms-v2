@@ -33,8 +33,13 @@ const emailTemplates = [
   { name: "Grocket Template 2", _id: "124" },
 ];
 
+type Checkbox = {
+  id: string;
+  checked: boolean;
+};
+
 const OrderReviewsTable: React.FC = () => {
-  const [checkBoxes, setCheckBoxes] = useState([]);
+  const [checkBoxes, setCheckBoxes] = useState<Checkbox[]>([]);
 
   const isOneReviewChecked = useMemo(() => {
     return checkBoxes.some((checkbox) => checkbox.checked);

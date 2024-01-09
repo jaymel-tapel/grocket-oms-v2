@@ -104,7 +104,6 @@ const DashboardTasks: React.FC = () => {
             <div
               key={i}
               className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
-              onClick={null}
             >
               <div className="flex justify-between ">
                 <div>

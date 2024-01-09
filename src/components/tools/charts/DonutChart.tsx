@@ -45,8 +45,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   return (
     <div
       className={`${
-        label?.length > 0 &&
-        "p-6 rounded-sm border border-stroke bg-white shadow-md h-full"
+        label && "p-6 rounded-sm border border-stroke bg-white shadow-md h-full"
       }`}
     >
       {label && (

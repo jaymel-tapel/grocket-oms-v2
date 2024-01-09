@@ -25,7 +25,7 @@ const OrdersManager: React.FC = () => {
           Add Order
         </Button>
       </div>
-      <OrdersManagerTable orders={orders} />
+      <OrdersManagerTable orders={orders ?? []} />
     </div>
   );
 };
