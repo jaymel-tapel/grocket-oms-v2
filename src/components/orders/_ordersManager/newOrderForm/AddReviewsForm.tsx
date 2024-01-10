@@ -16,7 +16,7 @@ type FormProps = {
 };
 
 const AddReviewsForm: React.FC<FormProps> = ({ children }) => {
-  const { reviews, setReviews } = useOrderForm();
+  const { setStep, reviews, setReviews } = useOrderForm();
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
     "Select From Reviews"
   );
@@ -40,8 +40,15 @@ const AddReviewsForm: React.FC<FormProps> = ({ children }) => {
     ]);
   };
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (reviews.length === 0) return;
+
+    setStep(5);
+  };
+
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       <div className="-mt-8">
         <OrderReviewsTable reviews={reviews} />
       </div>

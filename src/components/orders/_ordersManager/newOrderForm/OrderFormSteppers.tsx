@@ -20,11 +20,17 @@ const OrderFormSteppers = () => {
     seller,
     client,
     company,
+    reviews,
   } = useOrderForm() as OrderFormContext;
 
   const isStepDone = useMemo(() => {
-    return [!isEmpty(seller), !isEmpty(client), !isEmpty(company)];
-  }, [seller, client, company]);
+    return [
+      !isEmpty(seller),
+      !isEmpty(client),
+      !isEmpty(company),
+      reviews.length > 0,
+    ];
+  }, [seller, client, company, reviews]);
 
   const handleClick = (step: number) => {
     setStep(step);

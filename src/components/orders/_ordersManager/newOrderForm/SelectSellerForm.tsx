@@ -50,7 +50,7 @@ const SelectSellerForm: React.FC<FormProps> = ({ children }) => {
           >
             Date
           </label>
-          <div className="w-full">
+          <div className="w-full mt-2">
             <input
               type="date"
               id="orderDate"
@@ -78,7 +78,7 @@ const SelectSellerForm: React.FC<FormProps> = ({ children }) => {
           >
             Name
           </label>
-          <div className="w-full">
+          <div className="w-full mt-2">
             <input
               type="text"
               id="sellerName"
@@ -104,7 +104,7 @@ const SelectSellerForm: React.FC<FormProps> = ({ children }) => {
           >
             Email
           </label>
-          <div className="w-full">
+          <div className="w-full mt-2">
             <input
               type="email"
               id="sellerEmail"
