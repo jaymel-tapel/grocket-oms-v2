@@ -6,6 +6,7 @@ import SelectSellerForm from "./SelectSellerForm";
 import { Button } from "../../../tools/buttons/Button";
 import SelectCompanyForm from "./SelectCompanyForm";
 import AddReviewsForm from "./AddReviewsForm";
+import SummaryForm from "./SummaryForm";
 
 const NewOrderForm = () => {
   const { step } = useOrderForm();
@@ -34,6 +35,11 @@ const NewOrderForm = () => {
           <AddReviewsForm>
             <FormNavigation />
           </AddReviewsForm>
+        )}
+        {step === 5 && (
+          <SummaryForm>
+            <FormNavigation />
+          </SummaryForm>
         )}
       </div>
     </div>
