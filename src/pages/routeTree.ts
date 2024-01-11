@@ -11,6 +11,11 @@ import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
 import { getTaskQuery } from "../services/queries/taskQueries";
 import { getOrderQuery } from "../services/queries/orderQueries";
+import { z } from "zod";
+import {
+  getAllUsersOptions,
+  getUserOption,
+} from "../services/queries/accountsQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -184,16 +189,69 @@ const accountsIndexRoute = new Route({
   },
 });
 
-const accountsReportRoute = new Route({
+const sellersReport = new Route({
   getParentRoute: () => accountsRoute,
   path: "sellers_report",
   component: lazyRouteComponent(() => import("./accounts/SellerReports")),
 });
 
-const accountsManagerRoute = new Route({
+export const usersManagerRoute = new Route({
   getParentRoute: () => accountsRoute,
   path: "users_manager",
-  component: lazyRouteComponent(() => import("./accounts/UsersManager")),
+  validateSearch: z.object({
+    searchUsers: z
+      .object({
+        keyword: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        filter: z.string().optional(),
+        first: z.number().optional(),
+        last: z.number().optional(),
+        before: z.number().optional(),
+        after: z.number().optional(),
+      })
+      .optional(),
+  }).parse,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+      searchUsers: {
+        ...search.searchUsers,
+      },
+    }),
+  ],
+  loaderDeps: ({ search }) => ({
+    searchUsers: search.searchUsers,
+  }),
+  loader: async ({ context: { queryClient }, deps }) => {
+    queryClient.ensureQueryData(getAllUsersOptions(deps.searchUsers));
+  },
+  component: lazyRouteComponent(
+    () => import("./accounts/usersManager/UsersManager")
+  ),
+});
+
+export const usersManagerIndexRoute = new Route({
+  getParentRoute: () => usersManagerRoute,
+  path: "/",
+  // loaderDeps: ({ search }) => ({
+  //   searchUsers: search.searchUsers,
+  // }),
+  // loader: async ({ context: { queryClient }, deps }) => {
+  //   queryClient.ensureQueryData(getAllUsersOptions(deps.searchUsers));
+  // },
+  component: lazyRouteComponent(() => import("./accounts/usersManager/Index")),
+});
+
+const userRoute = new Route({
+  getParentRoute: () => usersManagerRoute,
+  path: "$userId",
+  parseParams: ({ userId }) => ({ userId: Number(userId) }),
+  stringifyParams: ({ userId }) => ({ userId: `${userId}` }),
+  loader: async ({ context: { queryClient }, params: { userId } }) => {
+    queryClient.ensureQueryData(getUserOption(userId));
+  },
+  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
 const inactiveUsersRoute = new Route({
@@ -233,8 +291,8 @@ const routeTree = rootRoute.addChildren([
 
     accountsRoute.addChildren([
       accountsIndexRoute,
-      accountsReportRoute,
-      accountsManagerRoute,
+      sellersReport,
+      usersManagerRoute.addChildren([usersManagerIndexRoute, userRoute]),
       inactiveUsersRoute,
       newAccountRoute,
     ]),

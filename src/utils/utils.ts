@@ -22,3 +22,13 @@ export const cn = (...inputs: ClassValue[]) => {
   // return inputs.filter(Boolean).join(" ");
   return twMerge(clsx(inputs));
 };
+
+export const getHeaders = () => {
+  const accessToken = localStorage.getItem("access_token");
+
+  const header = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+
+  return header;
+};
