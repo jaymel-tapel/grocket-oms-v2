@@ -83,12 +83,10 @@ const OrderInformation: React.FC = () => {
               Delete
             </Button>
             <div className="flex flex-col md:flex-row gap-4">
-              <Button type="button">
+              <Button type="button" variant="green">
                 <PlusIcon className="w-3 h-3 mr-1" /> Create Task
               </Button>
-              <Button type="submit" variant="submit">
-                Update Order
-              </Button>
+              <Button type="submit">Update Order</Button>
             </div>
           </div>
         </form>
