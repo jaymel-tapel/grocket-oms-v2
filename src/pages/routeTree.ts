@@ -5,7 +5,6 @@ import {
   lazyRouteComponent,
   rootRouteWithContext,
 } from "@tanstack/react-router";
-
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
@@ -32,6 +31,19 @@ const indexRoute = new Route({
     }
   },
   component: lazyRouteComponent(() => import("./login/Login")),
+});
+
+const forgotPasswordRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "forgot_password/$code",
+  beforeLoad: async ({ context: { queryClient } }) => {
+    if (isAuth()) {
+      throw redirect({ to: "/dashboard" });
+    } else {
+      queryClient.clear();
+    }
+  },
+  component: lazyRouteComponent(() => import("./login/ForgotPassword")),
 });
 
 const protectedRoute = new Route({
@@ -268,6 +280,8 @@ const newAccountRoute = new Route({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  forgotPasswordRoute,
+
   protectedRoute.addChildren([
     dashboardRoute,
     inboxRoute,
