@@ -63,7 +63,7 @@ const ForgotPassword = () => {
         <div className="mb-5">
           <Button
             type="submit"
-            className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-light p-4 text-white transition hover:bg-opacity-90"
+            className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-dark p-4 text-white transition hover:bg-opacity-90"
           >
             Send Password Reset Link
           </Button>
