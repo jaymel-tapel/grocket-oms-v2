@@ -35,7 +35,7 @@ const ForgotPassword = () => {
               type="email"
               placeholder="Enter your email"
               {...register("email")}
-              className="w-full rounded-lg border  border-stroke py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
+              className="w-full rounded-lg border  border-stroke mb-2 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
             />
             <span className="mt-2 px-2 text-red-500">
               {errors.email?.message}
