@@ -31,7 +31,6 @@ const Login = () => {
   const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
     try {
       await login(data);
-      console.log("Successfully logged in", data);
       navigate({ to: "/dashboard" });
     } catch (error) {
       console.error("Login error:", error);
