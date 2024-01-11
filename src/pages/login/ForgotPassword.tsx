@@ -25,7 +25,6 @@ const ForgotPassword = () => {
   return (
     <LoginPage
       headLabel="Reset Password"
-      pictureLabel="Grocket OMS"
       downLabel="Enter your email address to receive a password reset link."
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -36,9 +35,11 @@ const ForgotPassword = () => {
               type="email"
               placeholder="Enter your email"
               {...register("email")}
-              className="w-full rounded-lg border  border-stroke py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
+              className="w-full rounded-lg border  border-stroke mb-2 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
             />
-            <span>{errors.email?.message}</span>
+            <span className="mt-2 px-2 text-red-500">
+              {errors.email?.message}
+            </span>
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -62,7 +63,7 @@ const ForgotPassword = () => {
         <div className="mb-5">
           <Button
             type="submit"
-            className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-light p-4 text-white transition hover:bg-opacity-90"
+            className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-dark p-4 text-white transition hover:bg-opacity-90"
           >
             Send Password Reset Link
           </Button>

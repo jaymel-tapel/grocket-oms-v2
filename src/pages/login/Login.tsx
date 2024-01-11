@@ -31,7 +31,6 @@ const Login = () => {
   const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
     try {
       await login(data);
-      console.log("Successfully logged in", data);
       navigate({ to: "/dashboard" });
     } catch (error) {
       console.error("Login error:", error);
@@ -39,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <LoginPage pictureLabel="Welcome Back!" headLabel="Sign In to OMS">
+    <LoginPage headLabel="Sign In to OMS">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
           <label className="mb-2.5 block font-medium text-black">Email</label>
@@ -48,9 +47,9 @@ const Login = () => {
               type="email"
               placeholder="Enter your email"
               {...register("email")}
-              className="w-full rounded-lg border  border-stroke py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
+              className="w-full rounded-lg border  border-stroke mb-2 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
             />
-            <span>{errors.email?.message}</span>
+            <span className="px-2 text-red-500">{errors.email?.message}</span>
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -80,9 +79,11 @@ const Login = () => {
               type="password"
               placeholder="********"
               {...register("password")}
-              className="w-full rounded-lg border border-stroke  py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              className="w-full rounded-lg border border-stroke mb-2  py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
-            <span>{errors.password?.message}</span>
+            <span className="mt-2 px-2 text-red-500">
+              {errors.password?.message}
+            </span>
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -110,12 +111,12 @@ const Login = () => {
         <div className="mb-5">
           <Button
             type="submit"
-            className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-light p-4 text-white transition hover:bg-opacity-90"
+            className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-dark p-4 text-white transition hover:bg-opacity-90"
           >
             {isPending ? <IsLoading /> : "Sign In"}
           </Button>
         </div>
-        <div className="flex justify-between max-sm:flex-col max-sm:px-14 max-sm:gap-4">
+        <div className="flex justify-between max-sm:flex-col max-sm:px-10 max-sm:gap-4">
           <div>
             <input className="rounded" type="checkbox" />
             <label className="ml-2 font-normal text-xl leading-6 text-grText-gray">
@@ -125,7 +126,7 @@ const Login = () => {
           <Link
             to={"/forgot_password/$code"}
             params={{ code: "1" }}
-            className="font-normal text-xl leading-6 text-grBlue-light"
+            className="font-normal text-xl leading-6 text-grBlue-dark"
           >
             Forgot Password?
           </Link>
