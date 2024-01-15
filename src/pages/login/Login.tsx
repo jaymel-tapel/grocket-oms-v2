@@ -8,7 +8,7 @@ import { useLogin } from "../../services/queries/userQueries";
 import IsLoading from "../../components/tools/loading/IsLoading";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Enter valid email address" }),
+  username: z.string().email({ message: "Enter valid email address" }),
   password: z
     .string()
     .min(8, { message: "Password should be at least 8 characters." }),
@@ -46,10 +46,12 @@ const Login = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              {...register("email")}
+              {...register("username")}
               className="w-full rounded-lg border  border-stroke mb-2 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
             />
-            <span className="px-2 text-red-500">{errors.email?.message}</span>
+            <span className="px-2 text-red-500">
+              {errors.username?.message}
+            </span>
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -124,8 +126,7 @@ const Login = () => {
             </label>
           </div>
           <Link
-            to={"/forgot_password/$code"}
-            params={{ code: "1" }}
+            to={"/forgot_password/reset"}
             className="font-normal text-xl leading-6 text-grBlue-dark"
           >
             Forgot Password?

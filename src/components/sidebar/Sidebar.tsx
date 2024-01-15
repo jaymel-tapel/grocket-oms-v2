@@ -17,10 +17,18 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { Link, useRouterState } from "@tanstack/react-router";
+import { cleanAuthorization } from "../../utils/utils";
+
+const handleLogout = () => {
+  cleanAuthorization();
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
+};
 
 const userNavigation = [
   { name: "Your profile", to: "#" },
-  { name: "Sign out", to: "#" },
+  { name: "Sign out" },
 ];
 
 function classNames(...classes: (string | null)[]): string {
@@ -267,9 +275,14 @@ export default function SidebarNavigation() {
                           {({ active }) => (
                             <a
                               href={item.to}
+                              onClick={
+                                item.name === "Sign out"
+                                  ? () => handleLogout()
+                                  : undefined
+                              }
                               className={classNames(
                                 active ? "bg-gray-50" : "",
-                                "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                "block px-3 py-1 text-sm leading-6 text-gray-900 hover:cursor-pointer"
                               )}
                             >
                               {item.name}
