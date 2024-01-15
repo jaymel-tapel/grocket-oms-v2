@@ -35,6 +35,20 @@ const indexRoute = new Route({
 
 const forgotPasswordRoute = new Route({
   getParentRoute: () => rootRoute,
+  path: "forgot_password/reset",
+  beforeLoad: async ({ context: { queryClient } }) => {
+    if (isAuth()) {
+      throw redirect({ to: "/dashboard" });
+    } else {
+      queryClient.clear();
+    }
+  },
+  component: lazyRouteComponent(
+    () => import("./forgotPassword/ForgotPassword")
+  ),
+});
+const newPasswordRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: "forgot_password/$code",
   beforeLoad: async ({ context: { queryClient } }) => {
     if (isAuth()) {
@@ -43,7 +57,7 @@ const forgotPasswordRoute = new Route({
       queryClient.clear();
     }
   },
-  component: lazyRouteComponent(() => import("./login/ForgotPassword")),
+  component: lazyRouteComponent(() => import("./forgotPassword/ResetPassword")),
 });
 
 const protectedRoute = new Route({
@@ -281,6 +295,7 @@ const newAccountRoute = new Route({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   forgotPasswordRoute,
+  newPasswordRoute,
 
   protectedRoute.addChildren([
     dashboardRoute,
