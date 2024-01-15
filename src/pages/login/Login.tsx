@@ -5,7 +5,7 @@ import { Button } from "../../components/tools/buttons/Button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import LoginPage from "../../components/sections/LoginPage";
 import { useLogin } from "../../services/queries/userQueries";
-import IsLoading from "../../components/tools/loading/IsLoading";
+import IsLoading from "../../components/tools/spinner/Spinner";
 
 const loginSchema = z.object({
   username: z.string().email({ message: "Enter valid email address" }),
@@ -47,7 +47,7 @@ const Login = () => {
               type="email"
               placeholder="Enter your email"
               {...register("username")}
-              className="w-full rounded-lg border  border-stroke mb-2 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
+              className="w-full rounded-lg border  border-stroke py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
             />
             <span className="px-2 text-red-500">
               {errors.username?.message}

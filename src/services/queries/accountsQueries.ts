@@ -1,10 +1,12 @@
 import {
   queryOptions,
+  useMutation,
   useQuery,
-  useSuspenseQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import axios from "axios";
 import { getHeaders } from "../../utils/utils";
+import { UserFormSchema } from "../../components/accounts/usersManager/UserForm";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const USERS_URL = API_URL + "/users";
@@ -14,30 +16,18 @@ export type User = {
   name: string;
   email: string;
   role: string;
-  forgot_password_code: null | string;
-  profile_image: null | string;
-  contact_url: null | string;
-  phone: null | string;
+  forgot_password_code: undefined | string;
+  profile_image: undefined | string;
+  contact_url: undefined | string;
+  phone: undefined | string;
   status: string;
   createdAt: string;
   updatedAt: string;
-  deletedAt: null | string;
-};
-
-type PageInfo = {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor: number;
-  endCursor: number;
+  deletedAt: undefined | string;
 };
 
 type UsersResponse = {
-  edges: Array<{
-    cursor: string;
-    node: User;
-  }>;
-  pageInfo: PageInfo;
-  totalCount: number;
+  data: User[];
 };
 
 export type UsersParams = {
@@ -51,7 +41,7 @@ export type UsersParams = {
   before?: number;
 };
 
-// -- GET functions
+// -- GET requests
 
 const getAllUsers = async (params?: UsersParams): Promise<UsersResponse> => {
   const response = await axios.get(USERS_URL, {
@@ -77,7 +67,7 @@ export const getAllUsersOptions = (search?: UsersParams) => {
 
 export const getUserOption = (id: number) => {
   return queryOptions({
-    enabled: !isNaN(id),
+    enabled: id ? !isNaN(id) : false,
     queryKey: ["users", id],
     queryFn: () => getUser(id),
   });
@@ -88,5 +78,54 @@ export const useGetAllUsers = (search?: UsersParams) => {
 };
 
 export const useGetUser = (id: number) => {
-  return useSuspenseQuery(getUserOption(id));
+  return useQuery(getUserOption(id));
+};
+
+// -- POST requests
+
+export const useCreateAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: UserFormSchema) => {
+      return await axios.post(USERS_URL, payload, { headers: getHeaders() });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+};
+
+export const useUpdateUserPhoto = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: { id: number; payload: FormData }) => {
+      return await axios.post(
+        API_URL + `/profile/upload/${arg.id}`,
+        arg.payload,
+        { headers: getHeaders() }
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+};
+
+// -- PATCH / PUT requests
+
+export const useUpdateAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: { id: number; payload: UserFormSchema }) => {
+      return await axios.patch(USERS_URL + `/${arg.id}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
 };

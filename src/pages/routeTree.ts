@@ -269,7 +269,7 @@ export const usersManagerIndexRoute = new Route({
   component: lazyRouteComponent(() => import("./accounts/usersManager/Index")),
 });
 
-const userRoute = new Route({
+export const userRoute = new Route({
   getParentRoute: () => usersManagerRoute,
   path: "$userId",
   parseParams: ({ userId }) => ({ userId: Number(userId) }),
@@ -289,7 +289,7 @@ const inactiveUsersRoute = new Route({
 const newAccountRoute = new Route({
   getParentRoute: () => accountsRoute,
   path: "new",
-  component: lazyRouteComponent(() => import("./accounts/CreateAccount")),
+  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
 const routeTree = rootRoute.addChildren([

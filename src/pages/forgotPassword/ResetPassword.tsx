@@ -5,7 +5,7 @@ import LoginPage from "../../components/sections/LoginPage";
 import { Button } from "../../components/tools/buttons/Button";
 import { useNavigate } from "@tanstack/react-router";
 import { useResetPassword } from "../../services/queries/userQueries";
-import IsLoading from "../../components/tools/loading/IsLoading";
+import IsLoading from "../../components/tools/spinner/Spinner";
 
 const newPasswordSchema = z.object({
   password: z
