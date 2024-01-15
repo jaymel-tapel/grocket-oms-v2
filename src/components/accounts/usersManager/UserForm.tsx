@@ -15,6 +15,7 @@ import {
   useUpdateAccount,
 } from "../../../services/queries/accountsQueries";
 import { useNavigate } from "@tanstack/react-router";
+import Spinner from "../../tools/spinner/Spinner";
 
 const ROLES = ["ADMIN", "ACCOUNTANT", "SELLER"];
 
@@ -49,8 +50,10 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
     values: userId ? user : undefined,
   });
 
-  const { mutateAsync: createAccount } = useCreateAccount();
-  const { mutateAsync: updateAccount } = useUpdateAccount();
+  const { mutateAsync: createAccount, isPending: isCreating } =
+    useCreateAccount();
+  const { mutateAsync: updateAccount, isPending: isUpdating } =
+    useUpdateAccount();
 
   const onSubmit: SubmitHandler<UserFormSchema> = async (data) => {
     const response = userId
@@ -274,7 +277,15 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
         <Button type="button" variant="noBorder">
           Cancel
         </Button>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isCreating || isUpdating}>
+          {isCreating || isUpdating ? (
+            <>
+              <Spinner /> Submitting
+            </>
+          ) : (
+            "Save"
+          )}
+        </Button>
       </div>
     </form>
   );

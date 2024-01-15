@@ -8,6 +8,7 @@ import {
   useUpdateUserPhoto,
 } from "../../../services/queries/accountsQueries";
 import { useNavigate } from "@tanstack/react-router";
+import Spinner from "../../tools/spinner/Spinner";
 
 type ImageFile = File & {
   preview: string;
@@ -130,7 +131,13 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
             disabled={acceptedFiles.length === 0 || isPending}
             onClick={handleSave}
           >
-            Save
+            {isPending ? (
+              <>
+                <Spinner /> Saving
+              </>
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </div>
