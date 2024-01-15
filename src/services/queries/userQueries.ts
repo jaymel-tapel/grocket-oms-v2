@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { setAuthorization } from "../../utils/utils";
+import { getHeaders, setAuthorization } from "../../utils/utils";
+import toast from "react-hot-toast";
 
 type loginDetails = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -17,6 +18,43 @@ export const useLogin = () => {
     },
     onSuccess: ({ data }) => {
       setAuthorization(data.access_token);
+    },
+  });
+};
+
+//password reset step-1
+const forgotPassUrl = API_URL + "/auth/forgot";
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: (email: string) => {
+      return axios.post(forgotPassUrl, { email }, { headers: getHeaders() });
+    },
+    onSuccess: () => {
+      toast.success(
+        "Password reset link has been sent to you email. Please check your email address"
+      );
+    },
+  });
+};
+
+//password reset step-2
+type NewPassword = {
+  recovery_code: string;
+  newPassword: string;
+};
+
+const resetPasswordUrl = API_URL + "/auth/reset";
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: (payload: NewPassword) => {
+      return axios.post(resetPasswordUrl, payload, { headers: getHeaders() });
+    },
+    onSuccess: () => {
+      toast.success(
+        "Password has been set. You will be redirected to the login page."
+      );
     },
   });
 };

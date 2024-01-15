@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../../components/tools/buttons/Button";
 import LoginPage from "../../components/sections/LoginPage";
+import { Button } from "../../components/tools/buttons/Button";
+import { useForgotPassword } from "../../services/queries/userQueries";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Enter valid email address" }),
@@ -10,6 +11,7 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 const ForgotPassword = () => {
+  const { mutate: forgotPass } = useForgotPassword();
   const {
     register,
     handleSubmit,
@@ -18,10 +20,13 @@ const ForgotPassword = () => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit: SubmitHandler<ForgotPasswordSchema> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<ForgotPasswordSchema> = async (data) => {
+    try {
+      await forgotPass(data.email);
+    } catch (error) {
+      console.error("Error sending password reset link:", error);
+    }
   };
-
   return (
     <LoginPage
       headLabel="Reset Password"

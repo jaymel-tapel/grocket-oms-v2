@@ -124,8 +124,7 @@ const Login = () => {
             </label>
           </div>
           <Link
-            to={"/forgot_password/$code"}
-            params={{ code: "1" }}
+            to={"/forgot_password/reset"}
             className="font-normal text-xl leading-6 text-grBlue-dark"
           >
             Forgot Password?
