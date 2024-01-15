@@ -29,6 +29,16 @@ const UsersManagersTable: React.FC<TableProps> = ({ users }) => {
             </TableRow>
           </TableHead>
           <TableBody>
+            {users.length === 0 && (
+              <TableRow>
+                <TableBodyCell
+                  className="text-center text-gray-500"
+                  colSpan={5}
+                >
+                  No data found.
+                </TableBodyCell>
+              </TableRow>
+            )}
             {users.map((user, index) => (
               <TableRow key={index}>
                 <TableBodyCell className="text-center">{user.id}</TableBodyCell>

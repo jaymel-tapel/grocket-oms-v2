@@ -3,7 +3,6 @@ import UserPhotoForm from "../../../components/accounts/usersManager/UserPhotoFo
 import { useGetUser } from "../../../services/queries/accountsQueries";
 import { userRoute } from "../../routeTree";
 
-// import React from "react";
 const User = () => {
   const { userId } = userRoute.useParams();
   const { data: user } = useGetUser(userId);
@@ -13,7 +12,9 @@ const User = () => {
       <div className="mt-4">
         <span className="flex gap-2">
           <p>Accounts / Users Manager / </p>
-          <p className="text-[#41B2E9]">{user ? user.name : "New Account"}</p>
+          <p className="text-[#41B2E9]">
+            {userId ? user?.name : "New Account"}
+          </p>
         </span>
       </div>
 

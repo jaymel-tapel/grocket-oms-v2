@@ -4,6 +4,7 @@ import {
   redirect,
   lazyRouteComponent,
   rootRouteWithContext,
+  NotFoundRoute,
 } from "@tanstack/react-router";
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
@@ -47,6 +48,7 @@ const forgotPasswordRoute = new Route({
     () => import("./forgotPassword/ForgotPassword")
   ),
 });
+
 const newPasswordRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "forgot_password/$code",
@@ -230,7 +232,7 @@ export const usersManagerRoute = new Route({
         keyword: z.string().optional(),
         from: z.string().optional(),
         to: z.string().optional(),
-        filter: z.string().optional(),
+        filter: z.enum(["id", "email"]).optional(),
         first: z.number().optional(),
         last: z.number().optional(),
         before: z.number().optional(),
@@ -280,16 +282,16 @@ export const userRoute = new Route({
   component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
+const newAccountRoute = new Route({
+  getParentRoute: () => usersManagerRoute,
+  path: "new",
+  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
+});
+
 const inactiveUsersRoute = new Route({
   getParentRoute: () => accountsRoute,
   path: "inactive_users",
   component: lazyRouteComponent(() => import("./accounts/InactiveUsers")),
-});
-
-const newAccountRoute = new Route({
-  getParentRoute: () => accountsRoute,
-  path: "new",
-  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
 const routeTree = rootRoute.addChildren([
@@ -321,15 +323,30 @@ const routeTree = rootRoute.addChildren([
     accountsRoute.addChildren([
       accountsIndexRoute,
       sellersReport,
-      usersManagerRoute.addChildren([usersManagerIndexRoute, userRoute]),
+      usersManagerRoute.addChildren([
+        usersManagerIndexRoute,
+        userRoute,
+        newAccountRoute,
+      ]),
       inactiveUsersRoute,
-      newAccountRoute,
     ]),
   ]),
 ]);
 
+const notFoundRoute = new NotFoundRoute({
+  getParentRoute: () => rootRoute,
+  beforeLoad: async () => {
+    if (isAuth()) {
+      throw redirect({ to: "/dashboard" });
+    } else {
+      throw redirect({ to: "/" });
+    }
+  },
+});
+
 export const router = new Router({
   routeTree,
+  notFoundRoute,
   defaultPreload: "intent",
   context: { queryClient },
 });
