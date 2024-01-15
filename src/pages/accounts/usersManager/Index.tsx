@@ -22,7 +22,7 @@ const Index = () => {
   const users = useMemo(() => {
     if (!data) return [];
 
-    const users = data?.edges.map((edge) => edge.node);
+    const users = data?.data;
     return users;
   }, [data]);
 

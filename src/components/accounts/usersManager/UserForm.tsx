@@ -12,6 +12,7 @@ import { Button } from "../../tools/buttons/Button";
 import {
   User,
   useCreateAccount,
+  useUpdateAccount,
 } from "../../../services/queries/accountsQueries";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -49,10 +50,11 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
   });
 
   const { mutateAsync: createAccount } = useCreateAccount();
+  const { mutateAsync: updateAccount } = useUpdateAccount();
 
   const onSubmit: SubmitHandler<UserFormSchema> = async (data) => {
     const response = userId
-      ? await createAccount(data)
+      ? await updateAccount({ id: userId, payload: data })
       : await createAccount(data);
 
     if (response.status === 200 || response.status === 201) {

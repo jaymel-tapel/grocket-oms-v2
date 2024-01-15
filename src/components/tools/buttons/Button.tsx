@@ -5,7 +5,7 @@ import { cn } from "../../../utils/utils";
 interface ButtonProps {}
 
 const buttonVariants = cva(
-  "inline-flex items-center rounded-md py-4 px-6 justify-center text-sm whitespace-nowrap transition-colors",
+  "disabled:opacity-50 inline-flex items-center rounded-md py-4 px-6 justify-center text-sm whitespace-nowrap transition-colors",
   {
     variants: {
       variant: {

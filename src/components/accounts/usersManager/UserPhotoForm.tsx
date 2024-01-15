@@ -19,7 +19,7 @@ type FormProps = {
 
 const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
   const navigate = useNavigate();
-  const { mutateAsync: updatePhoto } = useUpdateUserPhoto();
+  const { mutateAsync: updatePhoto, isPending } = useUpdateUserPhoto();
   const [imageFile, setImageFile] = useState<ImageFile | null>(null);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     maxFiles: 1,
@@ -40,8 +40,7 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
     }
 
     if (user && user.profile_image) {
-      return null;
-      // return STORAGE_URL + selectedTemplate.header_image;
+      return user.profile_image;
     }
 
     return null;
@@ -52,9 +51,7 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
     if (acceptedFiles.length === 0) return;
 
     const formData = new FormData();
-    const files = JSON.stringify([acceptedFiles[0]]);
-    formData.append("image", files);
-    // formData.append("image", acceptedFiles[0]);
+    formData.append("image", acceptedFiles[0]);
 
     const response = await updatePhoto({
       id: user.id,
@@ -128,7 +125,11 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
           <Button type="button" variant="noBorder">
             Cancel
           </Button>
-          <Button type="button" onClick={handleSave}>
+          <Button
+            type="button"
+            disabled={acceptedFiles.length === 0 || isPending}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </div>

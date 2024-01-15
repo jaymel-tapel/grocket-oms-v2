@@ -26,20 +26,8 @@ export type User = {
   deletedAt: undefined | string;
 };
 
-type PageInfo = {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor: number;
-  endCursor: number;
-};
-
 type UsersResponse = {
-  edges: Array<{
-    cursor: string;
-    node: User;
-  }>;
-  pageInfo: PageInfo;
-  totalCount: number;
+  data: User[];
 };
 
 export type UsersParams = {
@@ -126,3 +114,18 @@ export const useUpdateUserPhoto = () => {
 };
 
 // -- PATCH / PUT requests
+
+export const useUpdateAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: { id: number; payload: UserFormSchema }) => {
+      return await axios.patch(USERS_URL + `/${arg.id}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+};

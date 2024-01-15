@@ -3,7 +3,7 @@ import axios from "axios";
 import { setAuthorization } from "../../utils/utils";
 
 type loginDetails = {
-  email: string;
+  username: string;
   password: string;
 };
 
