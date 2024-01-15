@@ -59,7 +59,6 @@ const Index = () => {
           searchUsers: {
             ...old?.searchUsers,
             filter: filter,
-            keyword: keywordDraft,
           },
         };
       },
