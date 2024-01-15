@@ -252,12 +252,12 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeSlashIcon
+                  <EyeIcon
                     className="h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />
                 ) : (
-                  <EyeIcon
+                  <EyeSlashIcon
                     className="h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />

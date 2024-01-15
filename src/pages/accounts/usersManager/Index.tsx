@@ -6,6 +6,12 @@ import { useEffect, useMemo, useState } from "react";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
 import { usersManagerIndexRoute } from "../../routeTree";
 import dayjs from "dayjs";
+import FiltersButton from "../../../components/tools/buttons/FiltersButton";
+import {
+  UsersManagerFilterType,
+  usersManagerFilters,
+} from "../../routeFilters";
+import { debounce } from "lodash";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -15,8 +21,8 @@ const Index = () => {
   const keyword = searchUsers?.keyword;
   const dateFrom = searchUsers?.from;
   const dateTo = searchUsers?.to;
+  const filter = searchUsers?.filter;
 
-  // const filter = searchUsers?.filter;
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
 
   const users = useMemo(() => {
@@ -27,7 +33,7 @@ const Index = () => {
   }, [data]);
 
   const handleCreateAccount = () => {
-    navigate({ to: "/accounts/new" });
+    navigate({ to: "/accounts/users_manager/new" });
   };
 
   const handleDateChange = (field: "from" | "to", value: string) => {
@@ -45,36 +51,41 @@ const Index = () => {
     });
   };
 
-  // const handleFilterChange = (filter: string) => {
-  //   navigate({
-  //     search: (old) => {
-  //       return {
-  //         ...old,
-  //         searchUsers: {
-  //           ...old?.searchUsers,
-  //           filter: filter,
-  //         },
-  //       };
-  //     },
-  //     replace: true,
-  //   });
-  // }
-
-  useEffect(() => {
+  const handleFilterChange = (filter: UsersManagerFilterType) => {
     navigate({
       search: (old) => {
         return {
           ...old,
           searchUsers: {
             ...old?.searchUsers,
-            keyword: keywordDraft || undefined,
-            first: 10,
-            after: 10,
+            filter: filter,
           },
         };
       },
       replace: true,
     });
+  };
+
+  useEffect(() => {
+    const handleKeywordChange = debounce(() => {
+      navigate({
+        search: (old) => {
+          return {
+            ...old,
+            searchUsers: {
+              ...old?.searchUsers,
+              keyword: keywordDraft || undefined,
+              first: 10,
+              after: 10,
+            },
+          };
+        },
+        replace: true,
+      });
+    }, 500);
+
+    handleKeywordChange();
+    return () => handleKeywordChange.cancel();
     //eslint-disable-next-line
   }, [keywordDraft]);
 
@@ -92,14 +103,21 @@ const Index = () => {
         </Button>
       </div>
       <div className="bg-white">
-        <div className="p-8 flex justify-between">
-          <SearchInput
-            placeholder="Search here..."
-            className="max-w-[20rem]"
-            grayBg={true}
-            value={keywordDraft}
-            onChange={(e) => setKeywordDraft(e.target.value)}
-          />
+        <div className="p-8 gap-y-4 flex justify-between max-md:flex-col">
+          <div className="flex gap-4 items-center">
+            <SearchInput
+              placeholder="Search here..."
+              className="w-full min-md:max-w-[20rem]"
+              grayBg={true}
+              value={keywordDraft}
+              onChange={(e) => setKeywordDraft(e.target.value)}
+            />
+            <FiltersButton
+              activeFilter={filter}
+              filterOptions={usersManagerFilters}
+              handleChange={handleFilterChange}
+            />
+          </div>
           <div className="flex gap-4">
             <input
               type="text"
@@ -114,7 +132,7 @@ const Index = () => {
                   dayjs(e.target.value).format("MM-DD-YYYY")
                 )
               }
-              className="block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
             />
             <input
               type="text"
@@ -129,7 +147,7 @@ const Index = () => {
                   dayjs(e.target.value).format("MM-DD-YYYY")
                 )
               }
-              className="block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
