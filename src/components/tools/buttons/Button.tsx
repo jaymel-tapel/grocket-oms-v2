@@ -5,7 +5,7 @@ import { cn } from "../../../utils/utils";
 interface ButtonProps {}
 
 const buttonVariants = cva(
-  "inline-flex items-center rounded-md py-4 px-6 justify-center text-sm whitespace-nowrap transition-colors",
+  "disabled:opacity-50 inline-flex items-center rounded-md py-4 px-6 justify-center text-sm whitespace-nowrap transition-colors",
   {
     variants: {
       variant: {
@@ -15,6 +15,7 @@ const buttonVariants = cva(
         delete: "text-[#DC3545] border border-[#DC3545]",
         inactive: "text-grText-dark bg-grGray-base border border-grGray-dark",
         black: "text-white bg-black",
+        noBorder: "text-black border-0",
       },
       size: {
         default: "h-10 ",

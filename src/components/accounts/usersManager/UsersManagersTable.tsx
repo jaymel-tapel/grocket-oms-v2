@@ -45,6 +45,7 @@ const UsersManagersTable: React.FC<TableProps> = ({ users }) => {
                   <Link
                     to="/accounts/users_manager/$userId"
                     params={{ userId: user.id }}
+                    className="text-blue-500"
                   >
                     View
                   </Link>
