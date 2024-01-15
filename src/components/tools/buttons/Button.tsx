@@ -15,6 +15,7 @@ const buttonVariants = cva(
         delete: "text-[#DC3545] border border-[#DC3545]",
         inactive: "text-grText-dark bg-grGray-base border border-grGray-dark",
         black: "text-white bg-black",
+        noBorder: "text-black border-0",
       },
       size: {
         default: "h-10 ",

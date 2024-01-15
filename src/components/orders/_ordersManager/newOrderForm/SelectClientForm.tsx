@@ -249,9 +249,9 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
                   );
                 })}
               </select>
-              {errors.origin && (
+              {errors.industry && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.origin?.message}
+                  {errors.industry?.message}
                 </p>
               )}
             </div>
