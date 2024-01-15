@@ -8,7 +8,7 @@ import { useResetPassword } from "../../services/queries/userQueries";
 import IsLoading from "../../components/tools/loading/IsLoading";
 
 const newPasswordSchema = z.object({
-  newPassword: z
+  password: z
     .string()
     .min(8, { message: "Password should be at least 8 characters." }),
 });
@@ -33,14 +33,14 @@ const ResetPassword = () => {
   });
 
   const onSubmit: SubmitHandler<NewPasswordSchema> = async (data: {
-    newPassword: string;
+    password: string;
   }) => {
     const recovery_code = getTokenFromURL();
 
     if (recovery_code) {
       const result = await newPass({
         recovery_code,
-        newPassword: data.newPassword,
+        password: data.password,
       });
 
       if (result.status === 201) {
@@ -64,11 +64,11 @@ const ResetPassword = () => {
             <input
               type="password"
               placeholder="Enter your new password"
-              {...register("newPassword")}
+              {...register("password")}
               className="w-full rounded-lg border  border-stroke mb-2 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none "
             />
             <span className="px-2 text-red-500">
-              {errors.newPassword?.message}
+              {errors.password?.message}
             </span>
             <span className="absolute right-4 top-4">
               <svg

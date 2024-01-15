@@ -41,7 +41,7 @@ export const useForgotPassword = () => {
 //password reset step-2
 type NewPassword = {
   recovery_code: string;
-  newPassword: string;
+  password: string;
 };
 
 const resetPasswordUrl = API_URL + "/auth/reset";
