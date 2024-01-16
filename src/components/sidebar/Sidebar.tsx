@@ -17,7 +17,12 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { cleanAuthorization } from "../../utils/utils";
+import {
+  UserLocalInfo,
+  cleanAuthorization,
+  getUserInfo,
+} from "../../utils/utils";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 const handleLogout = () => {
   cleanAuthorization();
@@ -27,9 +32,9 @@ const handleLogout = () => {
 };
 
 const userNavigation = [
-  { name: "Your profile", to: "#" },
-  { name: "Sign out" },
-];
+  { name: "Your profile", to: "/accounts/users_manager/$userId" },
+  { name: "Sign out", to: "/" },
+] as const;
 
 function classNames(...classes: (string | null)[]): string {
   return classes.filter(Boolean).join(" ");
@@ -101,6 +106,8 @@ const navigation = [
 export default function SidebarNavigation() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { location } = useRouterState();
+
+  const user = getUserInfo() as UserLocalInfo;
 
   const activeGroup = useMemo(() => {
     if (
@@ -184,7 +191,7 @@ export default function SidebarNavigation() {
                     </div>
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
-                  <SidebarComponent activeGroup={activeGroup} />
+                  <SidebarComponent activeGroup={activeGroup} user={user} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -194,7 +201,7 @@ export default function SidebarNavigation() {
         {/* Static sidebar for desktop */}
         <div className="no-scrollbar hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <SidebarComponent activeGroup={activeGroup} />
+          <SidebarComponent activeGroup={activeGroup} user={user} />
         </div>
 
         <div className="lg:pl-72">
@@ -243,16 +250,24 @@ export default function SidebarNavigation() {
                         className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                         aria-hidden="true"
                       >
-                        Jaymel Tapel
+                        {user?.name ?? ""}
                       </span>
                       <span className="ml-auto">Admin</span>
                     </div>
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full bg-gray-50"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
-                    />
+                    {user?.profile_image ? (
+                      <div className="rounded-full h-8 w-8 overflow-hidden">
+                        <img
+                          src={user.profile_image}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <UserCircleIcon
+                        className="h-12 w-12 text-gray-300"
+                        aria-hidden="true"
+                      />
+                    )}
                     <span className="flex flex-colhidden lg:flex lg:items-center">
                       <ChevronDownIcon
                         className="ml-2 h-5 w-5 text-gray-400"
@@ -270,26 +285,33 @@ export default function SidebarNavigation() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                      {userNavigation.map((item) => (
-                        <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <a
-                              href={item.to}
-                              onClick={
-                                item.name === "Sign out"
-                                  ? () => handleLogout()
-                                  : undefined
-                              }
-                              className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "block px-3 py-1 text-sm leading-6 text-gray-900 hover:cursor-pointer"
-                              )}
-                            >
-                              {item.name}
-                            </a>
-                          )}
-                        </Menu.Item>
-                      ))}
+                      {userNavigation.map((item) => {
+                        return (
+                          <Menu.Item key={item.name}>
+                            {({ active }) => (
+                              <Link
+                                to={item.to}
+                                params={
+                                  item.name === "Your profile" && {
+                                    userId: user.id,
+                                  }
+                                }
+                                onClick={
+                                  item.name === "Sign out"
+                                    ? () => handleLogout()
+                                    : undefined
+                                }
+                                className={classNames(
+                                  active ? "bg-gray-50" : "",
+                                  "block px-3 py-1 text-sm leading-6 text-gray-900 hover:cursor-pointer"
+                                )}
+                              >
+                                {item.name}
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        );
+                      })}
                     </Menu.Items>
                   </Transition>
                 </Menu>
@@ -308,8 +330,8 @@ function SidebarComponent(props) {
       <div className="flex items-center justify-center">
         <div className="flex justify-center gap-4 py-8">
           <p className="text-4xl text-white font-bold">OMS</p>
-          <p className="border-none bg-[#41B2E9] font-medium text-sm text-white rounded-md self-center py-1.5 px-3">
-            Admin
+          <p className="capitalize border-none bg-[#41B2E9] font-medium text-sm text-white rounded-md self-center py-1.5 px-3">
+            {props.user.role.toLowerCase() ?? "Seller"}
           </p>
         </div>
       </div>

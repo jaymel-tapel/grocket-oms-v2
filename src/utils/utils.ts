@@ -9,6 +9,7 @@ export const setAuthorization = (access_token: string) => {
 
 export const cleanAuthorization = () => {
   localStorage.removeItem(LOCAL_STORAGE_KEY);
+  localStorage.removeItem("user");
 };
 
 export const isAuth = () => {
@@ -41,4 +42,19 @@ export const getHeaders = () => {
   };
 
   return header;
+};
+
+export type UserLocalInfo = {
+  id: number;
+  name: string;
+  role: string;
+  profile_image: string;
+};
+
+export const getUserInfo = (): UserLocalInfo | undefined => {
+  const user = localStorage.getItem("user");
+
+  if (user) {
+    return JSON.parse(user) as UserLocalInfo;
+  }
 };
