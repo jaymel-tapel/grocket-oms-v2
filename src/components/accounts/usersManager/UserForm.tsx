@@ -283,7 +283,7 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
               <Spinner /> Submitting
             </>
           ) : (
-            "Save"
+            "Submit"
           )}
         </Button>
       </div>
