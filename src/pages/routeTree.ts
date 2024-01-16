@@ -233,10 +233,8 @@ export const usersManagerRoute = new Route({
         from: z.string().optional(),
         to: z.string().optional(),
         filter: z.enum(["id", "email"]).optional(),
-        first: z.number().optional(),
-        last: z.number().optional(),
-        before: z.number().optional(),
-        after: z.number().optional(),
+        page: z.number().optional().catch(1),
+        perPage: z.number().optional().catch(10),
       })
       .optional(),
   }).parse,

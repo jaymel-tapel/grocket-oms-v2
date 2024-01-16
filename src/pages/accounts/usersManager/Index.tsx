@@ -26,10 +26,19 @@ const Index = () => {
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
 
   const users = useMemo(() => {
-    if (!data) return [];
+    if (!data)
+      return {
+        data: [],
+        pagination: {
+          total: 0,
+          currentPage: 1,
+          lastPage: 1,
+          next: null,
+          prev: null,
+        },
+      };
 
-    const users = data?.data;
-    return users;
+    return { data: data.data, pagination: data.meta };
   }, [data]);
 
   const handleCreateAccount = () => {
@@ -75,8 +84,6 @@ const Index = () => {
             searchUsers: {
               ...old?.searchUsers,
               keyword: keywordDraft || undefined,
-              first: 10,
-              after: 10,
             },
           };
         },
@@ -151,7 +158,7 @@ const Index = () => {
             />
           </div>
         </div>
-        <UsersManagersTable users={users} />
+        <UsersManagersTable users={users.data} pagination={users.pagination} />
       </div>
     </div>
   );
