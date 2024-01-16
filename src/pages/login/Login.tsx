@@ -5,7 +5,7 @@ import { Button } from "../../components/tools/buttons/Button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import LoginPage from "../../components/sections/LoginPage";
 import { useLogin } from "../../services/queries/userQueries";
-import IsLoading from "../../components/tools/spinner/Spinner";
+import Spinner from "../../components/tools/spinner/Spinner";
 
 const loginSchema = z.object({
   username: z.string().email({ message: "Enter valid email address" }),
@@ -115,7 +115,7 @@ const Login = () => {
             type="submit"
             className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-dark p-4 text-white transition hover:bg-opacity-90"
           >
-            {isPending ? <IsLoading /> : "Sign In"}
+            {isPending ? <Spinner /> : "Sign In"}
           </Button>
         </div>
         <div className="flex justify-between max-sm:flex-col max-sm:px-10 max-sm:gap-4">

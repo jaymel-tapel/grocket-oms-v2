@@ -3,9 +3,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LoginPage from "../../components/sections/LoginPage";
 import { Button } from "../../components/tools/buttons/Button";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useResetPassword } from "../../services/queries/userQueries";
-import IsLoading from "../../components/tools/spinner/Spinner";
+import Spinner from "../../components/tools/spinner/Spinner";
 
 const newPasswordSchema = z.object({
   password: z
@@ -19,6 +19,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   const { mutateAsync: newPass, isPending } = useResetPassword();
+  const { code } = useParams({ from: "/forgot_password/$code" });
 
   const {
     register,
@@ -31,11 +32,9 @@ const ResetPassword = () => {
   const onSubmit: SubmitHandler<NewPasswordSchema> = async (data: {
     password: string;
   }) => {
-    const token = new URLSearchParams(window.location.search).get("token");
-
-    if (token) {
+    if (code) {
       const result = await newPass({
-        recovery_code: token,
+        recover_code: code,
         password: data.password,
       });
 
@@ -95,7 +94,7 @@ const ResetPassword = () => {
             type="submit"
             className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-dark p-4 text-white transition hover:bg-opacity-90"
           >
-            {isPending ? <IsLoading /> : "Reset Password"}
+            {isPending ? <Spinner /> : "Reset Password"}
           </Button>
         </div>
       </form>
