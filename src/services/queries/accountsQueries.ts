@@ -26,8 +26,18 @@ export type User = {
   deletedAt: undefined | string;
 };
 
+export type Pagination = {
+  currentPage: number;
+  lastPage: number;
+  perPage?: number;
+  next: number | null;
+  prev: number | null;
+  total: number;
+};
+
 type UsersResponse = {
   data: User[];
+  meta: Pagination;
 };
 
 export type UsersParams = {
