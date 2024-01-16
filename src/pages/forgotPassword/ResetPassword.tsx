@@ -19,10 +19,6 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   const { mutateAsync: newPass, isPending } = useResetPassword();
-  const getTokenFromURL = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get("token");
-  };
 
   const {
     register,
@@ -35,11 +31,11 @@ const ResetPassword = () => {
   const onSubmit: SubmitHandler<NewPasswordSchema> = async (data: {
     password: string;
   }) => {
-    const recovery_code = getTokenFromURL();
+    const token = new URLSearchParams(window.location.search).get("token");
 
-    if (recovery_code) {
+    if (token) {
       const result = await newPass({
-        recovery_code,
+        recovery_code: token,
         password: data.password,
       });
 
