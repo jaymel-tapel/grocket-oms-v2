@@ -40,7 +40,7 @@ export const useForgotPassword = () => {
 
 //password reset step-2
 type NewPassword = {
-  recovery_code: string;
+  recover_code: string;
   password: string;
 };
 

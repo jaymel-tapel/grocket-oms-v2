@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import LoginPage from "../../components/sections/LoginPage";
 import { Button } from "../../components/tools/buttons/Button";
 import { useForgotPassword } from "../../services/queries/userQueries";
+import Spinner from "../../components/tools/spinner/Spinner";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Enter valid email address" }),
@@ -11,7 +12,7 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 const ForgotPassword = () => {
-  const { mutate: forgotPass } = useForgotPassword();
+  const { mutate: forgotPass, isPending } = useForgotPassword();
   const {
     register,
     handleSubmit,
@@ -70,7 +71,7 @@ const ForgotPassword = () => {
             type="submit"
             className="w-full h-16 font-md text-xl leading-6 cursor-pointer rounded-lg border border-primary bg-grBlue-dark p-4 text-white transition hover:bg-opacity-90"
           >
-            Send Password Reset Link
+            {isPending ? <Spinner /> : "Send Password Reset Link"}
           </Button>
         </div>
       </form>
