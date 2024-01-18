@@ -45,10 +45,8 @@ export type UsersParams = {
   from?: string;
   to?: string;
   filter?: string;
-  first?: number;
-  last?: number;
-  after?: number;
-  before?: number;
+  page?: number;
+  perPage?: number;
 };
 
 // -- GET requests

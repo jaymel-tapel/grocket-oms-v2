@@ -1,33 +1,25 @@
 import { useMemo } from "react";
-import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { isEmpty } from "../../../../utils/utils";
+import { useFindProspectsContext } from "./FindProspectsContext";
+import { isEmpty } from "../../../utils/utils";
 
 const steps = [
-  { id: 1, name: "Select Seller" },
-  { id: 2, name: "Select Client" },
-  { id: 3, name: "Select Company" },
-  { id: 4, name: "Add Reviews" },
-  { id: 5, name: "Summary" },
+  { id: 1, name: "Enter Keywords" },
+  { id: 2, name: "Select Prospects" },
+  { id: 3, name: "Scrape Website Emails" },
+  { id: 4, name: "Save Prospects" },
 ] as const;
 
-const OrderFormSteppers = () => {
+const FindProspectsStepper = () => {
   const {
     step: currentStep,
     setStep,
-    seller,
-    client,
-    company,
-    reviews,
-  } = useOrderForm() as OrderFormContext;
+    prospectFinder,
+    prospects,
+  } = useFindProspectsContext();
 
   const isStepDone = useMemo(() => {
-    return [
-      !isEmpty(seller),
-      !isEmpty(client),
-      !isEmpty(company),
-      reviews.length > 0,
-    ];
-  }, [seller, client, company, reviews]);
+    return [!isEmpty(prospectFinder), prospects.length > 0];
+  }, [prospectFinder, prospects]);
 
   const handleClick = (step: number) => {
     setStep(step);
@@ -77,4 +69,4 @@ const OrderFormSteppers = () => {
   );
 };
 
-export default OrderFormSteppers;
+export default FindProspectsStepper;

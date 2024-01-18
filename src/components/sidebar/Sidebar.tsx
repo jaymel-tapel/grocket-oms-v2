@@ -78,7 +78,7 @@ const navigation = [
     to: "/clients",
     icon: MagnifyingGlassIcon,
     children: [
-      { name: "My Prospects", to: "#" },
+      { name: "My Prospects", to: "/prospects" },
       { name: "Email Templates", to: "#" },
     ],
   },

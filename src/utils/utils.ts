@@ -58,3 +58,7 @@ export const getUserInfo = (): UserLocalInfo | undefined => {
     return JSON.parse(user) as UserLocalInfo;
   }
 };
+
+export const isEmpty = (obj: object) => {
+  return !Object.values(obj).filter((value) => !!value).length;
+};

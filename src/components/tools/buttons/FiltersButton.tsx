@@ -2,11 +2,16 @@ import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { cn } from "../../../utils/utils";
-import { UsersManagerFilterType } from "../../../pages/routeFilters";
+import {
+  ClientsManagerFilterType,
+  UsersManagerFilterType,
+} from "../../../pages/routeFilters";
 
 type Props = {
   activeFilter?: UsersManagerFilterType;
-  filterOptions: ReadonlyArray<UsersManagerFilterType>;
+  filterOptions: ReadonlyArray<
+    UsersManagerFilterType | ClientsManagerFilterType
+  >;
   handleChange: (filter: UsersManagerFilterType) => void;
 };
 
