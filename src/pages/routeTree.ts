@@ -16,6 +16,10 @@ import {
   getAllUsersOptions,
   getUserOption,
 } from "../services/queries/accountsQueries";
+import {
+  getAllClientsOptions,
+  getClientOption,
+} from "../services/queries/clientsQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -194,11 +198,56 @@ const clientsReportRoute = new Route({
 const clientsManagerRoute = new Route({
   getParentRoute: () => clientsRoute,
   path: "clients_manager",
-  component: lazyRouteComponent(() => import("./clients/ClientsManager")),
+  validateSearch: z.object({
+    searchClients: z
+      .object({
+        keyword: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        filter: z.enum(["id", "email"]).optional(),
+        page: z.number().optional().catch(1),
+        perPage: z.number().optional().catch(10),
+      })
+      .optional(),
+  }).parse,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+      searchClients: {
+        ...search.searchClients,
+      },
+    }),
+  ],
+  loaderDeps: ({ search }) => ({
+    searchClients: search.searchClients,
+  }),
+  loader: async ({ context: { queryClient }, deps }) => {
+    queryClient.ensureQueryData(getAllClientsOptions(deps.searchClients));
+  },
+  component: lazyRouteComponent(
+    () => import("./clients/clientsManager/ClientsManager")
+  ),
+});
+
+export const clientsManagerIndexRoute = new Route({
+  getParentRoute: () => clientsManagerRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./clients/clientsManager/Index")),
+});
+
+export const clientRoute = new Route({
+  getParentRoute: () => clientsManagerRoute,
+  path: "$clientId",
+  parseParams: ({ clientId }) => ({ clientId: Number(clientId) }),
+  stringifyParams: ({ clientId }) => ({ clientId: `${clientId}` }),
+  loader: async ({ context: { queryClient }, params: { clientId } }) => {
+    queryClient.ensureQueryData(getClientOption(clientId));
+  },
+  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
 const newClientRoute = new Route({
-  getParentRoute: () => clientsRoute,
+  getParentRoute: () => clientsManagerRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./clients/AddNewClient")),
 });
@@ -260,12 +309,6 @@ export const usersManagerRoute = new Route({
 export const usersManagerIndexRoute = new Route({
   getParentRoute: () => usersManagerRoute,
   path: "/",
-  // loaderDeps: ({ search }) => ({
-  //   searchUsers: search.searchUsers,
-  // }),
-  // loader: async ({ context: { queryClient }, deps }) => {
-  //   queryClient.ensureQueryData(getAllUsersOptions(deps.searchUsers));
-  // },
   component: lazyRouteComponent(() => import("./accounts/usersManager/Index")),
 });
 
@@ -292,6 +335,24 @@ const inactiveUsersRoute = new Route({
   component: lazyRouteComponent(() => import("./accounts/InactiveUsers")),
 });
 
+const prospectsRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  path: "prospects",
+  component: lazyRouteComponent(() => import("./prospects/Prospects")),
+});
+
+const prospectsIndexRoute = new Route({
+  getParentRoute: () => prospectsRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./prospects/Index")),
+});
+
+const findProspectsRoute = new Route({
+  getParentRoute: () => prospectsRoute,
+  path: "find",
+  component: lazyRouteComponent(() => import("./prospects/FindProspects")),
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   forgotPasswordRoute,
@@ -314,8 +375,11 @@ const routeTree = rootRoute.addChildren([
     clientsRoute.addChildren([
       clientsIndexRoute,
       clientsReportRoute,
-      clientsManagerRoute,
-      newClientRoute,
+      clientsManagerRoute.addChildren([
+        clientsManagerIndexRoute,
+        clientRoute,
+        newClientRoute,
+      ]),
     ]),
 
     accountsRoute.addChildren([
@@ -328,6 +392,8 @@ const routeTree = rootRoute.addChildren([
       ]),
       inactiveUsersRoute,
     ]),
+
+    prospectsRoute.addChildren([prospectsIndexRoute, findProspectsRoute]),
   ]),
 ]);
 

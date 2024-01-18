@@ -5,21 +5,32 @@ import TableContainer from "../../tools/table/TableContainer";
 import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
-import { Pagination, User } from "../../../services/queries/accountsQueries";
+import { Pagination } from "../../../services/queries/accountsQueries";
 import { Link } from "@tanstack/react-router";
 import { cn } from "../../../utils/utils";
 import { useMemo } from "react";
+import { Client } from "../../../services/queries/clientsQueries";
 
-const COLUMNS = ["ID", "EMAIL", "NAME", "ROLE", "ACTION"];
+const COLUMNS = [
+  "ID",
+  "EMAIL",
+  "NAME",
+  "ORDERS",
+  "TOTAL AMOUNT",
+  "DATE REGISTERED",
+];
 
 type TableProps = {
-  users: User[];
+  clients: Client[];
   pagination: Pagination;
 };
 
-const UsersManagersTable: React.FC<TableProps> = ({ users, pagination }) => {
-  const usersShown = useMemo(() => {
-    if (users.length === 0) {
+const ClientsManagersTable: React.FC<TableProps> = ({
+  clients,
+  pagination,
+}) => {
+  const clientsShown = useMemo(() => {
+    if (clients.length === 0) {
       return { first: 0, last: 0 };
     }
 
@@ -28,9 +39,9 @@ const UsersManagersTable: React.FC<TableProps> = ({ users, pagination }) => {
       last:
         pagination.currentPage !== pagination.lastPage
           ? pagination.currentPage * 10
-          : pagination.currentPage * 10 - (10 - users.length),
+          : pagination.currentPage * 10 - (10 - clients.length),
     };
-  }, [pagination, users]);
+  }, [pagination, clients]);
 
   return (
     <TableContainer className="bg-white">
@@ -45,48 +56,45 @@ const UsersManagersTable: React.FC<TableProps> = ({ users, pagination }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {users.length === 0 && (
+          {clients.length === 0 && (
             <TableRow>
-              <TableBodyCell className="text-center text-gray-500" colSpan={5}>
+              <TableBodyCell className="text-center text-gray-500" colSpan={6}>
                 No data found.
               </TableBodyCell>
             </TableRow>
           )}
-          {users.map((user, index) => (
+          {clients.map((client, index) => (
             <TableRow key={index}>
-              <TableBodyCell className="text-center">{user.id}</TableBodyCell>
+              <TableBodyCell className="text-center">{client.id}</TableBodyCell>
               <TableBodyCell className="text-center">
-                {user.email}
+                {client.email}
               </TableBodyCell>
-              <TableBodyCell className="text-center">{user.name}</TableBodyCell>
+              <TableBodyCell className="text-center">
+                {client.name}
+              </TableBodyCell>
               <TableBodyCell className="text-center capitalize">
-                {user.role.toLocaleLowerCase()}
+                1
               </TableBodyCell>
+              <TableBodyCell className="text-center">$149</TableBodyCell>
               <TableBodyCell className="text-center">
-                <Link
-                  to="/accounts/users_manager/$userId"
-                  params={{ userId: user.id }}
-                  className="text-blue-500"
-                >
-                  View
-                </Link>
+                {client.createdAt}
               </TableBodyCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <TablePagination usersShown={usersShown} pagination={pagination} />
+      <TablePagination clientsShown={clientsShown} pagination={pagination} />
     </TableContainer>
   );
 };
 
-export default UsersManagersTable;
+export default ClientsManagersTable;
 
 function TablePagination(props) {
   return (
     <div className="p-4 sm:p-6 xl:p-7.5 flex justify-between">
       <div>
-        Showing {props.usersShown.first} - {props.usersShown.last} of{" "}
+        Showing {props.clientsShown.first} - {props.clientsShown.last} of{" "}
         {props.pagination.total}
       </div>
       <nav>
