@@ -10,7 +10,7 @@ import { useScrapeProspects } from "../../../services/queries/prospectsQueries";
 
 const step1Schema = z.object({
   keyword: z.string(),
-  limit: z.number(),
+  limit: z.coerce.number(),
 });
 
 export type Step1Schema = z.infer<typeof step1Schema>;
