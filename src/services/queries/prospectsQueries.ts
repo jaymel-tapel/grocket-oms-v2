@@ -7,6 +7,7 @@ import { useFindProspectsContext } from "../../components/prospects/findProspect
 const SCRAPER_URL = import.meta.env.VITE_SCRAPER_API_URL;
 
 export type Prospect = {
+  id: number;
   businessName: string;
   rating: string;
   reviews: string;
@@ -25,7 +26,7 @@ type ScrapeEmailsResponse = {
 };
 
 export const useScrapeProspects = () => {
-  const { setProspects } = useFindProspectsContext();
+  const { setProspects, setIsScraping } = useFindProspectsContext();
 
   return useMutation({
     mutationFn: async (
@@ -34,8 +35,18 @@ export const useScrapeProspects = () => {
       const response = await axios.post(SCRAPER_URL + "/search", payload);
       return response.data;
     },
+    onMutate: () => {
+      setIsScraping(true);
+    },
     onSuccess: (data) => {
-      setProspects(data.results);
+      const prospectsWithId = data.results.map((prospect, index) => {
+        return { ...prospect, id: index + 1 };
+      });
+
+      setProspects(prospectsWithId);
+    },
+    onSettled: () => {
+      setIsScraping(false);
     },
   });
 };

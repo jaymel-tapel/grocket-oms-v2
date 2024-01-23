@@ -2,6 +2,7 @@ import { useFindProspectsContext } from "./FindProspectsContext";
 import { Button } from "../../tools/buttons/Button";
 import FindProspectsStepper from "./FindProspectsStepper";
 import FindProspectsFormStep1 from "./FindProspectsFormStep1";
+import FindProspectsFormStep2 from "./FindProspectsFormStep2";
 
 const FindProspectsForm = () => {
   const { step } = useFindProspectsContext();
@@ -15,6 +16,11 @@ const FindProspectsForm = () => {
           <FindProspectsFormStep1>
             <ProspectFormNavigation />
           </FindProspectsFormStep1>
+        )}
+        {step === 2 && (
+          <FindProspectsFormStep2>
+            <ProspectFormNavigation />
+          </FindProspectsFormStep2>
         )}
       </div>
     </div>

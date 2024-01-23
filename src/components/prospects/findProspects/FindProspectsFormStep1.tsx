@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrapeProspects } from "../../../services/queries/prospectsQueries";
 
 const step1Schema = z.object({
-  keyword: z.string(),
+  search: z.string(),
   limit: z.coerce.number(),
 });
 
@@ -63,17 +63,17 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
             <input
               type="text"
               id="prospectKeyword"
-              defaultValue={prospectFinder.keyword}
-              {...register("keyword", {
-                onChange: (e) => handleChange("keyword", e.target.value),
+              defaultValue={prospectFinder.search}
+              {...register("search", {
+                onChange: (e) => handleChange("search", e.target.value),
               })}
               className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                errors.keyword && "border-red-500"
+                errors.search && "border-red-500"
               }`}
             />
-            {errors.keyword && (
+            {errors.search && (
               <p className="text-xs italic text-red-500 mt-2">
-                {errors.keyword?.message}
+                {errors.search?.message}
               </p>
             )}
           </div>

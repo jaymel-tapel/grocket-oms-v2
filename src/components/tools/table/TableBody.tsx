@@ -7,7 +7,9 @@ interface IsProps {
 
 const TableBody: React.FC<IsProps> = ({ children, classname = "" }) => {
   return (
-    <tbody className={`${classname}divide-y divide-gray-200`}>{children}</tbody>
+    <tbody className={`${classname} divide-y divide-gray-200`}>
+      {children}
+    </tbody>
   );
 };
 
