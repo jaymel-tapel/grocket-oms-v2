@@ -5,8 +5,6 @@ import {
 } from "./FindProspectsContext";
 import toast from "react-hot-toast";
 import ScrapedProspectsTable from "./ScrapedProspectsTable";
-import Spinner from "../../tools/spinner/Spinner";
-import { useScrapeProspects } from "../../../services/queries/prospectsQueries";
 
 type FormProps = {
   children: ReactNode;
@@ -15,8 +13,6 @@ type FormProps = {
 const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
   const { setStep, selectedProspects } =
     useFindProspectsContext() as FindProspectsContext;
-
-  const { isPending } = useScrapeProspects();
 
   const handleSubmmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,7 +27,7 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
 
   return (
     <form onSubmit={handleSubmmit}>
-      {isPending ? <Spinner /> : <ScrapedProspectsTable />}
+      <ScrapedProspectsTable />
       {children}
     </form>
   );

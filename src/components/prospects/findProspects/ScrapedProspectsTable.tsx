@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Table from "../../tools/table/Table";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
@@ -8,6 +8,8 @@ import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { useFindProspectsContext } from "./FindProspectsContext";
 import { Prospect } from "../../../services/queries/prospectsQueries";
+import { useIsMutating } from "@tanstack/react-query";
+import Spinner from "../../tools/spinner/Spinner";
 
 const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE"];
 
@@ -16,8 +18,24 @@ type TableProps = {
 };
 
 const ScrapedProspectsTable: React.FC<TableProps> = () => {
-  const { prospects, selectedProspects, setSelectedProspects } =
-    useFindProspectsContext();
+  const {
+    prospects,
+    setProspects,
+    selectedProspects,
+    setSelectedProspects,
+    setProspectsEmail,
+  } = useFindProspectsContext();
+
+  const isMutating = useIsMutating({ mutationKey: ["scrape-prospects"] });
+
+  useEffect(() => {
+    if (isMutating) {
+      setProspects([]);
+      setSelectedProspects([]);
+      setProspectsEmail([]);
+    }
+    //eslint-disable-next-line
+  }, [isMutating]);
 
   const isChecked = useCallback(
     (prospectId: number) => {
@@ -72,6 +90,13 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
           </TableRow>
         </TableHead>
         <TableBody>
+          {isMutating ? (
+            <TableRow>
+              <TableBodyCell className="py-8" colSpan={5}>
+                <Spinner className="h-8 w-8 mx-auto" />
+              </TableBodyCell>
+            </TableRow>
+          ) : null}
           {prospects.map((prospect, index) => {
             return (
               <TableRow key={index}>
@@ -88,8 +113,12 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                 </TableBodyCell>
                 <TableBodyCell>{prospect.businessName}</TableBodyCell>
                 <TableBodyCell>{prospect.rating}</TableBodyCell>
-                <TableBodyCell>{prospect.phone}</TableBodyCell>
-                <TableBodyCell>{prospect.website}</TableBodyCell>
+                <TableBodyCell className="text-grBlue-dark whitespace-nowrap">
+                  {prospect.phone}
+                </TableBodyCell>
+                <TableBodyCell className="text-grBlue-dark max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis">
+                  {prospect.website}
+                </TableBodyCell>
               </TableRow>
             );
           })}
