@@ -9,9 +9,7 @@ const Table: React.FC<IsProps> = ({ children, classname = "" }) => {
   return (
     <div className="flow-root overflow-auto">
       <div className="mx-auto">
-        <table
-          className={`${classname} min-w-full border-y border-y-gray-300 divide-y divide-gray-300`}
-        >
+        <table className={`${classname} min-w-full divide-y divide-gray-300`}>
           {children}
         </table>
       </div>
