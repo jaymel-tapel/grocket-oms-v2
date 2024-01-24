@@ -83,8 +83,9 @@ const ProspectFormNavigation = () => {
             variant={"lightBlue"}
             onClick={(e) => e.stopPropagation()}
           >
-            <CSVLink data={finalCsvData} filename={"oms-prospects.csv"} />
-            Export CSV
+            <CSVLink data={finalCsvData} filename={"oms-prospects.csv"}>
+              Export CSV
+            </CSVLink>
           </Button>
         )}
         <Button type="submit">
