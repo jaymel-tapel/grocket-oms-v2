@@ -78,7 +78,11 @@ const ProspectFormNavigation = () => {
       </div>
       <div className="flex gap-4">
         {step === 4 && (
-          <Button type="button" variant={"lightBlue"}>
+          <Button
+            type="button"
+            variant={"lightBlue"}
+            onClick={(e) => e.stopPropagation()}
+          >
             <CSVLink data={finalCsvData} filename={"oms-prospects.csv"} />
             Export CSV
           </Button>
