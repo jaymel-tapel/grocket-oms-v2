@@ -259,7 +259,7 @@ const TaskForm: React.FC = () => {
                 >
                   {isCreating ? (
                     <>
-                      Submit
+                      Submitting
                       <Spinner />
                     </>
                   ) : isUpdating ? (
