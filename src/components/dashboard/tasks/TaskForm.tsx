@@ -1,27 +1,33 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { taskRoute } from "../../../pages/routeTree";
-import { Task, useGetTask } from "../../../services/queries/taskQueries";
 import { useNavigate } from "@tanstack/react-router";
+import {
+  useCreateTasks,
+  useGetTask,
+  useUpdateTasks,
+} from "../../../services/queries/taskQueries";
+import { taskRoute } from "../../../pages/routeTree";
 
 const TaskSchema = z.object({
-  date: z.string(),
-  _id: z.string(),
-  name: z.string(),
+  name: z.string().optional(),
+  task_date: z.string(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
   title: z.string().min(1, { message: "Task name required" }),
-  type: z.string().min(1, { message: "Remarks is Required" }),
-  description: z.string().optional(),
-  note: z.string().optional(),
+  remarks: z.string().min(1, { message: "Remarks is Required" }),
+  description: z.string(),
+  note: z.string(),
 });
 
-type taskSchema = z.infer<typeof TaskSchema>;
+export type taskSchema = z.infer<typeof TaskSchema>;
 
-const TaskForm = () => {
-  const navigate = useNavigate();
+const TaskForm: React.FC = () => {
   const { taskId } = taskRoute.useParams();
-  const { data: taskData } = useGetTask(taskId ?? "");
+  const { data: tasks } = useGetTask(taskId ?? "");
+
+  const navigate = useNavigate();
+  const { mutateAsync: createTasks, isPending: isCreating } = useCreateTasks();
+  const { mutateAsync: updateTasks, isPending: isUpdating } = useUpdateTasks();
 
   const {
     register,
@@ -29,15 +35,32 @@ const TaskForm = () => {
     formState: { errors },
   } = useForm<taskSchema>({
     resolver: zodResolver(TaskSchema),
-    values: taskId ? (taskData as Task) : undefined,
-    resetOptions: {
-      keepDirtyValues: true,
-      keepErrors: true,
-    },
+    values: taskId
+      ? {
+          task_date: tasks?.taskSeller?.task_date
+            ? new Date(tasks.taskSeller.task_date).toLocaleDateString("en-CA")
+            : "",
+          title: tasks?.taskSeller?.title || "",
+          description: tasks?.taskSeller?.description || "",
+          email: tasks?.taskSeller?.email || "",
+          remarks: tasks?.taskSeller?.remarks || "",
+          note: tasks?.taskNotes?.[0]?.note || "",
+        }
+      : undefined,
   });
 
-  const onSubmit: SubmitHandler<taskSchema> = (data) => {
-    console.log("test", data);
+  const onSubmit: SubmitHandler<taskSchema> = async (data) => {
+    try {
+      const response = taskId
+        ? await updateTasks({ id: taskId, payload: data })
+        : await createTasks(data);
+
+      if (response.status === 200 || response.status === 201) {
+        navigate({ to: "/tasks" });
+      }
+    } catch (error) {
+      console.error("Error submitting task:", error);
+    }
   };
 
   const handleClose = () => {
@@ -62,34 +85,44 @@ const TaskForm = () => {
           <ul className="flex flex-col mt-14 ml-14">
             <li className="flex w-auto gap-20 max-sm:flex-col ">
               <div className="mb-4 w-5/12 max-sm:w-11/12">
-                <label className="block text-sm font-medium text-black">
+                <label
+                  htmlFor="taskdate"
+                  className="block text-sm font-medium text-black"
+                >
                   Date
                 </label>
                 <input
-                  type="text"
+                  type="date"
+                  id="taskdate"
                   className="mt-1 p-2 border rounded-sm w-full"
-                  {...register("date")}
+                  {...register("task_date")}
                 />
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
-                <label className="block text-sm font-medium text-black">
+                <label
+                  htmlFor="taskId"
+                  className="block text-sm font-medium text-black"
+                >
                   Order ID
                 </label>
                 <input
                   type="number"
+                  id="taskId"
                   className="mt-1 p-2 border rounded-sm w-full"
-                  {...register("_id")}
                 />
-                <span>{errors._id?.message}</span>
               </div>
             </li>
             <li className="flex w-auto gap-20 max-sm:flex-col ">
               <div className="mb-4 w-5/12 max-sm:w-11/12">
-                <label className="block text-sm font-medium text-black">
+                <label
+                  htmlFor="taskName"
+                  className="block text-sm font-medium text-black"
+                >
                   Business Name
                 </label>
                 <input
                   type="text"
+                  id="taskName"
                   className="mt-1 p-2 border rounded-sm w-full"
                   {...register("name")}
                 />
@@ -97,11 +130,15 @@ const TaskForm = () => {
                 <span>{errors.name?.message}</span>
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
-                <label className="block text-sm font-medium text-black">
+                <label
+                  htmlFor="taskEmail"
+                  className="block text-sm font-medium text-black"
+                >
                   Client Email Address
                 </label>
                 <input
-                  type="text"
+                  type="email"
+                  id="taskEmail"
                   className="mt-1 p-2 border rounded-sm w-full"
                   {...register("email")}
                 />
@@ -116,37 +153,48 @@ const TaskForm = () => {
 
             <li className="flex w-auto gap-20 mb-9 max-sm:flex-col ">
               <div className="mb-4 w-5/12 max-sm:w-11/12">
-                <label className="block text-sm font-medium text-black">
+                <label
+                  htmlFor="taskName"
+                  className="block text-sm font-medium text-black"
+                >
                   Task Name
                 </label>
                 <input
                   type="text"
+                  id="taskName"
                   className="mt-1 p-2 border rounded-sm w-full"
                   {...register("title")}
                 />
                 <span>{errors.title?.message}</span>
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
-                <label className="block text-sm font-medium text-black">
+                <label
+                  htmlFor="taskRemarks"
+                  className="block text-sm font-medium text-black"
+                >
                   Remarks
                 </label>
                 <input
                   type="text"
+                  id="taskRemarks"
                   className="mt-1 p-2 border rounded-sm w-full"
-                  {...register("type")}
+                  {...register("remarks")}
                 />
-                {errors.type?.message}
+                {errors.remarks?.message}
               </div>
             </li>
 
             <li className="w-11/12 mb-7">
               <div className="col-span-full">
-                <label className="block text-sm font-medium leading-6 text-black">
+                <label
+                  htmlFor="taskDescription"
+                  className="block text-sm font-medium leading-6 text-black"
+                >
                   Task Description
                 </label>
                 <div className="mt-2">
                   <textarea
-                    id="description"
+                    id="taskDescription"
                     className="block w-full h-[197px] rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm"
                     {...register("description")}
                   />
@@ -156,12 +204,15 @@ const TaskForm = () => {
 
             <li className="w-11/12 mb-16">
               <div className="col-span-full">
-                <label className="block text-sm font-medium leading-6 text-black">
+                <label
+                  htmlFor="taskNote"
+                  className="block text-sm font-medium leading-6 text-black"
+                >
                   Personal note
                 </label>
                 <div className="mt-2">
                   <textarea
-                    id="note"
+                    id="taskNote"
                     placeholder=" "
                     className="block w-full h-[197px] rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
                     {...register("note")}
@@ -183,8 +234,9 @@ const TaskForm = () => {
                 <button
                   type="submit"
                   className="border rounded-md bg-[#3C50E0] text-white  h-10 px-8"
+                  disabled={isCreating || isUpdating}
                 >
-                  {taskId ? "Update" : "Add Tasks"}
+                  {isCreating ? "Submit" : isUpdating ? "Updating" : "Submit"}
                 </button>
               </div>
             </li>
