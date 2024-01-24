@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -11,30 +11,33 @@ import {
   TrashIcon,
 } from "../../tools/svg/DashboardTasksLogos";
 import {
-  useCompleteTask,
+  useCompleteTasks,
   useDeleteTask,
-  useGetAllTasks,
+  useGetAllTasksActive,
+  useGetAllTasksCompleted,
 } from "../../../services/queries/taskQueries";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "../../tools/buttons/Button";
+import Spinner from "../../tools/spinner/Spinner";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
-  const { data: tasks } = useGetAllTasks();
-  const { mutateAsync: completeTaskAsync } = useCompleteTask();
-  const { mutate: deleteTask } = useDeleteTask();
+  const {
+    data: { nodes: tasksActive = [] } = {},
+    isLoading: activeLoading,
+    isError: activeError,
+  } = useGetAllTasksActive();
 
-  const filterTasks = useMemo(() => {
-    if (!tasks) return [];
+  const {
+    data: { nodes: tasksCompleted = [] } = {},
+    isLoading: completedLoading,
+    isError: completedError,
+  } = useGetAllTasksCompleted();
+  const { mutateAsync: completeTask } = useCompleteTasks();
+  const { mutateAsync: deleteTask } = useDeleteTask();
 
-    if (activeButton === "currentTasks") {
-      return tasks.filter((task) => task.type === "Order");
-    } else if (activeButton === "completedTasks") {
-      return tasks.filter((task) => task.type === "Completed");
-    } else {
-      return tasks;
-    }
-  }, [tasks, activeButton]);
+  const tasksToDisplay =
+    activeButton === "currentTasks" ? tasksActive : tasksCompleted;
 
   const navigate = useNavigate();
 
@@ -42,29 +45,37 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/new" });
   };
 
-  const handleClick = (taskId: string) => {
+  const handleClick = (taskId: number) => {
     navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 
   const handleTaskAction = async (
-    taskId: string,
-    action: "complete" | "delete"
+    taskId: number,
+    action: "Completed" | "Delete"
   ) => {
     try {
-      if (action === "complete") {
-        await completeTaskAsync(taskId);
-        console.log("Task completed", taskId);
-      } else if (action === "delete") {
+      if (action === "Completed") {
+        await completeTask(taskId);
+      } else if (action === "Delete") {
         await deleteTask(taskId);
-        console.log("Task deleted", taskId);
+      } else {
+        console.error(`Invalid action: ${action}`);
       }
     } catch (error) {
       console.error(
-        `Error ${action === "complete" ? "completing" : "deleting"} task:`,
+        `Error ${action === "Completed" ? "Completing" : "Deleting"} task:`,
         error
       );
     }
   };
+
+  if (activeLoading || completedLoading) {
+    return <Spinner className="py-40 px-96" />;
+  }
+
+  if (activeError || completedError) {
+    return <p className="py-40 px-96 ">Error fetching tasks.</p>;
+  }
 
   return (
     <>
@@ -89,110 +100,123 @@ const DashboardTasks: React.FC = () => {
             </Button>
           </div>
           <div className="">
-            <button
+            <Button
               type="button"
               className="rounded bg-chatBlue px-2 py-2 h-10 w-36 font-medium text-base text-white shadow-sm  hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#41B2E9]"
               onClick={handleTasks}
             >
               Add Task
-            </button>
+            </Button>
           </div>
         </div>
 
         <div>
-          {filterTasks?.map((task, i) => (
-            <div
-              key={i}
-              className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
-            >
-              <div className="flex justify-between ">
-                <div>
-                  <p className="text-black text-sm mb-1">{task.title}</p>
-                  <p className="text-slate text-sm mb-1 mt-4">
-                    {task.description}
-                  </p>
-                  <div className="flex flex-1 gap-6 mt-4">
-                    {[CheckCircle, PencilAlt, TrashIcon].map(
-                      (icon, iconIndex) => (
-                        <button
-                          key={iconIndex}
-                          onClick={() => {
-                            if (icon === CheckCircle) {
-                              handleTaskAction(task._id, "complete");
-                            } else if (icon === PencilAlt) {
-                              handleClick(task._id);
-                            } else if (icon === TrashIcon) {
-                              handleTaskAction(task._id, "delete");
-                            }
-                          }}
-                        >
-                          {icon}
-                        </button>
-                      )
-                    )}
-                    <span className="border-r-2"></span>
-                    {/* {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
-                      (icon, iconIndex) => (
-                        <Link
-                          key={iconIndex}
-                          to={
-                            icon === EnvelopeIcon
-                              ? "/inbox"
-                              : icon === PhoneIcon
-                              ? "/inbox"
-                              : undefined
-                          }
-                        >
-                          <button>{icon}</button>
-                        </Link>
-                      )
-                    )} */}
-                    {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
-                      (icon, iconIndex) => {
-                        if (icon === PhoneIcon) {
-                          return (
-                            <a key={iconIndex} href={`tel:${task.phone}`}>
-                              <button>{icon}</button>
-                            </a>
-                          );
-                        } else {
-                          return (
-                            <Link
-                              key={iconIndex}
-                              to={
-                                icon === EnvelopeIcon
-                                  ? "/inbox"
-                                  : icon === PaperAirplaneIcon
-                                  ? "/inbox"
-                                  : undefined
-                              }
-                            >
-                              <button>{icon}</button>
-                            </Link>
-                          );
-                        }
-                      }
-                    )}
-                  </div>
-                </div>
+          {tasksToDisplay.length > 0 ? (
+            tasksToDisplay.map((task, i) => (
+              <div
+                key={i}
+                className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
+              >
+                <div className="flex justify-between ">
+                  <div>
+                    <p className="text-black text-sm mb-1">{task.title}</p>
+                    <p className="text-slate text-sm mb-1 mt-4">
+                      {task.description}
+                    </p>
+                    <div className="flex flex-1 gap-6 mt-4">
+                      {[CheckCircle, PencilAlt, TrashIcon].map(
+                        (icon, iconIndex) => (
+                          <button
+                            key={iconIndex}
+                            onClick={() => {
+                              if (icon === CheckCircle) {
+                                handleTaskAction(
+                                  task.taskId,
 
-                <div>
-                  <div className="flex gap-2">
-                    <button>{CalendarIcon}</button>
-                    <p className="text-black">{task.date}</p>
+                                  "Completed"
+                                );
+                              } else if (icon === PencilAlt) {
+                                handleClick(task.taskId);
+                              } else if (icon === TrashIcon) {
+                                handleTaskAction(
+                                  task.taskId,
+
+                                  "Delete"
+                                );
+                              }
+                            }}
+                          >
+                            {icon}
+                          </button>
+                        )
+                      )}
+                      <span className="border-r-2"></span>
+                      {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
+                        (icon, iconIndex) => (
+                          <Link
+                            key={iconIndex}
+                            to={
+                              icon === EnvelopeIcon
+                                ? "/inbox"
+                                : icon === PhoneIcon
+                                ? "/inbox"
+                                : undefined
+                            }
+                            params={{ taskId: task.taskId }}
+                          >
+                            <button>{icon}</button>
+                          </Link>
+                        )
+                      )}
+                      {/* {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
+                        (icon, iconIndex) => {
+                          if (icon === PhoneIcon) {
+                            return (
+                              <a key={iconIndex} href={`tel:${task.phone}`}>
+                                <button>{icon}</button>
+                              </a>
+                            );
+                          } else {
+                            return (
+                              <Link
+                                key={iconIndex}
+                                to={
+                                  icon === EnvelopeIcon
+                                    ? "/inbox"
+                                    : icon === PaperAirplaneIcon
+                                    ? "/inbox"
+                                    : undefined
+                                }
+                              >
+                                <button>{icon}</button>
+                              </Link>
+                            );
+                          }
+                        }
+                      )} */}
+                    </div>
                   </div>
-                  <div className="flex gap-2 mt-4">
-                    <button>{LinkIcon}</button>
-                    <p className="text-black">Order {task._id}</p>
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <button>{BuildingIcon}</button>
-                    <p className="text-black">{task.name}</p>
+
+                  <div>
+                    <div className="flex gap-2">
+                      <button>{CalendarIcon}</button>
+                      <p className="text-black">{task.task_date}</p>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <button>{LinkIcon}</button>
+                      <p className="text-black">Order {task.taskId}</p>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <button>{BuildingIcon}</button>
+                      <p className="text-black">{task.name}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="py-40 px-96 ">Fetching Tasks Available.</p>
+          )}
         </div>
       </div>
     </>

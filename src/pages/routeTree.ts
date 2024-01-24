@@ -9,7 +9,7 @@ import {
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
-import { getTaskQuery } from "../services/queries/taskQueries";
+import { getTaskOption } from "../services/queries/taskQueries";
 import { getOrderQuery } from "../services/queries/orderQueries";
 import { z } from "zod";
 import {
@@ -94,12 +94,9 @@ const tasksRoute = new Route({
   component: lazyRouteComponent(() => import("./dashboard/Tasks")),
 });
 
-const tasksIndexRoute = new Route({
+export const tasksIndexRoute = new Route({
   getParentRoute: () => tasksRoute,
   path: "/",
-  // beforeLoad: async () => {
-  //   throw redirect({ to: "/tasks/all" });
-  // },
   component: lazyRouteComponent(
     () => import("../components/dashboard/tasks/DashboardTasks")
   ),
@@ -108,12 +105,10 @@ const tasksIndexRoute = new Route({
 export const taskRoute = new Route({
   getParentRoute: () => tasksRoute,
   path: "$taskId",
-  beforeLoad: async ({ params: { taskId } }) => {
-    if (isNaN(+taskId)) throw redirect({ to: "/tasks" });
-    return { queryOptions: getTaskQuery(taskId) };
-  },
-  loader: async ({ context: { queryClient, queryOptions } }) => {
-    queryClient.ensureQueryData(queryOptions).catch(console.log);
+  parseParams: ({ taskId }) => ({ taskId: Number(taskId) }),
+  stringifyParams: ({ taskId }) => ({ taskId: `${taskId}` }),
+  loader: async ({ context: { queryClient }, params: { taskId } }) => {
+    queryClient.ensureQueryData(getTaskOption(taskId)).catch(console.log);
   },
   component: lazyRouteComponent(() => import("./dashboard/NewTask")),
 });

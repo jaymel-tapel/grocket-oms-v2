@@ -1,156 +1,189 @@
 import {
-  UseMutationOptions,
-  UseQueryOptions,
+  queryOptions,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import axios from "axios";
+import { getHeaders } from "../../utils/utils";
+import { taskSchema } from "../../components/dashboard/tasks/TaskForm";
 
-const temporaryTasks = [
-  {
-    _id: "111",
-    name: "Mr. Restaurant",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Order",
-  },
-  {
-    _id: "112",
-    name: "Grain and Rice Inc.",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Order",
-  },
-  {
-    _id: "113",
-    name: "Big Tower Corp",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Completed",
-  },
-  {
-    _id: "114",
-    name: "Shanghai Dine",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Order",
-  },
-  {
-    _id: "115",
-    name: "Corn Bits Corp",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Order",
-  },
-  {
-    _id: "116",
-    name: "Legacy Corp",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Completed",
-  },
-  {
-    _id: "117",
-    name: "Grab Foods",
-    title: "Payment Reminder",
-    email: "testemail@gmail.com",
-    phone: "0171 1234567",
-    description: "This is the description",
-    note: "lurem ipsum dolor sit amet",
-    date: "2023-01-14 4:00:00 PM",
-    type: "Order",
-  },
-];
+const API_URL = import.meta.env.VITE_API_URL;
+const TASKS_URL = API_URL + "/tasks";
 
-type Tasks = typeof temporaryTasks;
-
-const getAllTasks = (): Tasks => {
-  // replace with axios api call later
-  return temporaryTasks;
+export type Tasks = {
+  id: number;
+  taskId: number;
+  name: string;
+  task_date: string;
+  title: string;
+  description: string;
+  remarks: string;
+  email: string;
+  note: string;
+  taskNotes: { note: string };
+  taskAccountant: {
+    taskId: number;
+    description: string;
+    email: string;
+    remarks: string;
+    task_date: string;
+    title: string;
+  } | null;
+  taskSeller: {
+    taskId: number;
+    description: string;
+    email: string;
+    remarks: string;
+    task_date: string;
+    title: string;
+  } | null;
 };
 
-export const getTaskQuery = (taskId: string): UseQueryOptions => {
+type TaskResponse = {
+  nodes: Tasks[];
+};
+
+export type TasksParams = {
+  first?: number;
+  last?: number;
+  after?: number;
+  before?: number;
+  completed?: boolean;
+};
+
+// -- Get Tasks
+
+const getAllTasksActive = async (
+  params?: TasksParams
+): Promise<TaskResponse> => {
+  const response = await axios.get(TASKS_URL, {
+    params,
+    headers: getHeaders(),
+  });
+
+  return response.data;
+};
+
+const getAllTasksCompleted = async (
+  params?: TasksParams
+): Promise<TaskResponse> => {
+  const response = await axios.get(TASKS_URL, {
+    params: { ...params, completed: true },
+    headers: getHeaders(),
+  });
+
+  return response.data;
+};
+
+const getTasks = async (id: number): Promise<Tasks> => {
+  const response = await axios.get(TASKS_URL + `/${id}`, {
+    headers: getHeaders(),
+  });
+
+  return response.data;
+};
+
+export const getAllTaskOptionActive = (taskId?: number) => {
   return {
-    enabled: !isNaN(+taskId),
-    queryKey: ["tasks", taskId],
-    queryFn: async () => {
-      return temporaryTasks.find((task) => task._id === taskId);
-    },
+    queryKey: ["tasksActive", taskId],
+    queryFn: () => getAllTasksActive(),
+    initialData: { nodes: [] },
   };
 };
 
-export const useGetAllTasks = () => {
-  return useQuery({
-    queryKey: ["tasks"],
-    queryFn: getAllTasks,
+export const getAllTaskOptionCompleted = (taskId?: number) => {
+  return {
+    queryKey: ["tasksCompleted", taskId],
+    queryFn: () => getAllTasksCompleted(),
+    initialData: { nodes: [] },
+  };
+};
+
+export const getTaskOption = (id: number) => {
+  return queryOptions({
+    enabled: id ? !isNaN(id) : false,
+    queryKey: ["tasks", id],
+    queryFn: () => getTasks(id),
   });
 };
 
-export const useGetTask = (taskId: string) => {
-  return useQuery(getTaskQuery(taskId));
+export const useGetAllTasksActive = (taskId?: number) => {
+  return useQuery(getAllTaskOptionActive(taskId));
 };
 
-export type Task = (typeof temporaryTasks)[number];
+export const useGetAllTasksCompleted = (taskId?: number) => {
+  return useQuery(getAllTaskOptionCompleted(taskId));
+};
 
-export const useCompleteTask = () => {
+export const useGetTask = (id: number) => {
+  return useQuery(getTaskOption(id));
+};
+
+// -- Post Tasks
+
+export const useCreateTasks = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (taskId: string) => {
-      const updatedTasks = temporaryTasks.map((task) =>
-        task._id === taskId ? { ...task, type: "Completed" } : task
-      );
-      const foundTask = updatedTasks.find(
-        (task) => task._id === taskId
-      ) as Task;
-      queryClient.setQueryData<Task[]>(["tasks"], (oldTasks) => {
-        return oldTasks
-          ? oldTasks.map((task) =>
-              task._id === foundTask._id ? { ...task, type: "Completed" } : task
-            )
-          : [];
-      });
+    mutationFn: async (payload: taskSchema) => {
+      return await axios.post(TASKS_URL, payload, { headers: getHeaders() });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 };
+
+// -- Patch Tasks
+
+export const useUpdateTasks = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: { taskId: number; payload: taskSchema }) => {
+      return await axios.patch(TASKS_URL + `/${arg.taskId}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+};
+
+// -- Update for Completing tasks
+
+export const useCompleteTasks = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return await axios.patch(
+        TASKS_URL + `/complete/${id}`,
+        {},
+        { headers: getHeaders() }
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+};
+
+// -- delete tasks
 
 export const useDeleteTask = () => {
   const queryClient = useQueryClient();
 
-  const mutationOptions: UseMutationOptions<{ _id: string }, Error, string> = {
-    mutationFn: async (taskId: string) => {
-      return { _id: taskId };
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData<Task[]>(["tasks"], (oldTasks) => {
-        return oldTasks ? oldTasks.filter((task) => task._id !== data._id) : [];
+  return useMutation({
+    mutationFn: async (taskId: number) => {
+      return await axios.delete(TASKS_URL + `/${taskId}`, {
+        headers: getHeaders(),
       });
     },
-  };
-
-  return useMutation<{ _id: string }, Error, string>(mutationOptions);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 };
