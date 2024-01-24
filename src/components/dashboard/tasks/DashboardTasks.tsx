@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -13,32 +13,31 @@ import {
 import {
   useCompleteTasks,
   useDeleteTask,
-  useGetAllTasks,
+  useGetAllTasksActive,
+  useGetAllTasksCompleted,
 } from "../../../services/queries/taskQueries";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "../../tools/buttons/Button";
+import Spinner from "../../tools/spinner/Spinner";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
   const {
-    data: { nodes: tasks = [] } = {},
-    isLoading,
-    isError,
-  } = useGetAllTasks();
+    data: { nodes: tasksActive = [] } = {},
+    isLoading: activeLoading,
+    isError: activeError,
+  } = useGetAllTasksActive();
+
+  const {
+    data: { nodes: tasksCompleted = [] } = {},
+    isLoading: completedLoading,
+    isError: completedError,
+  } = useGetAllTasksCompleted();
   const { mutateAsync: completeTask } = useCompleteTasks();
   const { mutateAsync: deleteTask } = useDeleteTask();
 
-  const filterTasks = useMemo(() => {
-    if (!tasks) return [];
-
-    if (activeButton === "currentTasks") {
-      return tasks.filter((task) => task.remarks === "Order");
-    } else if (activeButton === "completedTasks") {
-      return tasks.filter((task) => task.remarks === "Completed");
-    } else {
-      return tasks;
-    }
-  }, [tasks, activeButton]);
+  const tasksToDisplay =
+    activeButton === "currentTasks" ? tasksActive : tasksCompleted;
 
   const navigate = useNavigate();
 
@@ -56,14 +55,11 @@ const DashboardTasks: React.FC = () => {
   ) => {
     try {
       if (action === "Completed") {
-        await completeTask({ id: taskId });
+        await completeTask(taskId);
       } else if (action === "Delete") {
-        const existingTask = tasks.find((task) => task.id === taskId);
-        if (existingTask) {
-          await deleteTask({ id: taskId });
-        } else {
-          console.error(`Task with id ${taskId} not found.`);
-        }
+        await deleteTask(taskId);
+      } else {
+        console.error(`Invalid action: ${action}`);
       }
     } catch (error) {
       console.error(
@@ -73,11 +69,11 @@ const DashboardTasks: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return <p className="py-40 px-96 ">Loading...</p>;
+  if (activeLoading || completedLoading) {
+    return <Spinner className="py-40 px-96" />;
   }
 
-  if (isError) {
+  if (activeError || completedError) {
     return <p className="py-40 px-96 ">Error fetching tasks.</p>;
   }
 
@@ -104,19 +100,19 @@ const DashboardTasks: React.FC = () => {
             </Button>
           </div>
           <div className="">
-            <button
+            <Button
               type="button"
               className="rounded bg-chatBlue px-2 py-2 h-10 w-36 font-medium text-base text-white shadow-sm  hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#41B2E9]"
               onClick={handleTasks}
             >
               Add Task
-            </button>
+            </Button>
           </div>
         </div>
 
         <div>
-          {filterTasks.length > 0 ? (
-            filterTasks.map((task, i) => (
+          {tasksToDisplay.length > 0 ? (
+            tasksToDisplay.map((task, i) => (
               <div
                 key={i}
                 className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
@@ -134,11 +130,19 @@ const DashboardTasks: React.FC = () => {
                             key={iconIndex}
                             onClick={() => {
                               if (icon === CheckCircle) {
-                                handleTaskAction(task.id, "Completed");
+                                handleTaskAction(
+                                  task.taskId,
+
+                                  "Completed"
+                                );
                               } else if (icon === PencilAlt) {
-                                handleClick(task.id);
+                                handleClick(task.taskId);
                               } else if (icon === TrashIcon) {
-                                handleTaskAction(task.id, "Delete");
+                                handleTaskAction(
+                                  task.taskId,
+
+                                  "Delete"
+                                );
                               }
                             }}
                           >
@@ -158,7 +162,7 @@ const DashboardTasks: React.FC = () => {
                                 ? "/inbox"
                                 : undefined
                             }
-                            params={{ taskId: task.id }}
+                            params={{ taskId: task.taskId }}
                           >
                             <button>{icon}</button>
                           </Link>
@@ -200,7 +204,7 @@ const DashboardTasks: React.FC = () => {
                     </div>
                     <div className="flex gap-2 mt-4">
                       <button>{LinkIcon}</button>
-                      <p className="text-black">Order {task.id}</p>
+                      <p className="text-black">Order {task.taskId}</p>
                     </div>
                     <div className="flex gap-2 mt-4">
                       <button>{BuildingIcon}</button>

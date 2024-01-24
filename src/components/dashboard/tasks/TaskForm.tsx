@@ -8,6 +8,9 @@ import {
   useUpdateTasks,
 } from "../../../services/queries/taskQueries";
 import { taskRoute } from "../../../pages/routeTree";
+import { Button } from "../../tools/buttons/Button";
+import Spinner from "../../tools/spinner/Spinner";
+import { useEffect } from "react";
 
 const TaskSchema = z.object({
   name: z.string().optional(),
@@ -33,26 +36,44 @@ const TaskForm: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<taskSchema>({
     resolver: zodResolver(TaskSchema),
-    values: taskId
+    defaultValues: taskId
       ? {
+          ...tasks?.taskAccountant,
+          ...tasks?.taskSeller,
           task_date: tasks?.taskSeller?.task_date
             ? new Date(tasks.taskSeller.task_date).toLocaleDateString("en-CA")
+            : tasks?.taskAccountant?.task_date
+            ? new Date(tasks.taskAccountant.task_date).toLocaleDateString(
+                "en-CA"
+              )
             : "",
-          title: tasks?.taskSeller?.title || "",
-          description: tasks?.taskSeller?.description || "",
-          email: tasks?.taskSeller?.email || "",
-          remarks: tasks?.taskSeller?.remarks || "",
-          note: tasks?.taskNotes?.[0]?.note || "",
+          note: tasks?.taskNotes[0]?.note || "",
         }
       : undefined,
   });
 
+  useEffect(() => {
+    if (tasks) {
+      reset({
+        ...tasks?.taskAccountant,
+        ...tasks?.taskSeller,
+        task_date: tasks?.taskSeller?.task_date
+          ? new Date(tasks.taskSeller.task_date).toLocaleDateString("en-CA")
+          : tasks?.taskAccountant?.task_date
+          ? new Date(tasks.taskAccountant.task_date).toLocaleDateString("en-CA")
+          : "",
+        note: tasks?.taskNotes[0]?.note || "",
+      });
+    }
+  }, [taskId, tasks, reset]);
+
   const onSubmit: SubmitHandler<taskSchema> = async (data) => {
     try {
       const response = taskId
-        ? await updateTasks({ id: taskId, payload: data })
+        ? await updateTasks({ taskId, payload: data })
         : await createTasks(data);
 
       if (response.status === 200 || response.status === 201) {
@@ -224,20 +245,32 @@ const TaskForm: React.FC = () => {
 
             <li className="mr-20 mb-12">
               <div className="flex justify-end  mb-4 gap-4 max-sm:justify-center">
-                <button
+                <Button
                   onClick={handleClose}
                   className="border rounded-md bg-white text-black px-8 h-10"
                 >
                   Cancel
-                </button>
+                </Button>
 
-                <button
+                <Button
                   type="submit"
                   className="border rounded-md bg-[#3C50E0] text-white  h-10 px-8"
                   disabled={isCreating || isUpdating}
                 >
-                  {isCreating ? "Submit" : isUpdating ? "Updating" : "Submit"}
-                </button>
+                  {isCreating ? (
+                    <>
+                      Submit
+                      <Spinner />
+                    </>
+                  ) : isUpdating ? (
+                    <>
+                      Updating
+                      <Spinner />
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
               </div>
             </li>
           </ul>

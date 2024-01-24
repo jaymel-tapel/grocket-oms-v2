@@ -13,6 +13,7 @@ const TASKS_URL = API_URL + "/tasks";
 
 export type Tasks = {
   id: number;
+  taskId: number;
   name: string;
   task_date: string;
   title: string;
@@ -20,8 +21,17 @@ export type Tasks = {
   remarks: string;
   email: string;
   note: string;
-  taskNotes: {};
+  taskNotes: { note: string };
+  taskAccountant: {
+    taskId: number;
+    description: string;
+    email: string;
+    remarks: string;
+    task_date: string;
+    title: string;
+  } | null;
   taskSeller: {
+    taskId: number;
     description: string;
     email: string;
     remarks: string;
@@ -39,14 +49,27 @@ export type TasksParams = {
   last?: number;
   after?: number;
   before?: number;
+  completed?: boolean;
 };
 
 // -- Get Tasks
 
-const getAllTasks = async (params?: TasksParams): Promise<TaskResponse> => {
-  // replace with axios api call later
+const getAllTasksActive = async (
+  params?: TasksParams
+): Promise<TaskResponse> => {
   const response = await axios.get(TASKS_URL, {
     params,
+    headers: getHeaders(),
+  });
+
+  return response.data;
+};
+
+const getAllTasksCompleted = async (
+  params?: TasksParams
+): Promise<TaskResponse> => {
+  const response = await axios.get(TASKS_URL, {
+    params: { ...params, completed: true },
     headers: getHeaders(),
   });
 
@@ -61,10 +84,19 @@ const getTasks = async (id: number): Promise<Tasks> => {
   return response.data;
 };
 
-export const getAllTaskOption = (taskId?: number) => {
+export const getAllTaskOptionActive = (taskId?: number) => {
   return {
-    queryKey: ["tasks", taskId],
-    queryFn: () => getAllTasks(),
+    queryKey: ["tasksActive", taskId],
+    queryFn: () => getAllTasksActive(),
+    initialData: { nodes: [] },
+  };
+};
+
+export const getAllTaskOptionCompleted = (taskId?: number) => {
+  return {
+    queryKey: ["tasksCompleted", taskId],
+    queryFn: () => getAllTasksCompleted(),
+    initialData: { nodes: [] },
   };
 };
 
@@ -76,8 +108,12 @@ export const getTaskOption = (id: number) => {
   });
 };
 
-export const useGetAllTasks = (taskId?: number) => {
-  return useQuery(getAllTaskOption(taskId));
+export const useGetAllTasksActive = (taskId?: number) => {
+  return useQuery(getAllTaskOptionActive(taskId));
+};
+
+export const useGetAllTasksCompleted = (taskId?: number) => {
+  return useQuery(getAllTaskOptionCompleted(taskId));
 };
 
 export const useGetTask = (id: number) => {
@@ -105,8 +141,8 @@ export const useUpdateTasks = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (arg: { id: number; payload: taskSchema }) => {
-      return await axios.patch(TASKS_URL + `/${arg.id}`, arg.payload, {
+    mutationFn: async (arg: { taskId: number; payload: taskSchema }) => {
+      return await axios.patch(TASKS_URL + `/${arg.taskId}`, arg.payload, {
         headers: getHeaders(),
       });
     },
@@ -122,9 +158,9 @@ export const useCompleteTasks = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (arg: { id: number }) => {
+    mutationFn: async (id: number) => {
       return await axios.patch(
-        TASKS_URL + `/complete/${arg.id}`,
+        TASKS_URL + `/complete/${id}`,
         {},
         { headers: getHeaders() }
       );
@@ -141,12 +177,12 @@ export const useDeleteTask = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (arg: { id: number }) => {
-      return axios.delete(TASKS_URL + `/${arg.id}`, {
+    mutationFn: async (taskId: number) => {
+      return await axios.delete(TASKS_URL + `/${taskId}`, {
         headers: getHeaders(),
       });
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
