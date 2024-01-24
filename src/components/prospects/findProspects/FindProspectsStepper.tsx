@@ -18,8 +18,13 @@ const FindProspectsStepper = () => {
   } = useFindProspectsContext();
 
   const isStepDone = useMemo(() => {
-    return [!isEmpty(prospectFinder), prospects.length > 0, true, true];
-  }, [prospectFinder, prospects]);
+    return [
+      !isEmpty(prospectFinder),
+      prospects.length > 0,
+      currentStep >= 3,
+      currentStep >= 4,
+    ];
+  }, [prospectFinder, prospects, currentStep]);
 
   const handleClick = (step: number) => {
     setStep(step);
