@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -25,20 +25,20 @@ const DashboardTasks: React.FC = () => {
     isLoading,
     isError,
   } = useGetAllTasks();
-  const { mutateAsync: completeTaskAsync } = useCompleteTasks();
+  const { mutateAsync: completeTask } = useCompleteTasks();
   const { mutateAsync: deleteTask } = useDeleteTask();
 
-  // const filterTasks = useMemo(() => {
-  //   if (!tasks) return [];
+  const filterTasks = useMemo(() => {
+    if (!tasks) return [];
 
-  //   if (activeButton === "currentTasks") {
-  //     return tasks.filter((task) => task.remarks === "Order");
-  //   } else if (activeButton === "completedTasks") {
-  //     return tasks.filter((task) => task.remarks === "Completed" || "Complete");
-  //   } else {
-  //     return tasks;
-  //   }
-  // }, [tasks, activeButton]);
+    if (activeButton === "currentTasks") {
+      return tasks.filter((task) => task.remarks === "Order");
+    } else if (activeButton === "completedTasks") {
+      return tasks.filter((task) => task.remarks === "Completed");
+    } else {
+      return tasks;
+    }
+  }, [tasks, activeButton]);
 
   const navigate = useNavigate();
 
@@ -56,7 +56,7 @@ const DashboardTasks: React.FC = () => {
   ) => {
     try {
       if (action === "Completed") {
-        await completeTaskAsync({ id: taskId });
+        await completeTask({ id: taskId });
       } else if (action === "Delete") {
         const existingTask = tasks.find((task) => task.id === taskId);
         if (existingTask) {
@@ -115,8 +115,8 @@ const DashboardTasks: React.FC = () => {
         </div>
 
         <div>
-          {tasks.length > 0 ? (
-            tasks.map((task, i) => (
+          {filterTasks.length > 0 ? (
+            filterTasks.map((task, i) => (
               <div
                 key={i}
                 className="rounded-sm mt-9 border shadow-lg border-stroke  shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white"
