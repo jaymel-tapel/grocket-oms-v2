@@ -16,7 +16,7 @@ const TablePaginationLocal: React.FC<PaginationProps> = ({
 }) => {
   const pages = useMemo(() => {
     const totalPage = Math.ceil(totalItems / itemsPerPage);
-    return getPaginationRange(totalPage, currentPage, itemsPerPage, 1);
+    return getPaginationRange(totalPage, currentPage, 1);
   }, [currentPage, totalItems, itemsPerPage]);
 
   const itemIndexes = useMemo(() => {

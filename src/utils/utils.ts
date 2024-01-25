@@ -67,7 +67,6 @@ export const isEmpty = (obj: object) => {
 export const getPaginationRange = (
   totalPage: number,
   page: number,
-  itemsPerPage: number,
   siblings: number
 ) => {
   const totalPageNumber = 7 + siblings;
