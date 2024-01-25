@@ -6,8 +6,12 @@ type FormProps = {
 };
 
 const FindProspectsFormStep4: React.FC<FormProps> = ({ children }) => {
+  const handleSubmmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmmit}>
       <SelectedProspectsTable />
       {children}
     </form>

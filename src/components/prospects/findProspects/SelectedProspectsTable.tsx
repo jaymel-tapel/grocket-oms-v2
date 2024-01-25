@@ -12,13 +12,14 @@ import Spinner from "../../tools/spinner/Spinner";
 const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE", "EMAIL(S)"];
 
 const SelectedProspectsTable = () => {
-  const { selectedProspects, prospectsEmails } = useFindProspectsContext();
+  const { step, selectedProspects, prospectsEmails } =
+    useFindProspectsContext();
 
   const showEmails = useCallback(
     (index: number) => {
       const status = prospectsEmails[index]?.status;
 
-      if (status === "queued") {
+      if (status === "queued" && step === 3) {
         return "Queued";
       } else if (status === "pending") {
         return "In Progress";
@@ -28,10 +29,10 @@ const SelectedProspectsTable = () => {
       } else if (status === "error") {
         return "Error";
       } else {
-        return "";
+        return "Skipped";
       }
     },
-    [prospectsEmails]
+    [prospectsEmails, step]
   );
 
   return (

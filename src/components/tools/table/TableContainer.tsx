@@ -13,7 +13,7 @@ const TableContainer: React.FC<IsProps> = ({
 }) => {
   return (
     <div
-      className={`${className} bg-white border-x border-t focus:outline-none ${
+      className={`${className} bg-white border-x border-t focus:outline-none divide-y divide-gray-300 ${
         shadowOff ? "" : "shadow-md"
       }`}
     >
