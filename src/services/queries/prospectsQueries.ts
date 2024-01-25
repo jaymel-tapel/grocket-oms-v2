@@ -54,7 +54,7 @@ export const useScrapeProspects = () => {
 };
 
 export const useScrapeProspectEmails = () => {
-  const { selectedProspects, prospectsEmails, setProspectsEmail } =
+  const { setStep, selectedProspects, prospectsEmails, setProspectsEmail } =
     useFindProspectsContext();
 
   const scrapeEmailsQuery = useMutation({
@@ -109,6 +109,8 @@ export const useScrapeProspectEmails = () => {
         });
       }
     }
+
+    setStep(4);
   };
 
   const stopScrapeEmails = () => {
