@@ -15,10 +15,11 @@ const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
   const { setStep, selectedProspects, setProspectsEmail } =
     useFindProspectsContext() as FindProspectsContext;
 
-  const { scrapeEmails } = useScrapeProspectEmails();
+  const { scrapeEmails, stopScrapeEmails } = useScrapeProspectEmails();
 
   const handleSubmmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    stopScrapeEmails();
     setStep(4);
   };
 

@@ -90,6 +90,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
               type="number"
               id="prospectLimit"
               defaultValue={prospectFinder.limit}
+              max={1000}
               {...register("limit", {
                 onChange: (e) => handleChange("limit", e.target.value),
               })}

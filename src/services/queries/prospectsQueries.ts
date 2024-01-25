@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Step1Schema } from "../../components/prospects/findProspects/FindProspectsFormStep1";
 import { useFindProspectsContext } from "../../components/prospects/findProspects/FindProspectsContext";
+import { useRef } from "react";
 
 // const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = import.meta.env.VITE_SCRAPER_API_URL + "/api";
@@ -88,30 +89,34 @@ export const useScrapeProspectEmails = () => {
     },
   });
 
-  // const mutations = selectedProspects
-  //   .filter((prospect) => prospect.website)
-  //   .map((prospect, index) => {
-  //     return scrapeEmailsQuery.mutateAsync({
-  //       payload: { url: prospect.website },
-  //       index,
-  //     });
-  //   });
+  const stopScrapingRef = useRef(false);
 
   const scrapeEmails = async () => {
+    stopScrapingRef.current = false;
+
     for (const prospect of selectedProspects.filter(
       (prospect) => prospect.website
     )) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-
       const index = selectedProspects.indexOf(prospect);
-      await scrapeEmailsQuery.mutateAsync({
-        payload: { url: prospect.website },
-        index,
-      });
+
+      if (stopScrapingRef.current) {
+        break;
+      } else {
+        await scrapeEmailsQuery.mutateAsync({
+          payload: { url: prospect.website },
+          index,
+        });
+      }
     }
+  };
+
+  const stopScrapeEmails = () => {
+    stopScrapingRef.current = true;
   };
 
   return {
     scrapeEmails,
+    stopScrapeEmails,
   };
 };
