@@ -43,22 +43,48 @@ const FindProspectsForm = () => {
 
 export default FindProspectsForm;
 
-const csvColumns = [
-  ["Business Name", "Rating", "Phone", "Website", "Email(s)"],
-];
+const csvColumns = [["Business Name", "Rating", "Phone", "Website", "Email"]];
 
 const ProspectFormNavigation = () => {
   const { step, setStep, selectedProspects, prospectsEmails } =
     useFindProspectsContext();
 
   const finalCsvData = useMemo(() => {
-    const mappedData = selectedProspects.map((prospect, index) => [
-      prospect.businessName,
-      prospect.rating,
-      prospect.phone,
-      prospect.website,
-      prospectsEmails[index]?.emails?.join(", "),
-    ]);
+    // const mappedData = selectedProspects.map((prospect, index) => [
+    //   prospect.businessName,
+    //   prospect.rating,
+    //   prospect.phone,
+    //   prospect.website,
+    //   prospectsEmails[index]?.emails?.join(", "),
+    // ]);
+
+    const mappedData: Array<string[]> = [];
+
+    selectedProspects.forEach((prospect, index) => {
+      const emails = prospectsEmails[index]?.emails || [];
+
+      if (emails?.length > 0) {
+        // Add a row for each email
+        emails.forEach((email) => {
+          mappedData.push([
+            prospect.businessName,
+            prospect.rating,
+            prospect.phone,
+            prospect.website,
+            email,
+          ]);
+        });
+      } else {
+        // If there are no emails, add a single row
+        mappedData.push([
+          prospect.businessName,
+          prospect.rating,
+          prospect.phone,
+          prospect.website,
+          "",
+        ]);
+      }
+    });
 
     return csvColumns.concat(mappedData);
   }, [prospectsEmails, selectedProspects]);
@@ -81,7 +107,7 @@ const ProspectFormNavigation = () => {
           <Button
             type="button"
             variant={"lightBlue"}
-            onClick={(e) => e.stopPropagation()}
+            // onClick={(e) => e.stopPropagation()}
           >
             <CSVLink data={finalCsvData} filename={"oms-prospects.csv"}>
               Export CSV
