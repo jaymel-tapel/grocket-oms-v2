@@ -7,8 +7,9 @@ import {
   User,
   useUpdateUserPhoto,
 } from "../../../services/queries/accountsQueries";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import Spinner from "../../tools/spinner/Spinner";
+import { useUpdateProfilePhoto } from "../../../services/queries/userQueries";
 
 type ImageFile = File & {
   preview: string;
@@ -20,7 +21,11 @@ type FormProps = {
 
 const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
   const navigate = useNavigate();
+  const { location } = useRouterState();
   const { mutateAsync: updatePhoto, isPending } = useUpdateUserPhoto();
+  const { mutateAsync: updateProfilePhoto, isPending: isUpdating } =
+    useUpdateProfilePhoto();
+
   const [imageFile, setImageFile] = useState<ImageFile | null>(null);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     maxFiles: 1,
@@ -54,13 +59,17 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
     const formData = new FormData();
     formData.append("image", acceptedFiles[0]);
 
-    const response = await updatePhoto({
-      id: user.id,
-      payload: formData,
-    });
+    if (location.pathname.includes("users_manager")) {
+      const response = await updatePhoto({
+        id: user.id,
+        payload: formData,
+      });
 
-    if (response.status === 200) {
-      navigate({ to: "/accounts/users_manager" });
+      if (response.status === 200) {
+        navigate({ to: "/accounts/users_manager" });
+      }
+    } else if (location.pathname === "/profile") {
+      await updateProfilePhoto({ id: user.id, payload: formData });
     }
   };
 
@@ -128,10 +137,10 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
           </Button>
           <Button
             type="button"
-            disabled={acceptedFiles.length === 0 || isPending}
+            disabled={acceptedFiles.length === 0 || isPending || isUpdating}
             onClick={handleSave}
           >
-            {isPending ? (
+            {isPending || isUpdating ? (
               <>
                 <Spinner /> Saving
               </>

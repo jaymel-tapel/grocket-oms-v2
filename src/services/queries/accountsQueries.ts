@@ -7,6 +7,7 @@ import {
 import axios from "axios";
 import { getHeaders } from "../../utils/utils";
 import { UserFormSchema } from "../../components/accounts/usersManager/UserForm";
+import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const USERS_URL = API_URL + "/users";
@@ -98,6 +99,9 @@ export const useCreateAccount = () => {
     mutationFn: async (payload: UserFormSchema) => {
       return await axios.post(USERS_URL, payload, { headers: getHeaders() });
     },
+    onSuccess: () => {
+      toast.success("Created account successfully!");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
@@ -115,6 +119,9 @@ export const useUpdateUserPhoto = () => {
         { headers: getHeaders() }
       );
     },
+    onSuccess: () => {
+      toast.success("User photo updated!");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
@@ -131,6 +138,9 @@ export const useUpdateAccount = () => {
       return await axios.patch(USERS_URL + `/${arg.id}`, arg.payload, {
         headers: getHeaders(),
       });
+    },
+    onSuccess: () => {
+      toast.success("User profile updated!");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
