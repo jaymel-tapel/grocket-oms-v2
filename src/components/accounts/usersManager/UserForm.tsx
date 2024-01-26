@@ -5,7 +5,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../tools/buttons/Button";
@@ -14,8 +14,9 @@ import {
   useCreateAccount,
   useUpdateAccount,
 } from "../../../services/queries/accountsQueries";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import Spinner from "../../tools/spinner/Spinner";
+import { useUpdateProfile } from "../../../services/queries/userQueries";
 
 const ROLES = ["ADMIN", "ACCOUNTANT", "SELLER"];
 
@@ -26,21 +27,43 @@ const userFormSchema = z.object({
     .string()
     .min(8, { message: "Password must be at least 8 characters." })
     .optional(),
-  role: z.string(),
-  contact_url: z.string().optional(),
-  phone: z.string().optional(),
+  role: z.string().optional(),
+  contact_url: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
 });
 
 export type UserFormSchema = z.infer<typeof userFormSchema>;
 
 type FormProps = {
   user?: User;
-  userId: number;
+  userId?: number;
 };
 
 const UserForm: React.FC<FormProps> = ({ userId, user }) => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  const { location } = useRouterState();
+
+  // Check whether we're on profile page or users manager page
+  const isOnProfile = useMemo(() => {
+    if (location.pathname.includes("users_manager")) {
+      return false;
+    }
+
+    return true;
+  }, [location]);
+
+  // API calls used for Users Manager
+  const { mutateAsync: createAccount, isPending: isCreating } =
+    useCreateAccount();
+  const { mutateAsync: updateAccount, isPending: isUpdating } =
+    useUpdateAccount();
+
+  // API call used for Profile
+  const { mutateAsync: updateProfile, isPending: isUpdatingProfile } =
+    useUpdateProfile();
+
   const {
     register,
     handleSubmit,
@@ -50,18 +73,17 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
     values: userId ? user : undefined,
   });
 
-  const { mutateAsync: createAccount, isPending: isCreating } =
-    useCreateAccount();
-  const { mutateAsync: updateAccount, isPending: isUpdating } =
-    useUpdateAccount();
-
   const onSubmit: SubmitHandler<UserFormSchema> = async (data) => {
-    const response = userId
-      ? await updateAccount({ id: userId, payload: data })
-      : await createAccount(data);
+    if (isOnProfile) {
+      await updateProfile({ id: userId as number, payload: data });
+    } else if (!isOnProfile) {
+      const response = userId
+        ? await updateAccount({ id: userId, payload: data })
+        : await createAccount(data);
 
-    if (response.status === 200 || response.status === 201) {
-      navigate({ to: "/accounts/users_manager" });
+      if (response.status === 200 || response.status === 201) {
+        navigate({ to: "/accounts/users_manager" });
+      }
     }
   };
 
@@ -190,95 +212,106 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
         </div>
       </div>
 
-      <div className="p-8 flex flex-col border-y border-y-gray-300">
-        <span>Other Details</span>
-        <span className="text-xs text-gray-400">
-          Please provide additional information that may be relevant or required
-          based on the context
-        </span>
-      </div>
-
-      <div className="p-8 grid grid-cols-1 gap-4 border-b border-b-gray-300">
-        <div>
-          <label
-            htmlFor="role"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Role
-          </label>
-          <div className="mt-2">
-            <select
-              id="role"
-              autoComplete="off"
-              {...register("role")}
-              className={`capitalize block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                errors.role && "border-red-500"
-              }`}
-            >
-              <option disabled>Select Role</option>
-              {ROLES?.map((role, index) => {
-                return (
-                  <option value={`${role}`} key={index} className="capitalize">
-                    {role.toLocaleLowerCase()}
-                  </option>
-                );
-              })}
-            </select>
-            {errors.role && (
-              <p className="text-xs italic text-red-500 mt-2">
-                {errors.role?.message}
-              </p>
-            )}
+      {!isOnProfile && (
+        <>
+          <div className="p-8 flex flex-col border-y border-y-gray-300">
+            <span>Other Details</span>
+            <span className="text-xs text-gray-400">
+              Please provide additional information that may be relevant or
+              required based on the context
+            </span>
           </div>
-        </div>
 
-        {!userId && (
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Password
-            </label>
-            <div className="relative mt-2 rounded-md shadow-sm">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                className="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
-                {...register("password")}
-              />
-              <div
-                className="cursor-pointer absolute inset-y-0 right-0 flex items-center pr-3"
-                onClick={() => setShowPassword(!showPassword)}
+          <div className="p-8 grid grid-cols-1 gap-4 border-b border-b-gray-300">
+            <div>
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium leading-6 text-gray-900"
               >
-                {showPassword ? (
-                  <EyeIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <EyeSlashIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
+                Role
+              </label>
+              <div className="mt-2">
+                <select
+                  id="role"
+                  autoComplete="off"
+                  {...register("role")}
+                  className={`capitalize block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                    errors.role && "border-red-500"
+                  }`}
+                >
+                  <option disabled>Select Role</option>
+                  {ROLES?.map((role, index) => {
+                    return (
+                      <option
+                        value={`${role}`}
+                        key={index}
+                        className="capitalize"
+                      >
+                        {role.toLocaleLowerCase()}
+                      </option>
+                    );
+                  })}
+                </select>
+                {errors.role && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.role?.message}
+                  </p>
                 )}
               </div>
             </div>
-            {errors.password && (
-              <p className="text-xs italic text-red-500 mt-2">
-                {errors.password?.message}
-              </p>
+
+            {!userId && (
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Password
+                </label>
+                <div className="relative mt-2 rounded-md shadow-sm">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    className="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
+                    {...register("password")}
+                  />
+                  <div
+                    className="cursor-pointer absolute inset-y-0 right-0 flex items-center pr-3"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <EyeSlashIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
+                </div>
+                {errors.password && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.password?.message}
+                  </p>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       <div className="p-8 flex justify-end gap-4">
         <Button type="button" variant="noBorder">
           Cancel
         </Button>
-        <Button type="submit" disabled={isCreating || isUpdating}>
-          {isCreating || isUpdating ? (
+        <Button
+          type="submit"
+          disabled={isCreating || isUpdating || isUpdatingProfile}
+        >
+          {isCreating || isUpdating || isUpdatingProfile ? (
             <>
               <Spinner /> Submitting
             </>
