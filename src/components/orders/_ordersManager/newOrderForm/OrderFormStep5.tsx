@@ -7,7 +7,7 @@ type FormProps = {
   children: ReactNode;
 };
 
-const SummaryForm: React.FC<FormProps> = ({ children }) => {
+const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   const navigate = useNavigate();
   const { seller, client, company, reviews } = useOrderForm();
   const [remarks, setRemarks] = useState("");
@@ -158,4 +158,4 @@ const SummaryForm: React.FC<FormProps> = ({ children }) => {
   );
 };
 
-export default SummaryForm;
+export default OrderFormStep5;

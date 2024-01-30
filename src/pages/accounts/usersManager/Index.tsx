@@ -1,6 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "../../../components/tools/buttons/Button";
-import UsersManagersTable from "../../../components/accounts/usersManager/UsersManagersTable";
 import { useGetAllUsers } from "../../../services/queries/accountsQueries";
 import { useEffect, useMemo, useState } from "react";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
@@ -12,6 +11,7 @@ import {
   usersManagerFilters,
 } from "../../routeFilters";
 import { debounce } from "lodash";
+import UsersManagerTable from "../../../components/accounts/usersManager/UsersManagerTable";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -158,7 +158,7 @@ const Index = () => {
             />
           </div>
         </div>
-        <UsersManagersTable users={users.data} pagination={users.pagination} />
+        <UsersManagerTable users={users.data} pagination={users.pagination} />
       </div>
     </div>
   );

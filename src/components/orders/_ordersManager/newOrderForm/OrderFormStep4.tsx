@@ -15,7 +15,7 @@ type FormProps = {
   children: ReactNode;
 };
 
-const AddReviewsForm: React.FC<FormProps> = ({ children }) => {
+const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
   const { setStep, reviews, setReviews } = useOrderForm();
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
     "Select From Reviews"
@@ -117,4 +117,4 @@ const AddReviewsForm: React.FC<FormProps> = ({ children }) => {
   );
 };
 
-export default AddReviewsForm;
+export default OrderFormStep4;

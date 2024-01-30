@@ -10,11 +10,12 @@ import { useFindProspectsContext } from "./FindProspectsContext";
 import { Prospect } from "../../../services/queries/prospectsQueries";
 import { useIsMutating } from "@tanstack/react-query";
 import Spinner from "../../tools/spinner/Spinner";
-import TablePaginationLocal from "../../tools/table/TablePaginationLocal";
+import TablePagination, {
+  PaginationNavs,
+} from "../../tools/table/TablePagination";
 
 const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE"];
 const itemsPerPage = 10;
-type PageStringNavs = "first" | "last" | "prev" | "next";
 
 type TableProps = {
   // pagination: Pagination;
@@ -38,7 +39,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     return prospects.slice(firstProspectIndex, lastProspectIndex);
   }, [prospects, currentPage]);
 
-  const handlePageChange = (value: number | PageStringNavs) => {
+  const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
       setCurrentPage(value);
       return;
@@ -159,11 +160,12 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
           })}
         </TableBody>
       </Table>
-      <TablePaginationLocal
+      <TablePagination
         currentPage={currentPage}
         handlePageChange={handlePageChange}
         totalItems={prospects.length}
         itemsPerPage={itemsPerPage}
+        isFrontEndPagination={true}
       />
     </TableContainer>
   );

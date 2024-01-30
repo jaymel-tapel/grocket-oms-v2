@@ -1,12 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useOrderForm } from "./NewOrderFormContext";
 import OrderFormSteppers from "./OrderFormSteppers";
-import SelectClientForm from "./SelectClientForm";
-import SelectSellerForm from "./SelectSellerForm";
+import OrderFormStep1 from "./OrderFormStep1";
+import OrderFormStep2 from "./OrderFormStep2";
+import OrderFormStep3 from "./OrderFormStep3";
+import OrderFormStep4 from "./OrderFormStep4";
+import OrderFormStep5 from "./OrderFormStep5";
 import { Button } from "../../../tools/buttons/Button";
-import SelectCompanyForm from "./SelectCompanyForm";
-import AddReviewsForm from "./AddReviewsForm";
-import SummaryForm from "./SummaryForm";
 
 const NewOrderForm = () => {
   const { step } = useOrderForm();
@@ -17,29 +17,29 @@ const NewOrderForm = () => {
       <div className="mt-12 mb-8 border-t border-t-gray-300" />
       <div>
         {step === 1 && (
-          <SelectSellerForm>
+          <OrderFormStep1>
             <FormNavigation />
-          </SelectSellerForm>
+          </OrderFormStep1>
         )}
         {step === 2 && (
-          <SelectClientForm>
+          <OrderFormStep2>
             <FormNavigation />
-          </SelectClientForm>
+          </OrderFormStep2>
         )}
         {step === 3 && (
-          <SelectCompanyForm>
+          <OrderFormStep3>
             <FormNavigation />
-          </SelectCompanyForm>
+          </OrderFormStep3>
         )}
         {step === 4 && (
-          <AddReviewsForm>
+          <OrderFormStep4>
             <FormNavigation />
-          </AddReviewsForm>
+          </OrderFormStep4>
         )}
         {step === 5 && (
-          <SummaryForm>
+          <OrderFormStep5>
             <FormNavigation />
-          </SummaryForm>
+          </OrderFormStep5>
         )}
       </div>
     </div>

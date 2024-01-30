@@ -250,7 +250,7 @@ export const clientRoute = new Route({
 const newClientRoute = new Route({
   getParentRoute: () => clientsManagerRoute,
   path: "new",
-  component: lazyRouteComponent(() => import("./clients/AddNewClient")),
+  component: lazyRouteComponent(() => import("./clients/NewClient")),
 });
 
 const accountsRoute = new Route({
