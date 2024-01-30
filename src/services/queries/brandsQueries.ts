@@ -7,6 +7,7 @@ import {
 import axios from "axios";
 import { getHeaders } from "../../utils/utils";
 import { BrandFormSchema } from "../../components/brands/brandsManager/BrandsForm";
+import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BRANDS_URL = API_URL + "/brands";
@@ -17,7 +18,7 @@ export type Brands = {
   code: string;
   currency: string;
   address: string;
-  logo: string | undefined;
+  logo: undefined | string;
 };
 
 type BrandResponse = {
@@ -30,8 +31,6 @@ const getAllBrands = async (): Promise<BrandResponse> => {
     headers: getHeaders(),
   });
 
-  console.log("get All brands:", response.data);
-
   return response.data;
 };
 
@@ -39,8 +38,6 @@ const getBrands = async (id: number): Promise<Brands> => {
   const response = await axios.get(BRANDS_URL + `/${id}`, {
     headers: getHeaders(),
   });
-
-  console.log("get brands:", response.data);
 
   return response.data;
 };
@@ -94,6 +91,9 @@ export const useUpdateBrandLogo = () => {
         headers: getHeaders(),
       });
     },
+    onSuccess: () => {
+      toast.success(`Logo saved successfully`);
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
     },
@@ -108,6 +108,21 @@ export const useUpdateBrands = () => {
   return useMutation({
     mutationFn: async (arg: { id: number; payload: BrandFormSchema }) => {
       return await axios.patch(BRANDS_URL + `/${arg.id}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
+    },
+  });
+};
+
+export const useDeleteBrands = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return await axios.delete(BRANDS_URL + `/${id}`, {
         headers: getHeaders(),
       });
     },

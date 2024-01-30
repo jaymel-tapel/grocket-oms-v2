@@ -3,7 +3,7 @@ import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useDropzone } from "react-dropzone";
 import { Button } from "../../tools/buttons/Button";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import Spinner from "../../tools/spinner/Spinner";
 import {
   Brands,
@@ -18,8 +18,9 @@ type FormProps = {
   brands?: Brands;
 };
 
-const UserPhotoForm: React.FC<FormProps> = ({ brands }) => {
+const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
   const navigate = useNavigate();
+  const { location } = useRouterState();
   const { mutateAsync: updateLogo, isPending } = useUpdateBrandLogo();
   const [imageFile, setImageFile] = useState<ImageFile | null>(null);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -29,6 +30,7 @@ const UserPhotoForm: React.FC<FormProps> = ({ brands }) => {
     },
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
+      console.log("accept file zero:", file);
       setImageFile(Object.assign(file, { preview: URL.createObjectURL(file) }));
     },
   });
@@ -52,15 +54,16 @@ const UserPhotoForm: React.FC<FormProps> = ({ brands }) => {
     if (acceptedFiles.length === 0) return;
 
     const formData = new FormData();
-    formData.append("image", acceptedFiles[0]);
+    formData.append("logo", acceptedFiles[0]);
 
-    const response = await updateLogo({
-      id: brands.id,
-      payload: formData,
-    });
-
-    if (response.status === 200) {
-      navigate({ to: "/brands/brands_manager" });
+    if (location.pathname.includes("brands_manager")) {
+      const response = await updateLogo({
+        id: brands.id,
+        payload: formData,
+      });
+      if (response.status === 200) {
+        navigate({ to: "/brands/brands_manager" });
+      }
     }
   };
 
@@ -89,7 +92,7 @@ const UserPhotoForm: React.FC<FormProps> = ({ brands }) => {
             />
           )}
           <div className="flex flex-col gap-0.5">
-            <span>Upload your photo</span>
+            <span>Upload your Logo</span>
             <Button
               variant={"noBorder"}
               className="p-0 h-fit self-start text-red-500 text-xs"
@@ -147,4 +150,4 @@ const UserPhotoForm: React.FC<FormProps> = ({ brands }) => {
   );
 };
 
-export default UserPhotoForm;
+export default BrandsPhotoForm;

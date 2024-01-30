@@ -22,7 +22,6 @@ export type Tasks = {
   email: string;
   note: string;
   taks: { taskNotes: { note: string } };
-
   taskAccountant: {
     taskId: number;
     description: string;
