@@ -39,7 +39,7 @@ type FormProps = {
   children: ReactNode;
 };
 
-const SelectCompanyForm: React.FC<FormProps> = ({ children }) => {
+const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
   const { setStep, company, setCompany } = useOrderForm() as OrderFormContext;
   const {
     register,
@@ -241,4 +241,4 @@ const SelectCompanyForm: React.FC<FormProps> = ({ children }) => {
   );
 };
 
-export default SelectCompanyForm;
+export default OrderFormStep3;

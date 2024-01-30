@@ -8,13 +8,12 @@ import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { useFindProspectsContext } from "./FindProspectsContext";
 import Spinner from "../../tools/spinner/Spinner";
-import TablePaginationLocal from "../../tools/table/TablePaginationLocal";
+import TablePagination, {
+  PaginationNavs,
+} from "../../tools/table/TablePagination";
 
 const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE", "EMAIL(S)"];
-
 const itemsPerPage = 10;
-
-type PageStringNavs = "first" | "last" | "prev" | "next";
 
 const SelectedProspectsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,7 +27,7 @@ const SelectedProspectsTable = () => {
     return selectedProspects.slice(firstProspectIndex, lastProspectIndex);
   }, [selectedProspects, currentPage]);
 
-  const handlePageChange = (value: number | PageStringNavs) => {
+  const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
       setCurrentPage(value);
       return;
@@ -111,11 +110,12 @@ const SelectedProspectsTable = () => {
           })}
         </TableBody>
       </Table>
-      <TablePaginationLocal
+      <TablePagination
         currentPage={currentPage}
         handlePageChange={handlePageChange}
         totalItems={selectedProspects.length}
         itemsPerPage={itemsPerPage}
+        isFrontEndPagination={true}
       />
     </TableContainer>
   );
