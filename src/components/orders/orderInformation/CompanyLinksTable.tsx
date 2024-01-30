@@ -5,6 +5,7 @@ import TableRow from "../../tools/table/TableRow";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
+import TableContainer from "../../tools/table/TableContainer";
 
 const COLUMNS = ["ID", "COMPANY NAME", "URL", "ACTION"];
 
@@ -25,27 +26,29 @@ type CompanyLinksTableProps = {
 
 const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({ companies }) => {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {COLUMNS.map((col, index) => {
-            return <TableHeadCell key={index}>{col}</TableHeadCell>;
+    <TableContainer className="border-x-0 shadow-none">
+      <Table>
+        <TableHead>
+          <TableRow>
+            {COLUMNS.map((col, index) => {
+              return <TableHeadCell key={index}>{col}</TableHeadCell>;
+            })}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {companies.map((company, index) => {
+            return (
+              <TableRow key={index}>
+                <TableBodyCell>{company._id}</TableBodyCell>
+                <TableBodyCell>{company.name}</TableBodyCell>
+                <TableBodyCell>{company.url}</TableBodyCell>
+                {/* <TableBodyCell></TableBodyCell> */}
+              </TableRow>
+            );
           })}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {companies.map((company, index) => {
-          return (
-            <TableRow key={index}>
-              <TableBodyCell>{company._id}</TableBodyCell>
-              <TableBodyCell>{company.name}</TableBodyCell>
-              <TableBodyCell>{company.url}</TableBodyCell>
-              {/* <TableBodyCell></TableBodyCell> */}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

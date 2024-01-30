@@ -32,7 +32,7 @@ const handleLogout = () => {
 };
 
 const userNavigation = [
-  { name: "Your profile", to: "/accounts/users_manager/$userId" },
+  { name: "Your profile", to: "/profile" },
   { name: "Sign out", to: "/" },
 ] as const;
 

@@ -77,6 +77,12 @@ const protectedRoute = new Route({
   },
 });
 
+const profileRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  path: "profile",
+  component: lazyRouteComponent(() => import("./user/Profile")),
+});
+
 const dashboardRoute = new Route({
   getParentRoute: () => protectedRoute,
   path: "dashboard",
@@ -245,7 +251,7 @@ export const clientRoute = new Route({
 const newClientRoute = new Route({
   getParentRoute: () => clientsManagerRoute,
   path: "new",
-  component: lazyRouteComponent(() => import("./clients/AddNewClient")),
+  component: lazyRouteComponent(() => import("./clients/NewClient")),
 });
 
 const accountsRoute = new Route({
@@ -396,6 +402,7 @@ const routeTree = rootRoute.addChildren([
   newPasswordRoute,
 
   protectedRoute.addChildren([
+    profileRoute,
     dashboardRoute,
     inboxRoute,
     tasksRoute.addChildren([tasksIndexRoute, taskRoute, newTaskRoute]),

@@ -1,9 +1,3 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { ReactNode } from "react";
-
 const origins = [
   { _id: 1, name: "Test Origin 1" },
   { _id: 2, name: "Test Origin 2" },
@@ -16,46 +10,9 @@ const industries = [
   { _id: 3, name: "Test Industry 3" },
 ] as const;
 
-const selectClientSchema = z.object({
-  name: z.string(),
-  email: z.string().email().min(1, { message: "Invalid Email Address" }),
-  phone: z.string(),
-  third_party_id: z.string().optional(),
-  origin: z.coerce.number(),
-  industry: z.coerce.number(),
-  unit_cost: z.coerce.number(),
-});
-
-type SelectClientSchema = z.infer<typeof selectClientSchema>;
-
-type FormProps = {
-  children: ReactNode;
-};
-
-const SelectClientForm: React.FC<FormProps> = ({ children }) => {
-  const { setStep, client, setClient } = useOrderForm() as OrderFormContext;
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SelectClientSchema>({
-    resolver: zodResolver(selectClientSchema),
-  });
-
-  const handleChange = (field: keyof typeof client, value: string | number) => {
-    setClient((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
-    setClient(data);
-    setStep(3);
-  };
-
+function ClientFormInformation(props) {
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="">
+    <>
       <div className="flex flex-col gap-4 border-b border-b-gray-300">
         <div className="flex flex-col">
           <span className="font-bold text-sm">Client Information</span>
@@ -76,17 +33,14 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
               <input
                 type="text"
                 id="clientName"
-                defaultValue={client.name}
-                {...register("name", {
-                  onChange: (e) => handleChange("name", e.target.value),
-                })}
+                {...props.register("name")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.name && "border-red-500"
+                  props.errors.name && "border-red-500"
                 }`}
               />
-              {errors.name && (
+              {props.errors.name && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.name?.message}
+                  {props.errors.name?.message}
                 </p>
               )}
             </div>
@@ -102,17 +56,14 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
               <input
                 type="email"
                 id="clientEmail"
-                defaultValue={client.email}
-                {...register("email", {
-                  onChange: (e) => handleChange("email", e.target.value),
-                })}
+                {...props.register("email")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.email && "border-red-500"
+                  props.errors.email && "border-red-500"
                 }`}
               />
-              {errors.email && (
+              {props.errors.email && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.email?.message}
+                  {props.errors.email?.message}
                 </p>
               )}
             </div>
@@ -129,17 +80,14 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
               <input
                 type="text"
                 id="clientPhone"
-                defaultValue={client.phone}
-                {...register("phone", {
-                  onChange: (e) => handleChange("phone", e.target.value),
-                })}
+                {...props.register("phone")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.phone && "border-red-500"
+                  props.errors.phone && "border-red-500"
                 }`}
               />
-              {errors.phone && (
+              {props.errors.phone && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.phone?.message}
+                  {props.errors.phone?.message}
                 </p>
               )}
             </div>
@@ -157,10 +105,10 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
           </span>
         </div>
 
-        <div className="my-8 grid grid-cols-2 gap-x-12 gap-y-4">
+        <div className="mt-8 mb-4 grid grid-cols-2 gap-x-12 gap-y-4">
           <div>
             <label
-              htmlFor="third_party_id"
+              htmlFor="thirdPartyId"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               3rd Party Id
@@ -168,40 +116,33 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
             <div className="w-full mt-2">
               <input
                 type="text"
-                id="third_party_id"
-                defaultValue={client.third_party_id}
-                {...register("third_party_id", {
-                  onChange: (e) =>
-                    handleChange("third_party_id", e.target.value),
-                })}
+                id="thirdPartyId"
+                {...props.register("thirdPartyId")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.third_party_id && "border-red-500"
+                  props.errors.thirdPartyId && "border-red-500"
                 }`}
               />
-              {errors.third_party_id && (
+              {props.errors.thirdPartyId && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.third_party_id?.message}
+                  {props.errors.thirdPartyId?.message}
                 </p>
               )}
             </div>
           </div>
           <div>
             <label
-              htmlFor="origin"
+              htmlFor="sourceId"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Client Origin
             </label>
             <div className="mt-2">
               <select
-                id="origin"
+                id="sourceId"
                 autoComplete="off"
-                {...register("origin", {
-                  onChange: (e) =>
-                    handleChange("origin", parseInt(e.target.value)),
-                })}
+                {...props.register("sourceId")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.origin && "border-red-500"
+                  props.errors.sourceId && "border-red-500"
                 }`}
               >
                 <option disabled>Select Origin</option>
@@ -213,9 +154,9 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
                   );
                 })}
               </select>
-              {errors.origin && (
+              {props.errors.sourceId && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.origin?.message}
+                  {props.errors.sourceId?.message}
                 </p>
               )}
             </div>
@@ -223,21 +164,18 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
 
           <div>
             <label
-              htmlFor="industry"
+              htmlFor="industryId"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Industry
             </label>
             <div className="mt-2">
               <select
-                id="industry"
+                id="industryId"
                 autoComplete="off"
-                {...register("industry", {
-                  onChange: (e) =>
-                    handleChange("industry", parseInt(e.target.value)),
-                })}
+                {...props.register("industryId")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.industry && "border-red-500"
+                  props.errors.industryId && "border-red-500"
                 }`}
               >
                 <option disabled>Select Industry</option>
@@ -249,16 +187,16 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
                   );
                 })}
               </select>
-              {errors.industry && (
+              {props.errors.industryId && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.industry?.message}
+                  {props.errors.industryId?.message}
                 </p>
               )}
             </div>
           </div>
           <div>
             <label
-              htmlFor="unit_cost"
+              htmlFor="default_unit_cost"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Unit Cost
@@ -266,29 +204,23 @@ const SelectClientForm: React.FC<FormProps> = ({ children }) => {
             <div className="w-full mt-2">
               <input
                 type="number"
-                id="unit_cost"
-                defaultValue={client.unit_cost}
-                {...register("unit_cost", {
-                  onChange: (e) =>
-                    handleChange("unit_cost", parseFloat(e.target.value)),
-                })}
+                id="default_unit_cost"
+                {...props.register("default_unit_cost")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.unit_cost && "border-red-500"
+                  props.errors.default_unit_cost && "border-red-500"
                 }`}
               />
-              {errors.unit_cost && (
+              {props.errors.default_unit_cost && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.unit_cost?.message}
+                  {props.errors.default_unit_cost?.message}
                 </p>
               )}
             </div>
           </div>
         </div>
       </div>
-
-      {children}
-    </form>
+    </>
   );
-};
+}
 
-export default SelectClientForm;
+export default ClientFormInformation;
