@@ -1,4 +1,7 @@
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { getHeaders } from "../../utils/utils";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const temporaryOrders = [
   {
@@ -125,6 +128,9 @@ const temporaryOrders = [
 
 export type Orders = typeof temporaryOrders;
 
+const API_URL = import.meta.env.VITE_API_URL;
+const ORDERS_URL = API_URL + "/orders";
+
 const getAllOrders = (): Orders => {
   // replace with axios api call later
   return temporaryOrders;
@@ -149,4 +155,15 @@ export const useGetAllOrders = () => {
 
 export const useGetOrder = (orderId: string) => {
   return useQuery(getOrderQuery(orderId));
+};
+
+export const useCreateOrder = () => {
+  return useMutation({
+    mutationFn: async (payload: FormData) => {
+      return axios.post(ORDERS_URL, payload, { headers: getHeaders() });
+    },
+    onSuccess: () => {
+      toast.success("Order created!");
+    },
+  });
 };

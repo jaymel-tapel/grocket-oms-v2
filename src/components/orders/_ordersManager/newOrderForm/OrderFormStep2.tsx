@@ -19,7 +19,7 @@ const industries = [
 const selectClientSchema = z.object({
   name: z.string(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
-  phone: z.string(),
+  phone: z.string().optional(),
   third_party_id: z.string().optional(),
   origin: z.coerce.number(),
   industry: z.coerce.number(),
@@ -50,7 +50,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   };
 
   const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
-    setClient(data);
+    setClient({ ...data, phone: data.phone ?? "" });
     setStep(3);
   };
 

@@ -34,7 +34,7 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
       ...reviews,
       {
         name,
-        status: 5,
+        status: "NEU",
         _id: "temp",
       },
     ]);

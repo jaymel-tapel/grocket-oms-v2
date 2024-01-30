@@ -8,7 +8,6 @@ import { Review } from "../../orderInformation/OrderReviewsTable";
 // You still need a <OrderFormContext.Provider> above in the tree TO PROVIDE THE VALUE FOR THIS CONTEXT.
 
 type SelectSeller = {
-  date: string;
   name: string;
   email: string;
 };
@@ -36,16 +35,18 @@ export type OrderFormContext = {
   client: SelectClient;
   company: SelectCompany;
   reviews: Reviews;
+  orderDate: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setSeller: React.Dispatch<React.SetStateAction<SelectSeller>>;
   setClient: React.Dispatch<React.SetStateAction<SelectClient>>;
   setCompany: React.Dispatch<React.SetStateAction<SelectCompany>>;
   setReviews: React.Dispatch<React.SetStateAction<Reviews>>;
+  setOrderDate: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const OrderFormContext = createContext<OrderFormContext>({
   step: 1,
-  seller: { name: "", email: "", date: "" },
+  seller: { name: "", email: "" },
   client: {
     name: "",
     email: "",
@@ -57,11 +58,13 @@ export const OrderFormContext = createContext<OrderFormContext>({
   },
   company: { name: "", url: "" },
   reviews: [],
+  orderDate: "",
   setStep: () => {},
   setSeller: () => {},
   setClient: () => {},
   setCompany: () => {},
   setReviews: () => {},
+  setOrderDate: () => {},
 });
 
 export const useOrderForm = () => useContext(OrderFormContext);
@@ -75,7 +78,6 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
   const [seller, setSeller] = useState<SelectSeller>({
     name: "",
     email: "",
-    date: "",
   });
   const [client, setClient] = useState<SelectClient>({
     name: "",
@@ -88,6 +90,7 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
   });
   const [company, setCompany] = useState<SelectCompany>({ name: "", url: "" });
   const [reviews, setReviews] = useState<Reviews>([]);
+  const [orderDate, setOrderDate] = useState("");
 
   return (
     <OrderFormContext.Provider
@@ -97,11 +100,13 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
         client,
         company,
         reviews,
+        orderDate,
         setStep,
         setSeller,
         setClient,
         setCompany,
         setReviews,
+        setOrderDate,
       }}
     >
       {children}
