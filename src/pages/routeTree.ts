@@ -20,6 +20,7 @@ import {
   getAllClientsOptions,
   getClientOption,
 } from "../services/queries/clientsQueries";
+import { getBrandOption } from "../services/queries/brandsQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -348,6 +349,47 @@ const findProspectsRoute = new Route({
   component: lazyRouteComponent(() => import("./prospects/FindProspects")),
 });
 
+const brandsRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  path: "brands",
+  component: lazyRouteComponent(() => import("./brands/Brands")),
+});
+
+const brandsManagerRoute = new Route({
+  getParentRoute: () => brandsRoute,
+  path: "brands_manager",
+  component: lazyRouteComponent(
+    () => import("./brands/brandsManager/BrandsManager")
+  ),
+});
+
+export const brandsManagerIndexRoute = new Route({
+  getParentRoute: () => brandsManagerRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./brands/brandsManager/Index")),
+});
+
+export const brandRoute = new Route({
+  getParentRoute: () => brandsManagerRoute,
+  path: "$brandId",
+  parseParams: ({ brandId }) => ({ brandId: Number(brandId) }),
+  stringifyParams: ({ brandId }) => ({ brandId: `${brandId}` }),
+  loader: async ({ context: { queryClient }, params: { brandId } }) => {
+    queryClient.ensureQueryData(getBrandOption(brandId));
+  },
+  component: lazyRouteComponent(
+    () => import("./brands/brandsManager/CreateBrands")
+  ),
+});
+
+const newBrandsRoute = new Route({
+  getParentRoute: () => brandsManagerRoute,
+  path: "new",
+  component: lazyRouteComponent(
+    () => import("./brands/brandsManager/CreateBrands")
+  ),
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   forgotPasswordRoute,
@@ -389,6 +431,14 @@ const routeTree = rootRoute.addChildren([
     ]),
 
     prospectsRoute.addChildren([prospectsIndexRoute, findProspectsRoute]),
+
+    brandsRoute.addChildren([
+      brandsManagerRoute.addChildren([
+        brandsManagerIndexRoute,
+        newBrandsRoute,
+        brandRoute,
+      ]),
+    ]),
   ]),
 ]);
 
