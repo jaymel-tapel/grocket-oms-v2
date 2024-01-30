@@ -117,6 +117,8 @@ export const useUpdateBrands = () => {
   });
 };
 
+// -- delete Brands
+
 export const useDeleteBrands = () => {
   const queryClient = useQueryClient();
 
