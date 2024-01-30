@@ -50,7 +50,7 @@ const TaskForm: React.FC = () => {
                 "en-CA"
               )
             : "",
-          note: tasks?.taskNotes[0]?.note || "",
+          note: tasks?.task.taskNotes[0]?.note || "",
         }
       : undefined,
   });
@@ -65,7 +65,7 @@ const TaskForm: React.FC = () => {
           : tasks?.taskAccountant?.task_date
           ? new Date(tasks.taskAccountant.task_date).toLocaleDateString("en-CA")
           : "",
-        note: tasks?.taskNotes[0]?.note || "",
+        note: tasks?.task.taskNotes[0]?.note || "",
       });
     }
   }, [taskId, tasks, reset]);
