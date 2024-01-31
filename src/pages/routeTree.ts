@@ -458,43 +458,39 @@ const routeTree = rootRoute.addChildren([
     ordersRoute.addChildren([
       ordersIndexRoute,
       ordersReportRoute,
-      ordersManagerRoute.addChildren([
-        ordersManagerIndexRoute,
-        newOrderRoute,
-        orderRoute,
-      ]),
+      ordersManagerRoute,
+      ordersManagerIndexRoute,
+      newOrderRoute,
+      orderRoute,
       deletedOrdersRoute,
     ]),
 
     clientsRoute.addChildren([
       clientsIndexRoute,
       clientsReportRoute,
-      clientsManagerRoute.addChildren([
-        clientsManagerIndexRoute,
-        clientRoute,
-        newClientRoute,
-      ]),
+      clientsManagerRoute,
+      clientsManagerIndexRoute,
+      clientRoute,
+      newClientRoute,
     ]),
 
     accountsRoute.addChildren([
       accountsIndexRoute,
       sellersReport,
-      usersManagerRoute.addChildren([
-        usersManagerIndexRoute,
-        userRoute,
-        newAccountRoute,
-      ]),
+      usersManagerRoute,
+      usersManagerIndexRoute,
+      userRoute,
+      newAccountRoute,
       inactiveUsersRoute,
     ]),
 
     prospectsRoute.addChildren([prospectsIndexRoute, findProspectsRoute]),
 
     brandsRoute.addChildren([
-      brandsManagerRoute.addChildren([
-        brandsManagerIndexRoute,
-        newBrandsRoute,
-        brandRoute,
-      ]),
+      brandsManagerRoute,
+      brandsManagerIndexRoute,
+      newBrandsRoute,
+      brandRoute,
     ]),
   ]),
 ]);
