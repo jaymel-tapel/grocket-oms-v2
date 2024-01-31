@@ -21,7 +21,7 @@ export type Tasks = {
   remarks: string;
   email: string;
   note: string;
-  taskNotes: { note: string };
+  task: { taskNotes: { note: string } };
   taskAccountant: {
     taskId: number;
     description: string;
@@ -159,11 +159,28 @@ export const useCompleteTasks = () => {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      return await axios.patch(
-        TASKS_URL + `/complete/${id}`,
-        {},
-        { headers: getHeaders() }
-      );
+      try {
+        queryClient.setQueryData<TaskResponse>(["tasks"], (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            nodes: oldData.nodes.map((task) =>
+              task.id === id ? { ...task, completed: true } : task
+            ),
+          };
+        });
+
+        const response = await axios.patch(
+          TASKS_URL + `/complete/${id}`,
+          {},
+          { headers: getHeaders() }
+        );
+
+        return response.data;
+      } catch (error) {
+        queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        throw error;
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -178,12 +195,38 @@ export const useDeleteTask = () => {
 
   return useMutation({
     mutationFn: async (taskId: number) => {
-      return await axios.delete(TASKS_URL + `/${taskId}`, {
-        headers: getHeaders(),
-      });
+      try {
+        queryClient.setQueryData<TaskResponse>(["tasksActive"], (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            nodes: oldData.nodes.filter((task) => task.id !== taskId),
+          };
+        });
+
+        queryClient.setQueryData<Tasks>(["tasks", taskId], (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+          };
+        });
+
+        const response = await axios.delete(TASKS_URL + `/${taskId}`, {
+          headers: getHeaders(),
+        });
+
+        return response.data;
+      } catch (error) {
+        queryClient.invalidateQueries({ queryKey: ["tasksActive"] });
+        queryClient.invalidateQueries({ queryKey: ["tasks", taskId] });
+
+        throw error;
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasksActive"] });
     },
   });
 };

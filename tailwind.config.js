@@ -25,6 +25,10 @@ export default {
         grGray: {
           base: "#EFF4FB",
           dark: "#E2E8F0",
+          light: "#637381",
+        },
+        grYellow: {
+          base: "#FFEFBC",
         },
         chatBlue: "#41B2E9",
         chatGray: "#EFF4FB",

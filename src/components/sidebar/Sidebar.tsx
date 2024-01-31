@@ -97,9 +97,9 @@ const navigation = [
   },
   {
     name: "Brands",
-    to: "/clients",
+    to: "/brands",
     icon: GlobeAltIcon,
-    children: [{ name: "Brands Manager", to: "#" }],
+    children: [{ name: "Brands Manager", to: "/brands/brands_manager" }],
   },
 ] as const;
 
