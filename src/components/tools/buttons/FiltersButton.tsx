@@ -3,16 +3,19 @@ import { Menu, Transition } from "@headlessui/react";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { cn } from "../../../utils/utils";
 import {
-  ClientsManagerFilterType,
-  UsersManagerFilterType,
+  ClientsFiltersType,
+  UsersFiltersType,
+  OrdersFiltersType,
 } from "../../../pages/routeFilters";
 
 type Props = {
-  activeFilter?: UsersManagerFilterType;
+  activeFilter?: UsersFiltersType | ClientsFiltersType | OrdersFiltersType;
   filterOptions: ReadonlyArray<
-    UsersManagerFilterType | ClientsManagerFilterType
+    UsersFiltersType | ClientsFiltersType | OrdersFiltersType
   >;
-  handleChange: (filter: UsersManagerFilterType) => void;
+  handleChange: (
+    filter: UsersFiltersType | ClientsFiltersType | OrdersFiltersType
+  ) => void;
 };
 
 const FiltersButton: React.FC<Props> = ({

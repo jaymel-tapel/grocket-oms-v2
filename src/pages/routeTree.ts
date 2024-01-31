@@ -10,7 +10,10 @@ import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
-import { getOrderQuery } from "../services/queries/orderQueries";
+import {
+  getAllOrdersOptions,
+  getOrderOption,
+} from "../services/queries/orderQueries";
 import { z } from "zod";
 import {
   getAllUsersOptions,
@@ -148,24 +151,69 @@ const ordersReportRoute = new Route({
 const ordersManagerRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "orders_manager",
-  component: lazyRouteComponent(() => import("./orders/OrdersManager")),
+  validateSearch: z.object({
+    searchOrders: z
+      .object({
+        keyword: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        filter: z
+          .enum([
+            "order_id",
+            "company",
+            "payment_status",
+            "review_status",
+            "reviewer_name",
+            "client",
+            "seller",
+            "remarks",
+          ])
+          .optional(),
+        page: z.number().optional().catch(1),
+        perPage: z.number().optional().catch(10),
+      })
+      .optional(),
+  }).parse,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+      searchOrders: {
+        ...search.searchOrders,
+      },
+    }),
+  ],
+  loaderDeps: ({ search }) => ({
+    searchOrders: search.searchOrders,
+  }),
+  loader: async ({ context: { queryClient }, deps }) => {
+    queryClient.ensureQueryData(getAllOrdersOptions(deps.searchOrders));
+  },
+  component: lazyRouteComponent(
+    () => import("./orders/ordersManager/OrdersManager")
+  ),
+});
+
+export const ordersManagerIndexRoute = new Route({
+  getParentRoute: () => ordersManagerRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./orders/ordersManager/Index")),
 });
 
 const newOrderRoute = new Route({
-  getParentRoute: () => ordersRoute,
+  getParentRoute: () => ordersManagerRoute,
   path: "new",
-  component: lazyRouteComponent(() => import("./orders/AddNewOrderPage")),
+  component: lazyRouteComponent(
+    () => import("./orders/ordersManager/NewOrderPage")
+  ),
 });
 
 export const orderRoute = new Route({
-  getParentRoute: () => ordersRoute,
+  getParentRoute: () => ordersManagerRoute,
   path: "$orderId",
-  beforeLoad: async ({ params: { orderId } }) => {
-    // if (isNaN(+orderId)) throw redirect({ to: "/orders" });
-    return { queryOptions: getOrderQuery(orderId) };
-  },
-  loader: async ({ context: { queryClient, queryOptions } }) => {
-    queryClient.ensureQueryData(queryOptions).catch(console.log);
+  parseParams: ({ orderId }) => ({ orderId: Number(orderId) }),
+  stringifyParams: ({ orderId }) => ({ orderId: `${orderId}` }),
+  loader: async ({ context: { queryClient }, params: { orderId } }) => {
+    queryClient.ensureQueryData(getOrderOption(orderId));
   },
   component: lazyRouteComponent(() => import("./orders/OrderInformation")),
 });
@@ -368,9 +416,11 @@ const routeTree = rootRoute.addChildren([
     ordersRoute.addChildren([
       ordersIndexRoute,
       ordersReportRoute,
-      ordersManagerRoute,
-      newOrderRoute,
-      orderRoute,
+      ordersManagerRoute.addChildren([
+        ordersManagerIndexRoute,
+        newOrderRoute,
+        orderRoute,
+      ]),
       deletedOrdersRoute,
     ]),
 

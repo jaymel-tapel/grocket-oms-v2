@@ -1,28 +1,28 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Button } from "../../../components/tools/buttons/Button";
-import { useGetAllUsers } from "../../../services/queries/accountsQueries";
 import { useEffect, useMemo, useState } from "react";
-import SearchInput from "../../../components/tools/searchInput/SearchInput";
-import { usersManagerIndexRoute } from "../../routeTree";
+import { debounce } from "lodash";
+import { ordersManagerIndexRoute } from "../../routeTree";
+import { useGetAllOrders } from "../../../services/queries/orderQueries";
+import { useNavigate } from "@tanstack/react-router";
+import { OrdersFiltersType, ordersFilters } from "../../routeFilters";
+import OrdersManagerTable from "../../../components/orders/_ordersManager/OrdersManagerTable";
 import dayjs from "dayjs";
 import FiltersButton from "../../../components/tools/buttons/FiltersButton";
-import { UsersFiltersType, usersFilters } from "../../routeFilters";
-import { debounce } from "lodash";
-import UsersManagerTable from "../../../components/accounts/usersManager/UsersManagerTable";
+import SearchInput from "../../../components/tools/searchInput/SearchInput";
+import { Button } from "../../../components/tools/buttons/Button";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { searchUsers } = usersManagerIndexRoute.useSearch();
-  const { data } = useGetAllUsers(searchUsers);
+  const { searchOrders } = ordersManagerIndexRoute.useSearch();
+  const { data } = useGetAllOrders(searchOrders);
 
-  const keyword = searchUsers?.keyword;
-  const dateFrom = searchUsers?.from;
-  const dateTo = searchUsers?.to;
-  const filter = searchUsers?.filter;
+  const keyword = searchOrders?.keyword;
+  const dateFrom = searchOrders?.from;
+  const dateTo = searchOrders?.to;
+  const filter = searchOrders?.filter;
 
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
 
-  const users = useMemo(() => {
+  const orders = useMemo(() => {
     if (!data)
       return {
         data: [],
@@ -38,8 +38,8 @@ const Index = () => {
     return { data: data.data, pagination: data.meta };
   }, [data]);
 
-  const handleCreateAccount = () => {
-    navigate({ to: "/accounts/users_manager/new" });
+  const handleAddOrder = () => {
+    navigate({ to: "/orders/orders_manager/new" });
   };
 
   const handleDateChange = (field: "from" | "to", value: string) => {
@@ -47,8 +47,8 @@ const Index = () => {
       search: (old) => {
         return {
           ...old,
-          searchUsers: {
-            ...old?.searchUsers,
+          searchOrders: {
+            ...old?.searchOrders,
             [field]: value,
           },
         };
@@ -57,13 +57,13 @@ const Index = () => {
     });
   };
 
-  const handleFilterChange = (filter: UsersFiltersType) => {
+  const handleFilterChange = (filter: OrdersFiltersType) => {
     navigate({
       search: (old) => {
         return {
           ...old,
-          searchUsers: {
-            ...old?.searchUsers,
+          searchOrders: {
+            ...old?.searchOrders,
             filter: filter,
           },
         };
@@ -78,8 +78,8 @@ const Index = () => {
         search: (old) => {
           return {
             ...old,
-            searchUsers: {
-              ...old?.searchUsers,
+            searchOrders: {
+              ...old?.searchOrders,
               keyword: keywordDraft || undefined,
             },
           };
@@ -98,11 +98,11 @@ const Index = () => {
       <div className="flex mt-4 justify-between mb-6">
         <div>
           <span className="flex gap-2">
-            <p>Accounts</p> / <p className="text-[#41B2E9]">Users Manager</p>
+            <p>Orders</p> / <p className="text-[#41B2E9]">Orders Manager</p>
           </span>
         </div>
 
-        <Button type="button" variant="lightBlue" onClick={handleCreateAccount}>
+        <Button type="button" variant="lightBlue" onClick={handleAddOrder}>
           Create Account
         </Button>
       </div>
@@ -118,7 +118,7 @@ const Index = () => {
             />
             <FiltersButton
               activeFilter={filter}
-              filterOptions={usersFilters}
+              filterOptions={ordersFilters}
               handleChange={handleFilterChange}
             />
           </div>
@@ -155,7 +155,10 @@ const Index = () => {
             />
           </div>
         </div>
-        <UsersManagerTable users={users.data} pagination={users.pagination} />
+        <OrdersManagerTable
+          orders={orders.data}
+          pagination={orders.pagination}
+        />
       </div>
     </div>
   );

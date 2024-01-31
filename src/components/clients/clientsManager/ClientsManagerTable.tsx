@@ -21,6 +21,7 @@ const COLUMNS = [
   "TOTAL AMOUNT",
   "DATE REGISTERED",
 ];
+
 const itemsPerPage = 10;
 
 type TableProps = {

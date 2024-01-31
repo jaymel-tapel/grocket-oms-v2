@@ -39,7 +39,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
 
     type ReviewPayload = {
       name: string;
-      status: number;
+      status: string;
       google_review_id?: string;
     };
 
@@ -77,20 +77,11 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
     formData.append("brandId", JSON.stringify(1));
     formData.append("orderReviews", JSON.stringify(reviewsPayload));
 
-    await createOrder(formData);
+    const response = await createOrder(formData);
 
-    // const payload = {
-    //   seller: {
-    //     name: seller.name,
-    //     email: seller.email,
-    //   },
-    //   client,
-    //   company,
-    //   reviews,
-    // };
-
-    // console.log(payload);
-    // navigate({ to: "/orders/orders_manager" });
+    if (response.status === 201) {
+      navigate({ to: "/orders/orders_manager" });
+    }
   };
 
   return (
