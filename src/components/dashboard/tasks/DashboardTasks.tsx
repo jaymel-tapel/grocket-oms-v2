@@ -27,7 +27,6 @@ const DashboardTasks: React.FC = () => {
     isLoading: activeLoading,
     isError: activeError,
   } = useGetAllTasksActive();
-  console.log("test:", tasksActive);
 
   const {
     data: { nodes: tasksCompleted = [] } = {},
@@ -47,7 +46,7 @@ const DashboardTasks: React.FC = () => {
   };
 
   const handleClick = (taskId: number) => {
-    navigate({ to: "/tasks/$taskId", params: { taskId: taskId } });
+    navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 
   const handleTaskAction = async (
