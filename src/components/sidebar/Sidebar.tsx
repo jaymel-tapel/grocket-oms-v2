@@ -292,9 +292,11 @@ export default function SidebarNavigation() {
                               <Link
                                 to={item.to}
                                 params={
-                                  item.name === "Your profile" && {
-                                    userId: user.id,
-                                  }
+                                  item.name === "Your profile"
+                                    ? {
+                                        userId: user.id,
+                                      }
+                                    : undefined
                                 }
                                 onClick={
                                   item.name === "Sign out"
