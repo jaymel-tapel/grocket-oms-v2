@@ -10,7 +10,10 @@ import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
-import { getOrderQuery } from "../services/queries/orderQueries";
+import {
+  getAllOrdersOptions,
+  getOrderOption,
+} from "../services/queries/orderQueries";
 import { z } from "zod";
 import {
   getAllUsersOptions,
@@ -20,6 +23,7 @@ import {
   getAllClientsOptions,
   getClientOption,
 } from "../services/queries/clientsQueries";
+import { getBrandOption } from "../services/queries/brandsQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -148,24 +152,69 @@ const ordersReportRoute = new Route({
 const ordersManagerRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "orders_manager",
-  component: lazyRouteComponent(() => import("./orders/OrdersManager")),
+  validateSearch: z.object({
+    searchOrders: z
+      .object({
+        keyword: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        filter: z
+          .enum([
+            "order_id",
+            "company",
+            "payment_status",
+            "review_status",
+            "reviewer_name",
+            "client",
+            "seller",
+            "remarks",
+          ])
+          .optional(),
+        page: z.number().optional().catch(1),
+        perPage: z.number().optional().catch(10),
+      })
+      .optional(),
+  }).parse,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+      searchOrders: {
+        ...search.searchOrders,
+      },
+    }),
+  ],
+  loaderDeps: ({ search }) => ({
+    searchOrders: search.searchOrders,
+  }),
+  loader: async ({ context: { queryClient }, deps }) => {
+    queryClient.ensureQueryData(getAllOrdersOptions(deps.searchOrders));
+  },
+  component: lazyRouteComponent(
+    () => import("./orders/ordersManager/OrdersManager")
+  ),
+});
+
+export const ordersManagerIndexRoute = new Route({
+  getParentRoute: () => ordersManagerRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./orders/ordersManager/Index")),
 });
 
 const newOrderRoute = new Route({
-  getParentRoute: () => ordersRoute,
+  getParentRoute: () => ordersManagerRoute,
   path: "new",
-  component: lazyRouteComponent(() => import("./orders/AddNewOrderPage")),
+  component: lazyRouteComponent(
+    () => import("./orders/ordersManager/NewOrderPage")
+  ),
 });
 
 export const orderRoute = new Route({
-  getParentRoute: () => ordersRoute,
+  getParentRoute: () => ordersManagerRoute,
   path: "$orderId",
-  beforeLoad: async ({ params: { orderId } }) => {
-    // if (isNaN(+orderId)) throw redirect({ to: "/orders" });
-    return { queryOptions: getOrderQuery(orderId) };
-  },
-  loader: async ({ context: { queryClient, queryOptions } }) => {
-    queryClient.ensureQueryData(queryOptions).catch(console.log);
+  parseParams: ({ orderId }) => ({ orderId: Number(orderId) }),
+  stringifyParams: ({ orderId }) => ({ orderId: `${orderId}` }),
+  loader: async ({ context: { queryClient }, params: { orderId } }) => {
+    queryClient.ensureQueryData(getOrderOption(orderId));
   },
   component: lazyRouteComponent(() => import("./orders/OrderInformation")),
 });
@@ -354,6 +403,47 @@ const findProspectsRoute = new Route({
   component: lazyRouteComponent(() => import("./prospects/FindProspects")),
 });
 
+const brandsRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  path: "brands",
+  component: lazyRouteComponent(() => import("./brands/Brands")),
+});
+
+const brandsManagerRoute = new Route({
+  getParentRoute: () => brandsRoute,
+  path: "brands_manager",
+  component: lazyRouteComponent(
+    () => import("./brands/brandsManager/BrandsManager")
+  ),
+});
+
+export const brandsManagerIndexRoute = new Route({
+  getParentRoute: () => brandsManagerRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./brands/brandsManager/Index")),
+});
+
+export const brandRoute = new Route({
+  getParentRoute: () => brandsManagerRoute,
+  path: "$brandId",
+  parseParams: ({ brandId }) => ({ brandId: Number(brandId) }),
+  stringifyParams: ({ brandId }) => ({ brandId: `${brandId}` }),
+  loader: async ({ context: { queryClient }, params: { brandId } }) => {
+    queryClient.ensureQueryData(getBrandOption(brandId));
+  },
+  component: lazyRouteComponent(
+    () => import("./brands/brandsManager/CreateBrands")
+  ),
+});
+
+const newBrandsRoute = new Route({
+  getParentRoute: () => brandsManagerRoute,
+  path: "new",
+  component: lazyRouteComponent(
+    () => import("./brands/brandsManager/CreateBrands")
+  ),
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   forgotPasswordRoute,
@@ -369,6 +459,7 @@ const routeTree = rootRoute.addChildren([
       ordersIndexRoute,
       ordersReportRoute,
       ordersManagerRoute,
+      ordersManagerIndexRoute,
       newOrderRoute,
       orderRoute,
       deletedOrdersRoute,
@@ -377,25 +468,30 @@ const routeTree = rootRoute.addChildren([
     clientsRoute.addChildren([
       clientsIndexRoute,
       clientsReportRoute,
-      clientsManagerRoute.addChildren([
-        clientsManagerIndexRoute,
-        clientRoute,
-        newClientRoute,
-      ]),
+      clientsManagerRoute,
+      clientsManagerIndexRoute,
+      clientRoute,
+      newClientRoute,
     ]),
 
     accountsRoute.addChildren([
       accountsIndexRoute,
       sellersReport,
-      usersManagerRoute.addChildren([
-        usersManagerIndexRoute,
-        userRoute,
-        newAccountRoute,
-      ]),
+      usersManagerRoute,
+      usersManagerIndexRoute,
+      userRoute,
+      newAccountRoute,
       inactiveUsersRoute,
     ]),
 
     prospectsRoute.addChildren([prospectsIndexRoute, findProspectsRoute]),
+
+    brandsRoute.addChildren([
+      brandsManagerRoute,
+      brandsManagerIndexRoute,
+      newBrandsRoute,
+      brandRoute,
+    ]),
   ]),
 ]);
 

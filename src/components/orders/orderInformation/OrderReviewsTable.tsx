@@ -20,7 +20,7 @@ export type Review = {
   rating?: number;
   review?: string;
   google_review_id?: string;
-  status: number;
+  status: string;
 };
 
 type Checkbox = {

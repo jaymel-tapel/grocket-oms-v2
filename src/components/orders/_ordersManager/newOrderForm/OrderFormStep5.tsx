@@ -1,7 +1,8 @@
 import React, { ReactNode, useMemo, useState } from "react";
 import { useOrderForm } from "./NewOrderFormContext";
-import toast from "react-hot-toast";
 import { useNavigate } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import { useCreateOrder } from "../../../../services/queries/orderQueries";
 
 type FormProps = {
   children: ReactNode;
@@ -9,9 +10,12 @@ type FormProps = {
 
 const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   const navigate = useNavigate();
-  const { seller, client, company, reviews } = useOrderForm();
+  const { seller, client, company, reviews, orderDate, setOrderDate } =
+    useOrderForm();
   const [remarks, setRemarks] = useState("");
   const [isConfirmationEmail, setIsConfirmation] = useState(true);
+
+  const { mutateAsync: createOrder } = useCreateOrder();
 
   const reviewsAmount = useMemo(() => {
     const reviewsWithGoogleId = reviews.filter(
@@ -28,28 +32,75 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
     };
   }, [reviews]);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const payload = {
-      date: seller.date,
-      seller: {
-        name: seller.name,
-        email: seller.email,
-      },
-      client,
-      company,
-      reviews,
+    const formData = new FormData();
+
+    type ReviewPayload = {
+      name: string;
+      status: string;
+      google_review_id?: string;
     };
 
-    console.log(payload);
-    toast.success("Order submitted (console logged only)");
+    const reviewsPayload = reviews.map(({ name, status, google_review_id }) => {
+      const newObj: ReviewPayload = { name, status };
+      if (google_review_id !== undefined) {
+        newObj.google_review_id = google_review_id;
+      }
+      return newObj;
+    });
 
-    navigate({ to: "/orders/orders_manager" });
+    console.log(reviewsPayload);
+
+    if (orderDate) {
+      formData.append("order_date", orderDate);
+    }
+
+    if (client.third_party_id) {
+      formData.append("thirdPartyId", client.third_party_id);
+    }
+
+    if (client.phone) {
+      formData.append("thirdPartyId", client.phone);
+    }
+
+    formData.append("seller_email", seller.email);
+    formData.append("seller_name", seller.name);
+    formData.append("client_email", client.email);
+    formData.append("client_name", client.name);
+    formData.append("company_name", company.name);
+    formData.append("company_url", company.url);
+    formData.append("unit_cost", JSON.stringify(client.unit_cost));
+    formData.append("sourceId", JSON.stringify(client.origin));
+    formData.append("industryId", JSON.stringify(client.industry));
+    formData.append("brandId", JSON.stringify(1));
+    formData.append("orderReviews", JSON.stringify(reviewsPayload));
+
+    const response = await createOrder(formData);
+
+    if (response.status === 201) {
+      navigate({ to: "/orders/orders_manager" });
+    }
   };
 
   return (
     <form onSubmit={onSubmit}>
+      <div>
+        <input
+          type="text"
+          id="dateTo"
+          placeholder={dayjs().format("MM-DD-YYYY")}
+          onFocus={(e) => (e.target.type = "date")}
+          onBlur={(e) => (e.target.type = "text")}
+          defaultValue={orderDate}
+          onChange={(e) =>
+            setOrderDate(dayjs(e.target.value).format("MM-DD-YYYY"))
+          }
+          className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+        />
+      </div>
+
       <div className="grid grid-cols-3">
         <div className="flex flex-col gap-2">
           <span className="font-bold">Seller</span>

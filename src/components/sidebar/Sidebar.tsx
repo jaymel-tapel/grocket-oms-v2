@@ -97,9 +97,9 @@ const navigation = [
   },
   {
     name: "Brands",
-    to: "/clients",
+    to: "/brands",
     icon: GlobeAltIcon,
-    children: [{ name: "Brands Manager", to: "#" }],
+    children: [{ name: "Brands Manager", to: "/brands/brands_manager" }],
   },
 ] as const;
 
@@ -292,9 +292,11 @@ export default function SidebarNavigation() {
                               <Link
                                 to={item.to}
                                 params={
-                                  item.name === "Your profile" && {
-                                    userId: user.id,
-                                  }
+                                  item.name === "Your profile"
+                                    ? {
+                                        userId: user.id,
+                                      }
+                                    : undefined
                                 }
                                 onClick={
                                   item.name === "Sign out"

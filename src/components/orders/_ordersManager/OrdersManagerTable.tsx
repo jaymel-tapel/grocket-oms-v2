@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Table from "../../tools/table/Table";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
@@ -6,12 +5,16 @@ import TableContainer from "../../tools/table/TableContainer";
 import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
-import SearchInput from "../../tools/searchInput/SearchInput";
-import { FilterLogo } from "../../tools/svg/FilterLogo";
-import { Orders } from "../../../services/queries/orderQueries";
+import { Order } from "../../../services/queries/orderQueries";
 import { useNavigate } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import { Pagination } from "../../../services/queries/accountsQueries";
+import { useEffect, useState } from "react";
+import TablePagination, {
+  PaginationNavs,
+} from "../../tools/table/TablePagination";
 
-const DataHead: string[] = [
+const COLUMNS = [
   "Date",
   "Order ID",
   "Client",
@@ -21,72 +24,97 @@ const DataHead: string[] = [
   "Remarks",
 ];
 
-type OrdersManagerTableProps = {
-  orders: Orders;
+const itemsPerPage = 10;
+
+type TableProps = {
+  orders: Order[];
+  pagination: Pagination;
 };
 
-const OrdersManagerTable: React.FC<OrdersManagerTableProps> = ({
+const OrdersManagerTable: React.FC<TableProps> = ({
   orders = [],
+  pagination,
 }) => {
-  const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const handleClick = (orderId: string) => {
-    navigate({ to: "/orders/$orderId", params: { orderId } });
+  const handlePageChange = (value: number | PaginationNavs) => {
+    if (typeof value === "number") {
+      setCurrentPage(value);
+      return;
+    }
+
+    const lastPage = pagination.lastPage;
+
+    if (value === "first") {
+      setCurrentPage(1);
+    } else if (value === "prev") {
+      if (currentPage !== 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else if (value === "next") {
+      if (currentPage !== lastPage) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else if (value === "last") {
+      setCurrentPage(lastPage);
+    }
+  };
+
+  useEffect(() => {
+    navigate({
+      to: "/orders",
+      search: ({ searchOrders }) => {
+        return {
+          searchOrders: {
+            ...searchOrders,
+            page: currentPage,
+            perPage: itemsPerPage,
+          },
+        };
+      },
+    });
+    //eslint-disable-next-line
+  }, [currentPage]);
+
+  const handleClick = (orderId: number) => {
+    navigate({
+      to: "/orders/orders_manager/$orderId",
+      params: { orderId },
+    });
   };
 
   return (
     <TableContainer className="bg-white">
-      <div className="pt-8 px-8 flex justify-between">
-        <div className="flex gap-4">
-          <SearchInput
-            className={"w-46"}
-            type="text"
-            id="Client Name"
-            placeholder=" Search here..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <div className="">
-            <button className="flex border py-2 px-4 rounded-md">
-              <span className="mt-1 mr-2">{FilterLogo}</span> Filters
-            </button>
-          </div>
-        </div>
-        <div className="">
-          <input
-            className="border mr-2 py-2 px-2 rounded-sm"
-            type="date"
-            placeholder="Date Start"
-          />
-          <input
-            className="border py-2 px-2 rounded-sm"
-            type="date"
-            placeholder="End Date"
-          />
-        </div>
-      </div>
-
       <Table>
         <TableHead>
           <TableRow>
-            {DataHead.map((head, i) => (
-              <TableHeadCell key={i}>{head}</TableHeadCell>
+            {COLUMNS.map((col, index) => (
+              <TableHeadCell key={index}>{col}</TableHeadCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
+          {orders.length === 0 && (
+            <TableRow>
+              <TableBodyCell className="text-center text-gray-500" colSpan={7}>
+                No data found.
+              </TableBodyCell>
+            </TableRow>
+          )}
           {orders.map((order, i) => (
             <TableRow
               key={i}
               className="cursor-pointer"
-              onClick={() => handleClick(order._id)}
+              onClick={() => handleClick(order.id)}
             >
-              <TableBodyCell>{order.date}</TableBodyCell>
-              <TableBodyCell>{order._id}</TableBodyCell>
-              <TableBodyCell>{order.client}</TableBodyCell>
-              <TableBodyCell>{order.total}</TableBodyCell>
-              <TableBodyCell>{order.reviews.length}</TableBodyCell>
+              <TableBodyCell>
+                {dayjs(order.createdAt).format("MM-DD-YYYY")}
+              </TableBodyCell>
+              <TableBodyCell>{order.id}</TableBodyCell>
+              <TableBodyCell>{order.client.name}</TableBodyCell>
+              <TableBodyCell>{order.total_price}</TableBodyCell>
+              <TableBodyCell>5</TableBodyCell>
               <TableBodyCell>
                 <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                   {order.payment_status}
@@ -97,6 +125,13 @@ const OrdersManagerTable: React.FC<OrdersManagerTableProps> = ({
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        itemsPerPage={10}
+        currentPage={currentPage}
+        lastPage={pagination.lastPage}
+        handlePageChange={handlePageChange}
+        totalItems={pagination.total}
+      />
     </TableContainer>
   );
 };

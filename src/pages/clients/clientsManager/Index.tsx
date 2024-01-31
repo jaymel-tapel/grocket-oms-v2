@@ -8,10 +8,7 @@ import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import { debounce } from "lodash";
 import { useGetAllClients } from "../../../services/queries/clientsQueries";
 import ClientsManagersTable from "../../../components/clients/clientsManager/ClientsManagerTable";
-import {
-  ClientsManagerFilterType,
-  clientsManagerFilters,
-} from "../../routeFilters";
+import { ClientsFiltersType, clientsFilters } from "../../routeFilters";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -60,7 +57,7 @@ const Index = () => {
     });
   };
 
-  const handleFilterChange = (filter: ClientsManagerFilterType) => {
+  const handleFilterChange = (filter: ClientsFiltersType) => {
     navigate({
       search: (old) => {
         return {
@@ -121,7 +118,7 @@ const Index = () => {
             />
             <FiltersButton
               activeFilter={filter}
-              filterOptions={clientsManagerFilters}
+              filterOptions={clientsFilters}
               handleChange={handleFilterChange}
             />
           </div>

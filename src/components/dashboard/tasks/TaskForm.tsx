@@ -13,9 +13,9 @@ import Spinner from "../../tools/spinner/Spinner";
 import { useEffect } from "react";
 
 const TaskSchema = z.object({
-  name: z.string().optional(),
-  task_date: z.string(),
-  email: z.string().email().min(1, { message: "Invalid Email Address" }),
+  name: z.string(),
+  task_date: z.string().min(1, { message: "Date required" }),
+  email: z.string().nullable(),
   title: z.string().min(1, { message: "Task name required" }),
   remarks: z.string().min(1, { message: "Remarks is Required" }),
   description: z.string(),
@@ -50,7 +50,7 @@ const TaskForm: React.FC = () => {
                 "en-CA"
               )
             : "",
-          note: tasks?.taskNotes[0]?.note || "",
+          note: tasks?.task.taskNotes[0]?.note || "",
         }
       : undefined,
   });
@@ -65,7 +65,7 @@ const TaskForm: React.FC = () => {
           : tasks?.taskAccountant?.task_date
           ? new Date(tasks.taskAccountant.task_date).toLocaleDateString("en-CA")
           : "",
-        note: tasks?.taskNotes[0]?.note || "",
+        note: tasks?.task.taskNotes[0]?.note || "",
       });
     }
   }, [taskId, tasks, reset]);
@@ -115,9 +115,12 @@ const TaskForm: React.FC = () => {
                 <input
                   type="date"
                   id="taskdate"
-                  className="mt-1 p-2 border rounded-sm w-full"
+                  className="mt-1 p-2 mb-2 border rounded-sm w-full"
                   {...register("task_date")}
                 />
+                <span className="px-1 text-red-500">
+                  {errors.task_date?.message}
+                </span>
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
                 <label
@@ -147,8 +150,6 @@ const TaskForm: React.FC = () => {
                   className="mt-1 p-2 border rounded-sm w-full"
                   {...register("name")}
                 />
-
-                <span>{errors.name?.message}</span>
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
                 <label
@@ -163,7 +164,6 @@ const TaskForm: React.FC = () => {
                   className="mt-1 p-2 border rounded-sm w-full"
                   {...register("email")}
                 />
-                <span>{errors.email?.message}</span>
               </div>
             </li>
             <li className="border-t mt-12 mr-24 mb-10 max-sm:w-11/12"></li>
@@ -183,10 +183,12 @@ const TaskForm: React.FC = () => {
                 <input
                   type="text"
                   id="taskName"
-                  className="mt-1 p-2 border rounded-sm w-full"
+                  className="mt-1 p-2 mb-2 border rounded-sm w-full"
                   {...register("title")}
                 />
-                <span>{errors.title?.message}</span>
+                <span className="px-1 text-red-500">
+                  {errors.title?.message}
+                </span>
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
                 <label
@@ -198,10 +200,12 @@ const TaskForm: React.FC = () => {
                 <input
                   type="text"
                   id="taskRemarks"
-                  className="mt-1 p-2 border rounded-sm w-full"
+                  className="mt-1 p-2 mb-2 border rounded-sm w-full"
                   {...register("remarks")}
                 />
-                {errors.remarks?.message}
+                <span className="px-1 text-red-500">
+                  {errors.remarks?.message}
+                </span>
               </div>
             </li>
 

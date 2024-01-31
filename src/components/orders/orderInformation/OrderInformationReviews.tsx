@@ -16,7 +16,7 @@ const reviews = [
     rating: 1,
     review: "Bad review",
     google_review_id: "111",
-    status: 5,
+    status: "NEU",
   },
   {
     _id: "101",
@@ -24,7 +24,7 @@ const reviews = [
     rating: 2,
     review: "Another review",
     google_review_id: "112",
-    status: 5,
+    status: "BEAUFTRAGT",
   },
 ];
 
