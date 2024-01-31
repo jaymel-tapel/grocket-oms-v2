@@ -64,13 +64,15 @@ const OrdersManagerTable: React.FC<TableProps> = ({
   useEffect(() => {
     navigate({
       to: "/orders",
-      search: ({ searchOrders }) => ({
-        searchOrders: {
-          ...searchOrders,
-          page: currentPage,
-          perPage: itemsPerPage,
-        },
-      }),
+      search: ({ searchOrders }) => {
+        return {
+          searchOrders: {
+            ...searchOrders,
+            page: currentPage,
+            perPage: itemsPerPage,
+          },
+        };
+      },
     });
     //eslint-disable-next-line
   }, [currentPage]);

@@ -47,7 +47,7 @@ const DashboardTasks: React.FC = () => {
   };
 
   const handleClick = (taskId: number) => {
-    navigate({ to: "/tasks/$taskId", params: { taskId } });
+    navigate({ to: "/tasks/$taskId", params: { taskId: taskId } });
   };
 
   const handleTaskAction = async (
