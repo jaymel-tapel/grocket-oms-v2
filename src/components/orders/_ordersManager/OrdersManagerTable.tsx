@@ -63,7 +63,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
 
   useEffect(() => {
     navigate({
-      to: "/orders",
+      to: "/orders/orders_manager",
       search: ({ searchOrders }) => {
         return {
           searchOrders: {
