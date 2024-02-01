@@ -15,7 +15,7 @@ import { debounce } from "lodash";
 const selectClientSchema = z.object({
   name: z.string(),
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
-  phone: z.string().optional(),
+  phone: z.string().optional().catch(""),
   third_party_id: z.string().optional(),
   origin: z.coerce.number().min(1).catch(1),
   industry: z.coerce.number().min(1).catch(41),
@@ -29,7 +29,8 @@ type FormProps = {
 };
 
 const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
-  const { setStep, client, setClient } = useOrderForm() as OrderFormContext;
+  const { setStep, client, setClient, setCompanies } =
+    useOrderForm() as OrderFormContext;
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
@@ -81,6 +82,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
       third_party_id: client.clientInfo.thirdPartyId ?? "",
     });
 
+    setCompanies(client.companies);
+
     setValue("name", client.name);
     setValue("email", client.email);
     setValue("industry", client.clientInfo.industryId ?? 41);
@@ -90,8 +93,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
   };
 
-  const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
-    setClient({ ...data, phone: data.phone ?? "" });
+  const onSubmit: SubmitHandler<SelectClientSchema> = () => {
     setStep(3);
   };
 

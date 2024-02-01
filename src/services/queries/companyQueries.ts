@@ -39,12 +39,12 @@ export type GoogleReview = {
   description: string;
 };
 
-export const useGetCompanies = (clientId: number | undefined) => {
+export const useGetCompanies = (companyId: number | undefined) => {
   return useQuery({
-    enabled: clientId ? true : false,
-    queryKey: ["companies", clientId],
+    enabled: companyId ? true : false,
+    queryKey: ["companies", companyId],
     queryFn: async (): Promise<Company[]> => {
-      const response = await axios.get(COMPANIES_URL + "/source", {
+      const response = await axios.get(COMPANIES_URL + `/${companyId}`, {
         headers: getHeaders(),
       });
       return response.data;

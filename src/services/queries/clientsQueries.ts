@@ -8,6 +8,7 @@ import axios from "axios";
 import { getHeaders } from "../../utils/utils";
 import { Pagination, User } from "./accountsQueries";
 import { ClientFormSchema } from "../../components/clients/clientsManager/ClientForm";
+import { Company } from "./companyQueries";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CLIENTS_URL = API_URL + "/clients";
@@ -32,6 +33,7 @@ export type Client = {
   email: string;
   sellerId: number;
   seller: User;
+  companies: Company[];
   clientInfo: ClientInfo;
   phone: undefined | string;
   status: string;

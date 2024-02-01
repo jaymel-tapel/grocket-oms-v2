@@ -5,7 +5,6 @@ import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode, useMemo, useState } from "react";
 import CompanyLinksTable from "../../orderInformation/CompanyLinksTable";
 import { Button } from "../../../tools/buttons/Button";
-import { useGetCompanies } from "../../../../services/queries/companyQueries";
 
 const selectCompanySchema = z.object({
   name: z.string(),
@@ -24,10 +23,8 @@ type FormProps = {
 };
 
 const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { client, setStep, company, setCompany } =
+  const { client, setStep, company, setCompany, companies } =
     useOrderForm() as OrderFormContext;
-
-  const { data: companies } = useGetCompanies(client.id);
 
   const companyLinks = useMemo(() => {
     if (!client.id) {
@@ -177,7 +174,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
       </div>
 
       <div>
-        <span className="font-medium text-sm">Company Links</span>
+        <span className="font-medium text-sm block mb-4">Company Links</span>
         <CompanyLinksTable companies={companyLinks} />
       </div>
 
