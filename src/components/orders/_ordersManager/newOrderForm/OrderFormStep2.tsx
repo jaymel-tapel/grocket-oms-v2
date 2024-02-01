@@ -13,8 +13,8 @@ const selectClientSchema = z.object({
   email: z.string().email().min(1, { message: "Invalid Email Address" }),
   phone: z.string().optional(),
   third_party_id: z.string().optional(),
-  origin: z.coerce.number(),
-  industry: z.coerce.number(),
+  origin: z.coerce.number().catch(1),
+  industry: z.coerce.number().catch(41),
   unit_cost: z.coerce.number(),
 });
 
