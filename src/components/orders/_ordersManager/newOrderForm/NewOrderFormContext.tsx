@@ -1,5 +1,8 @@
 import React, { ReactNode, createContext, useContext, useState } from "react";
-import { PendingReview } from "../../../../services/queries/companyQueries";
+import {
+  Company,
+  PendingReview,
+} from "../../../../services/queries/companyQueries";
 
 // If you’re familiar with the context API before Hooks,
 // useContext(OrderFormContext) is equivalent to static
@@ -36,6 +39,7 @@ export type OrderFormContext = {
   seller: SelectSeller;
   client: SelectClient;
   company: SelectCompany;
+  companies: SelectCompany[] | Company[];
   reviews: Reviews;
   orderDate: string;
   remarks: string;
@@ -44,6 +48,9 @@ export type OrderFormContext = {
   setSeller: React.Dispatch<React.SetStateAction<SelectSeller>>;
   setClient: React.Dispatch<React.SetStateAction<SelectClient>>;
   setCompany: React.Dispatch<React.SetStateAction<SelectCompany>>;
+  setCompanies: React.Dispatch<
+    React.SetStateAction<SelectCompany[] | Company[]>
+  >;
   setReviews: React.Dispatch<React.SetStateAction<Reviews>>;
   setOrderDate: React.Dispatch<React.SetStateAction<string>>;
   setRemarks: React.Dispatch<React.SetStateAction<string>>;
@@ -63,6 +70,7 @@ export const OrderFormContext = createContext<OrderFormContext>({
     third_party_id: "",
   },
   company: { name: "", url: "" },
+  companies: [],
   reviews: [],
   orderDate: "",
   remarks: "",
@@ -71,6 +79,7 @@ export const OrderFormContext = createContext<OrderFormContext>({
   setSeller: () => {},
   setClient: () => {},
   setCompany: () => {},
+  setCompanies: () => {},
   setReviews: () => {},
   setOrderDate: () => {},
   setRemarks: () => {},
@@ -99,6 +108,7 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
     third_party_id: "",
   });
   const [company, setCompany] = useState<SelectCompany>({ name: "", url: "" });
+  const [companies, setCompanies] = useState<SelectCompany[] | Company[]>([]);
   const [reviews, setReviews] = useState<Reviews>([]);
   const [orderDate, setOrderDate] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -111,6 +121,7 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
         seller,
         client,
         company,
+        companies,
         reviews,
         orderDate,
         remarks,
@@ -119,6 +130,7 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
         setSeller,
         setClient,
         setCompany,
+        setCompanies,
         setReviews,
         setOrderDate,
         setRemarks,
