@@ -137,7 +137,12 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
                   />
                 </div>
               </div>
-              <Button variant="black" type="button" className="self-end">
+              <Button
+                variant="black"
+                type="button"
+                className="self-end"
+                onClick={handleGetReviews}
+              >
                 Get Reviews
               </Button>
             </div>
