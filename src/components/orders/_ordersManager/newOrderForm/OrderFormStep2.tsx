@@ -15,7 +15,7 @@ const selectClientSchema = z.object({
   third_party_id: z.string().optional(),
   origin: z.coerce.number().min(1).catch(1),
   industry: z.coerce.number().min(1).catch(41),
-  unit_cost: z.coerce.number(),
+  unit_cost: z.coerce.number().min(1).catch(10),
 });
 
 type SelectClientSchema = z.infer<typeof selectClientSchema>;
