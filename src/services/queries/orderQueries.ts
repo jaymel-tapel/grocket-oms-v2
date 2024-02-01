@@ -83,6 +83,7 @@ export const useGetAllOrders = (search?: OrdersParams) => {
 
 export const useCreateOrder = () => {
   return useMutation({
+    mutationKey: ["create-order"],
     mutationFn: async (payload: FormData) => {
       return axios.post(ORDERS_URL, payload, { headers: getHeaders() });
     },

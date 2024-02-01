@@ -1,4 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useIsMutating } from "@tanstack/react-query";
+
 import { useOrderForm } from "./NewOrderFormContext";
 import OrderFormSteppers from "./OrderFormSteppers";
 import OrderFormStep1 from "./OrderFormStep1";
@@ -7,6 +9,7 @@ import OrderFormStep3 from "./OrderFormStep3";
 import OrderFormStep4 from "./OrderFormStep4";
 import OrderFormStep5 from "./OrderFormStep5";
 import { Button } from "../../../tools/buttons/Button";
+import Spinner from "../../../tools/spinner/Spinner";
 
 const NewOrderForm = () => {
   const { step } = useOrderForm();
@@ -50,6 +53,8 @@ export default NewOrderForm;
 
 const FormNavigation = () => {
   const { step, setStep } = useOrderForm();
+  const isSubmitting = useIsMutating({ mutationKey: ["create-order"] });
+
   const navigate = useNavigate();
 
   const handleCancel = () => {
@@ -71,7 +76,10 @@ const FormNavigation = () => {
             Previous
           </Button>
         )}
-        <Button type="submit">{step < 5 ? "Next" : "Submit"}</Button>
+        <Button type="submit" disabled={isSubmitting > 0}>
+          {isSubmitting > 0 && <Spinner />}
+          {step < 5 ? "Next" : "Submit"}
+        </Button>
       </div>
     </div>
   );
