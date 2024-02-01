@@ -1,5 +1,5 @@
 import React, { ReactNode, createContext, useContext, useState } from "react";
-import { Review } from "../../orderInformation/OrderReviewsTable";
+import { PendingReview } from "../../../../services/queries/companyQueries";
 
 // If you’re familiar with the context API before Hooks,
 // useContext(OrderFormContext) is equivalent to static
@@ -8,11 +8,13 @@ import { Review } from "../../orderInformation/OrderReviewsTable";
 // You still need a <OrderFormContext.Provider> above in the tree TO PROVIDE THE VALUE FOR THIS CONTEXT.
 
 type SelectSeller = {
+  id?: number;
   name: string;
   email: string;
 };
 
 type SelectClient = {
+  id?: number;
   name: string;
   email: string;
   phone: string;
@@ -27,7 +29,7 @@ type SelectCompany = {
   url: string;
 };
 
-type Reviews = Review[];
+type Reviews = PendingReview[];
 
 export type OrderFormContext = {
   step: number;

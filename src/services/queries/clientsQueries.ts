@@ -40,6 +40,16 @@ export type Client = {
   deletedAt: undefined | string;
 };
 
+export type Industry = {
+  id: number;
+  name: string;
+};
+
+export type Origin = {
+  id: number;
+  name: string;
+};
+
 type ClientsResponse = {
   data: Client[];
   meta: Pagination;
@@ -94,6 +104,32 @@ export const useGetAllClients = (search?: ClientsParams) => {
 
 export const useGetClient = (id: number) => {
   return useQuery(getClientOption(id));
+};
+
+export const useGetClientIndustries = () => {
+  return useQuery({
+    queryKey: ["industries"],
+    queryFn: async (): Promise<Industry[]> => {
+      const response = await axios.get(CLIENTS_URL + "/industries", {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+    staleTime: Infinity,
+  });
+};
+
+export const useGetClientOrigins = () => {
+  return useQuery({
+    queryKey: ["origins"],
+    queryFn: async (): Promise<Origin[]> => {
+      const response = await axios.get(CLIENTS_URL + "/source", {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+    staleTime: Infinity,
+  });
 };
 
 // -- POST requests

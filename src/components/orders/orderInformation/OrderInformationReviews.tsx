@@ -1,32 +1,12 @@
 import React, { useState } from "react";
 import logo from "../../../assets/grocket.png";
 import { Button } from "../../tools/buttons/Button";
-import ReviewsFromGoogleTable from "./ReviewsFromGoogleTable";
-import OrderReviewsTable from "./OrderReviewsTable";
+// import OrderReviewsTable from "./OrderReviewsTable";
 
 const company = {
   name: "Grocket",
   url: "https://g-rocket.me",
 };
-
-const reviews = [
-  {
-    _id: "100",
-    name: "Test 1",
-    rating: 1,
-    review: "Bad review",
-    google_review_id: "111",
-    status: "NEU",
-  },
-  {
-    _id: "101",
-    name: "Test 2",
-    rating: 2,
-    review: "Another review",
-    google_review_id: "112",
-    status: "BEAUFTRAGT",
-  },
-];
 
 const ADD_REVIEW_METHODS = [
   "Select From Reviews",
@@ -83,7 +63,7 @@ const OrderInformationReviews: React.FC = () => {
             </div>
             <div className="mt-4">
               <span className="text-sm font-bold">Results</span>
-              <ReviewsFromGoogleTable />
+              {/* <ReviewsFromGoogleTable reviews={[]}  /> */}
             </div>
           </>
         )}
@@ -117,7 +97,7 @@ const OrderInformationReviews: React.FC = () => {
       </div>
 
       <div className="mt-12">
-        <OrderReviewsTable reviews={reviews} isNewOrder={false} />
+        {/* <OrderReviewsTable reviews={[]} isNewOrder={false} /> */}
       </div>
     </div>
   );

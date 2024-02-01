@@ -15,13 +15,13 @@ import TablePagination, {
 } from "../../tools/table/TablePagination";
 
 const COLUMNS = [
-  "Date",
-  "Order ID",
-  "Client",
-  "Total",
-  "Review",
-  "Payment Status",
-  "Remarks",
+  "DATE",
+  "ORDER ID",
+  "ClIENT",
+  "TOTAL",
+  "REVIEWS",
+  "PAYMENT STATUS",
+  "REMARKS",
 ];
 
 const itemsPerPage = 10;
@@ -114,7 +114,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
               <TableBodyCell>{order.id}</TableBodyCell>
               <TableBodyCell>{order.client.name}</TableBodyCell>
               <TableBodyCell>{order.total_price}</TableBodyCell>
-              <TableBodyCell>5</TableBodyCell>
+              <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
               <TableBodyCell>
                 <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                   {order.payment_status}

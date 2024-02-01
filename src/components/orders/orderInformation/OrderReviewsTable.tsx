@@ -6,6 +6,7 @@ import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
 import { Button } from "../../tools/buttons/Button";
+import { PendingReview } from "../../../services/queries/companyQueries";
 
 const COLUMNS = ["ID", "NAME", "REVIEW STATUS", "ORIGIN", "ACTION"];
 
@@ -14,26 +15,22 @@ const emailTemplates = [
   { name: "Grocket Template 2", _id: "124" },
 ];
 
-export type Review = {
-  _id: string;
-  name: string;
-  rating?: number;
-  review?: string;
-  google_review_id?: string;
-  status: string;
-};
-
 type Checkbox = {
-  id: string;
+  id: number;
   checked: boolean;
 };
 
 type Props = {
-  reviews: Review[];
+  reviews: PendingReview[];
   isNewOrder?: boolean;
+  deleteReview: (reviewId: number) => void;
 };
 
-const OrderReviewsTable: React.FC<Props> = ({ isNewOrder = true, reviews }) => {
+const OrderReviewsTable: React.FC<Props> = ({
+  isNewOrder = true,
+  reviews,
+  deleteReview,
+}) => {
   const [checkBoxes, setCheckBoxes] = useState<Checkbox[]>([]);
 
   const isOneReviewChecked = useMemo(() => {
@@ -59,7 +56,7 @@ const OrderReviewsTable: React.FC<Props> = ({ isNewOrder = true, reviews }) => {
     }
   };
 
-  const handleCheckReview = (id: string) => {
+  const handleCheckReview = (id: number) => {
     setCheckBoxes((prevState) =>
       prevState.map((checkbox) =>
         checkbox.id === id
@@ -76,7 +73,7 @@ const OrderReviewsTable: React.FC<Props> = ({ isNewOrder = true, reviews }) => {
       const initialBooleans = reviews
         // .slice(currentPage * 5, currentPage * 5 + 5)
         .map((review) => {
-          return { id: review._id, checked: false };
+          return { id: review.id, checked: false };
         });
       setCheckBoxes(initialBooleans);
     }
@@ -124,20 +121,26 @@ const OrderReviewsTable: React.FC<Props> = ({ isNewOrder = true, reviews }) => {
                   <>
                     <TableBodyCell>
                       <input
-                        id={review._id}
+                        id={review.name}
                         type="checkbox"
                         className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
                         checked={isChecked}
-                        onChange={() => handleCheckReview(review._id)}
+                        onChange={() => handleCheckReview(review.id)}
                       />
                     </TableBodyCell>
-                    <TableBodyCell>{review._id}</TableBodyCell>
+                    <TableBodyCell>{review.id}</TableBodyCell>
                   </>
                 )}
                 <TableBodyCell>{review.name}</TableBodyCell>
                 <TableBodyCell>{review.status}</TableBodyCell>
                 <TableBodyCell>
                   {review?.google_review_id ? "Selected" : "Manual"}
+                </TableBodyCell>
+                <TableBodyCell
+                  className="text-[#DC3545] cursor-pointer font-medium whitespace-nowrap"
+                  onClick={() => deleteReview(review.id)}
+                >
+                  Delete
                 </TableBodyCell>
               </TableRow>
             );

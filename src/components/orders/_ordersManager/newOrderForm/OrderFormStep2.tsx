@@ -3,18 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode } from "react";
-
-const origins = [
-  { _id: 1, name: "Test Origin 1" },
-  { _id: 2, name: "Test Origin 2" },
-  { _id: 3, name: "Test Origin 3" },
-] as const;
-
-const industries = [
-  { _id: 1, name: "Test Industry 1" },
-  { _id: 2, name: "Test Industry 2" },
-  { _id: 3, name: "Test Industry 3" },
-] as const;
+import {
+  useGetClientIndustries,
+  useGetClientOrigins,
+} from "../../../../services/queries/clientsQueries";
 
 const selectClientSchema = z.object({
   name: z.string(),
@@ -34,6 +26,10 @@ type FormProps = {
 
 const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   const { setStep, client, setClient } = useOrderForm() as OrderFormContext;
+
+  const { data: industries } = useGetClientIndustries();
+  const { data: origins } = useGetClientOrigins();
+
   const {
     register,
     handleSubmit,
@@ -207,7 +203,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 <option disabled>Select Origin</option>
                 {origins?.map((origin, index) => {
                   return (
-                    <option value={`${origin._id}`} key={index}>
+                    <option value={`${origin.id}`} key={index}>
                       {origin.name}
                     </option>
                   );
@@ -243,7 +239,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 <option disabled>Select Industry</option>
                 {industries?.map((industry, index) => {
                   return (
-                    <option value={`${industry._id}`} key={index}>
+                    <option value={`${industry.id}`} key={index}>
                       {industry.name}
                     </option>
                   );

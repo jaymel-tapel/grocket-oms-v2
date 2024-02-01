@@ -5,23 +5,7 @@ import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode, useMemo, useState } from "react";
 import CompanyLinksTable from "../../orderInformation/CompanyLinksTable";
 import { Button } from "../../../tools/buttons/Button";
-
-const companyLinks = [
-  {
-    _id: "1359",
-    name: "RECHTSANWALT DR. DR. IRANBOMY ",
-    valid_url: 1,
-    url: "https://g.page/Rechtsanwalt-Iranbomy?share",
-    client_id: 1696,
-  },
-  {
-    _id: "13324",
-    name: "TEST COMPANY ",
-    valid_url: 1,
-    url: "https://test.link",
-    client_id: 1696,
-  },
-];
+import { useGetCompanies } from "../../../../services/queries/companyQueries";
 
 const selectCompanySchema = z.object({
   name: z.string(),
@@ -40,7 +24,20 @@ type FormProps = {
 };
 
 const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { setStep, company, setCompany } = useOrderForm() as OrderFormContext;
+  const { client, setStep, company, setCompany } =
+    useOrderForm() as OrderFormContext;
+
+  const { data: companies } = useGetCompanies(client.id);
+
+  const companyLinks = useMemo(() => {
+    if (!client.id) {
+      return [company];
+    } else if (companies) {
+      return companies;
+    }
+    return [];
+  }, [companies, client.id, company]);
+
   const {
     register,
     handleSubmit,
@@ -50,8 +47,8 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     resolver: zodResolver(selectCompanySchema),
   });
 
-  const handleSelectCompany = (companyId: string) => {
-    const foundCompany = companyLinks.find((comp) => comp._id === companyId);
+  const handleSelectCompany = (companyName: string) => {
+    const foundCompany = companyLinks.find((comp) => comp.name === companyName);
     if (!foundCompany) return;
 
     setValue("url", foundCompany.url);
@@ -63,7 +60,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     // and we need the ID as identifier for our handleSelect function.
     // We can just try to do the find method
     // here as well to make it much cleaner
-    setCompany({ name: company.name, url: data.url });
+    setCompany(data);
     setStep(4);
   };
 
@@ -110,6 +107,13 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
       setShowErrors(false);
     }
 
+    if (!client.id) {
+      setCompany({ name: newCompany.name, url: newCompany.url });
+      setValue("name", newCompany.name);
+      setValue("url", newCompany.url);
+      setNewCompany({ name: "", url: "" });
+    }
+
     // add new company query here later
   };
 
@@ -127,7 +131,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
             <select
               id="company"
               autoComplete="off"
-              defaultValue={company.name}
+              value={company.name}
               {...register("name", {
                 onChange: (e) => handleSelectCompany(e.target.value),
               })}
@@ -140,7 +144,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
               </option>
               {companyLinks?.map((company, index) => {
                 return (
-                  <option value={company._id} key={index}>
+                  <option value={company.name} key={index}>
                     {company.name}
                   </option>
                 );
