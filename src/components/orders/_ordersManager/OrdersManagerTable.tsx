@@ -15,13 +15,13 @@ import TablePagination, {
 } from "../../tools/table/TablePagination";
 
 const COLUMNS = [
-  "Date",
-  "Order ID",
-  "Client",
-  "Total",
-  "Reviews",
-  "Payment Status",
-  "Remarks",
+  "DATE",
+  "ORDER ID",
+  "ClIENT",
+  "TOTAL",
+  "REVIEWS",
+  "PAYMENT STATUS",
+  "REMARKS",
 ];
 
 const itemsPerPage = 10;
@@ -78,7 +78,6 @@ const OrdersManagerTable: React.FC<TableProps> = ({
   }, [currentPage]);
 
   const handleClick = (orderId: number) => {
-    // @ts-expect-error idk why this is giving error all of a sudden
     navigate({
       to: "/orders/orders_manager/$orderId",
       params: { orderId },
