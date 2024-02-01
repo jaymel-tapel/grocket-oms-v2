@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode } from "react";
+import { useDebounce } from "../../../../hooks/useDebounce";
+// import { debounce } from "lodash";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -17,13 +19,26 @@ type FormProps = {
 
 const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
+  // const [isEmailFocused, setIsEmailFocused] = useState(false);
+
   const {
     register,
     handleSubmit,
+    watch,
+    // setValue,
     formState: { errors },
   } = useForm<SelectSellerSchema>({
     resolver: zodResolver(selectSellerSchema),
   });
+
+  const sellerEmail = watch("email");
+  const debouncedEmail = useDebounce(sellerEmail, 500);
+  console.log(debouncedEmail);
+
+  // const { data: sellers } = useGetAllSellers({
+  //   keyword: debouncedEmail,
+  //   perPage: 5,
+  // });
 
   const handleChange = (field: keyof typeof seller, value: typeof field) => {
     setSeller((prev) => ({
@@ -31,6 +46,27 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
       [field]: value,
     }));
   };
+
+  // const handleFocus = (method: "blur" | "focus") => {
+  //   if (method === "blur") {
+  //     const debounceBlur = debounce(() => setIsEmailFocused(false), 100);
+  //     debounceBlur();
+  //     return;
+  //   }
+
+  //   setIsEmailFocused(true);
+  // };
+
+  // const handleEmailSelect = (seller: { id: number, name: string, email: string }) => {
+  //   setSeller({
+  //     id: seller.id,
+  //     name: seller.name,
+  //     email: seller.email,
+  //   });
+
+  //   setValue("name", seller.name);
+  //   setValue("email", seller.email);
+  // };
 
   const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
     setSeller(data);
