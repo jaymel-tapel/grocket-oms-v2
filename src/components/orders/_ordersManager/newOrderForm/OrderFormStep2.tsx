@@ -2,11 +2,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
+  Client,
+  useGetAllClients,
   useGetClientIndustries,
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
+import { useDebounce } from "../../../../hooks/useDebounce";
+import { debounce } from "lodash";
 
 const selectClientSchema = z.object({
   name: z.string(),
@@ -26,7 +30,7 @@ type FormProps = {
 
 const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   const { setStep, client, setClient } = useOrderForm() as OrderFormContext;
-
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
 
@@ -34,8 +38,18 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<SelectClientSchema>({
     resolver: zodResolver(selectClientSchema),
+  });
+
+  const clientEmail = watch("email");
+  const debouncedEmail = useDebounce(clientEmail, 500);
+
+  const { data: clients } = useGetAllClients({
+    keyword: debouncedEmail,
+    perPage: 5,
   });
 
   const handleChange = (field: keyof typeof client, value: string | number) => {
@@ -45,11 +59,51 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     }));
   };
 
+  const handleFocus = (method: "blur" | "focus") => {
+    if (method === "blur") {
+      const debounceBlur = debounce(() => setIsEmailFocused(false), 100);
+      debounceBlur();
+      return;
+    }
+
+    setIsEmailFocused(true);
+  };
+
+  const handleEmailSelect = (client: Client) => {
+    setClient({
+      id: client.id,
+      name: client.name,
+      email: client.email,
+      industry: client.clientInfo.industryId ?? 41,
+      origin: client.clientInfo.sourceId ?? 1,
+      phone: client.phone ?? "",
+      unit_cost: client.clientInfo.default_unit_cost ?? 10,
+      third_party_id: client.clientInfo.thirdPartyId ?? "",
+    });
+
+    setValue("name", client.name);
+    setValue("email", client.email);
+    setValue("industry", client.clientInfo.industryId ?? 41);
+    setValue("origin", client.clientInfo.sourceId ?? 1);
+    setValue("phone", client.phone ?? "");
+    setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
+    setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
+  };
+
   const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
-    console.log(data);
     setClient({ ...data, phone: data.phone ?? "" });
     setStep(3);
   };
+
+  useEffect(() => {
+    if (debouncedEmail === "") {
+      setClient((prev) => ({
+        ...prev,
+        id: undefined,
+      }));
+    }
+    //eslint-disable-next-line
+  }, [debouncedEmail]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="">
@@ -77,9 +131,10 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 {...register("name", {
                   onChange: (e) => handleChange("name", e.target.value),
                 })}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
                   errors.name && "border-red-500"
                 }`}
+                disabled={client.id ? true : false}
               />
               {errors.name && (
                 <p className="text-xs italic text-red-500 mt-2">
@@ -95,7 +150,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
             >
               Email
             </label>
-            <div className="w-full mt-2">
+            <div className="w-full mt-2 relative">
               <input
                 type="email"
                 id="clientEmail"
@@ -103,10 +158,28 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 {...register("email", {
                   onChange: (e) => handleChange("email", e.target.value),
                 })}
+                onFocus={() => handleFocus("focus")}
+                onBlur={() => handleFocus("blur")}
+                autoComplete="off"
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.email && "border-red-500"
                 }`}
               />
+              {isEmailFocused && clients?.data && (
+                <div className="absolute w-full bg-white border border-gray-300">
+                  {clients.data.map((client, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="p-2 cursor-pointer hover:bg-grBlue-base hover:text-white"
+                        onClick={() => handleEmailSelect(client)}
+                      >
+                        {client.email}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               {errors.email && (
                 <p className="text-xs italic text-red-500 mt-2">
                   {errors.email?.message}

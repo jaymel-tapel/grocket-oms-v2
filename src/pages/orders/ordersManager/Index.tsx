@@ -103,7 +103,7 @@ const Index = () => {
         </div>
 
         <Button type="button" variant="lightBlue" onClick={handleAddOrder}>
-          Create Account
+          New Order
         </Button>
       </div>
       <div className="bg-white">
