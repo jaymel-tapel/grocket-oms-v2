@@ -39,6 +39,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   });
 
   const handleChange = (field: keyof typeof client, value: string | number) => {
+    console.log(value);
     setClient((prev) => ({
       ...prev,
       [field]: value,
@@ -193,8 +194,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 id="origin"
                 autoComplete="off"
                 {...register("origin", {
-                  onChange: (e) =>
-                    handleChange("origin", parseInt(e.target.value)),
+                  onChange: (e) => handleChange("origin", e.target.value),
                 })}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.origin && "border-red-500"
@@ -229,8 +229,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 id="industry"
                 autoComplete="off"
                 {...register("industry", {
-                  onChange: (e) =>
-                    handleChange("industry", parseInt(e.target.value)),
+                  onChange: (e) => handleChange("industry", e.target.value),
                 })}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.industry && "border-red-500"

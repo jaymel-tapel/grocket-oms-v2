@@ -38,12 +38,16 @@ export type OrderFormContext = {
   company: SelectCompany;
   reviews: Reviews;
   orderDate: string;
+  remarks: string;
+  sendConfirmation: boolean;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setSeller: React.Dispatch<React.SetStateAction<SelectSeller>>;
   setClient: React.Dispatch<React.SetStateAction<SelectClient>>;
   setCompany: React.Dispatch<React.SetStateAction<SelectCompany>>;
   setReviews: React.Dispatch<React.SetStateAction<Reviews>>;
   setOrderDate: React.Dispatch<React.SetStateAction<string>>;
+  setRemarks: React.Dispatch<React.SetStateAction<string>>;
+  setConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const OrderFormContext = createContext<OrderFormContext>({
@@ -61,12 +65,16 @@ export const OrderFormContext = createContext<OrderFormContext>({
   company: { name: "", url: "" },
   reviews: [],
   orderDate: "",
+  remarks: "",
+  sendConfirmation: false,
   setStep: () => {},
   setSeller: () => {},
   setClient: () => {},
   setCompany: () => {},
   setReviews: () => {},
   setOrderDate: () => {},
+  setRemarks: () => {},
+  setConfirmation: () => {},
 });
 
 export const useOrderForm = () => useContext(OrderFormContext);
@@ -84,8 +92,8 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
   const [client, setClient] = useState<SelectClient>({
     name: "",
     email: "",
-    origin: 0,
-    industry: 0,
+    origin: 1,
+    industry: 1,
     unit_cost: 0,
     phone: "",
     third_party_id: "",
@@ -93,6 +101,8 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
   const [company, setCompany] = useState<SelectCompany>({ name: "", url: "" });
   const [reviews, setReviews] = useState<Reviews>([]);
   const [orderDate, setOrderDate] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const [sendConfirmation, setConfirmation] = useState(false);
 
   return (
     <OrderFormContext.Provider
@@ -103,12 +113,16 @@ export const OrderFormProvider: React.FC<ProviderProps> = ({ children }) => {
         company,
         reviews,
         orderDate,
+        remarks,
+        sendConfirmation,
         setStep,
         setSeller,
         setClient,
         setCompany,
         setReviews,
         setOrderDate,
+        setRemarks,
+        setConfirmation,
       }}
     >
       {children}
