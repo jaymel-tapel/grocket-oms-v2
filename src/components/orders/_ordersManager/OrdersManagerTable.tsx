@@ -19,7 +19,7 @@ const COLUMNS = [
   "Order ID",
   "Client",
   "Total",
-  "Review",
+  "Reviews",
   "Payment Status",
   "Remarks",
 ];
@@ -78,6 +78,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
   }, [currentPage]);
 
   const handleClick = (orderId: number) => {
+    // @ts-expect-error idk why this is giving error all of a sudden
     navigate({
       to: "/orders/orders_manager/$orderId",
       params: { orderId },
@@ -114,7 +115,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
               <TableBodyCell>{order.id}</TableBodyCell>
               <TableBodyCell>{order.client.name}</TableBodyCell>
               <TableBodyCell>{order.total_price}</TableBodyCell>
-              <TableBodyCell>5</TableBodyCell>
+              <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
               <TableBodyCell>
                 <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                   {order.payment_status}

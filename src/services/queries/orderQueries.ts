@@ -26,6 +26,7 @@ export type Order = {
   payment_status_date: string | null;
   date_paid: string | null;
   invoice_image: string | null;
+  orderReviewCount: number;
   client: Client;
   company: Company;
 };

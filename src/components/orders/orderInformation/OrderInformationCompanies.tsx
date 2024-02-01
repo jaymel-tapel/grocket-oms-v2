@@ -20,21 +20,6 @@ const scrapedStats = {
   reviews: [78, 2, 0, 0, 4],
 };
 
-const companyLinks = [
-  {
-    _id: "1359",
-    status: 1,
-    created_at: "2023-03-21T19:38:17.000000Z",
-    updated_at: "2023-12-27T02:34:51.000000Z",
-    name: "RECHTSANWALT DR. DR. IRANBOMY ",
-    latest_check: 0,
-    check_url: 1,
-    valid_url: 1,
-    url: "https://g.page/Rechtsanwalt-Iranbomy?share",
-    client_id: 1696,
-  },
-];
-
 const OrderInformationCompanies: React.FC = () => {
   return (
     <div className="border-b border-grGray-dark">
@@ -76,7 +61,7 @@ const OrderInformationCompanies: React.FC = () => {
 
       <div className="py-4 flex flex-col">
         <span className="font-medium">Client Links</span>
-        <CompanyLinksTable companies={companyLinks} />
+        <CompanyLinksTable companies={[]} />
       </div>
     </div>
   );

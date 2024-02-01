@@ -1,8 +1,13 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import OrderReviewsTable from "../../orderInformation/OrderReviewsTable";
 import { useOrderForm } from "./NewOrderFormContext";
 import { Button } from "../../../tools/buttons/Button";
 import ReviewsFromGoogleTable from "../../orderInformation/ReviewsFromGoogleTable";
+import {
+  PendingReview,
+  useGetCompanyReviews,
+} from "../../../../services/queries/companyQueries";
+import toast from "react-hot-toast";
 
 const ADD_REVIEW_METHODS = [
   "Select From Reviews",
@@ -16,28 +21,60 @@ type FormProps = {
 };
 
 const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
-  const { setStep, reviews, setReviews } = useOrderForm();
+  const { setStep, reviews, setReviews, company } = useOrderForm();
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
     "Select From Reviews"
   );
 
   const [name, setName] = useState("");
+  const [noOfReviews, setNoOfReviews] = useState(10);
+
+  const { companyReviews, getCompanyReviews, isFetchingCompanyReviews } =
+    useGetCompanyReviews();
+
+  const filteredCompanyReviews = useMemo(() => {
+    const _filteredCompanyReviews = companyReviews?.filter(
+      (lowRev) =>
+        !reviews.some(
+          (rev) => lowRev?.google_review_id === rev?.google_review_id
+        )
+    );
+    return _filteredCompanyReviews;
+  }, [companyReviews, reviews]);
+
+  const handleGetReviews = () => {
+    getCompanyReviews({ url: company.url, quantity: noOfReviews });
+  };
 
   const handleTabClick = (method: AddReviewMethods) => {
     setMethod(method);
   };
 
-  const handleAddReview = () => {
-    if (!name) return;
+  const handleAddReview = (_name?: string, google_review_id?: string) => {
+    if (!_name) {
+      if (!name) {
+        toast("Name cannot be empty");
+        return;
+      }
+    }
 
-    setReviews([
-      ...reviews,
-      {
-        name,
-        status: "NEU",
-        _id: "temp",
-      },
-    ]);
+    const newReview: PendingReview = {
+      name: _name ?? name,
+      status: "NEU",
+      id: reviews.length,
+    };
+
+    if (google_review_id) {
+      newReview.google_review_id = google_review_id;
+    }
+
+    setReviews([...reviews, newReview]);
+
+    setName("");
+  };
+
+  const handleDeleteReview = (reviewId: number) => {
+    setReviews(reviews.filter((review) => review.id !== reviewId));
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -47,10 +84,18 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
     setStep(5);
   };
 
+  useEffect(() => {
+    handleGetReviews();
+    //eslint-disable-next-line
+  }, []);
+
   return (
     <form onSubmit={onSubmit}>
       <div className="-mt-8">
-        <OrderReviewsTable reviews={reviews} />
+        <OrderReviewsTable
+          reviews={reviews}
+          deleteReview={handleDeleteReview}
+        />
       </div>
 
       <div className="mt-8 p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
@@ -73,16 +118,36 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
       <div className="mt-8">
         {selectedMethod === "Select From Reviews" && (
           <>
-            <span className="text-sm font-medium">No. of Reviews</span>
-            <div className="mt-4 flex gap-4 w-fit items-center">
-              <input type="number" className="p-2 border rounded-sm w-[8rem]" />
-              <Button variant="black" type="button">
+            <div className="flex gap-x-4">
+              <div>
+                <label
+                  htmlFor="no_of_reviews"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  No. of Reviews
+                </label>
+                <div className="w-[8rem] mt-2">
+                  <input
+                    type="number"
+                    id="no_of_reviews"
+                    value={noOfReviews}
+                    min={0}
+                    onChange={(e) => setNoOfReviews(parseInt(e.target.value))}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              <Button variant="black" type="button" className="self-end">
                 Get Reviews
               </Button>
             </div>
             <div className="mt-4">
               <span className="text-sm font-bold">Results</span>
-              <ReviewsFromGoogleTable />
+              <ReviewsFromGoogleTable
+                reviews={filteredCompanyReviews}
+                addReview={handleAddReview}
+                isPending={isFetchingCompanyReviews}
+              />
             </div>
           </>
         )}
@@ -104,7 +169,11 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <Button type="button" variant="black" onClick={handleAddReview}>
+              <Button
+                type="button"
+                variant="black"
+                onClick={() => handleAddReview()}
+              >
                 Add Review
               </Button>
             </div>
