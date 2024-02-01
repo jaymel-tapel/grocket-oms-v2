@@ -3,6 +3,10 @@ import { useOrderForm } from "./NewOrderFormContext";
 import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useCreateOrder } from "../../../../services/queries/orderQueries";
+import {
+  useGetClientIndustries,
+  useGetClientOrigins,
+} from "../../../../services/queries/clientsQueries";
 
 type FormProps = {
   children: ReactNode;
@@ -24,6 +28,15 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   } = useOrderForm();
 
   const { mutateAsync: createOrder } = useCreateOrder();
+  const { data: industries } = useGetClientIndustries();
+  const { data: origins } = useGetClientOrigins();
+
+  const nameValues = useMemo(() => {
+    const industry = industries?.find((item) => item.id === client.industry);
+    const origin = origins?.find((item) => item.id === client.origin);
+
+    return { industry: industry?.name ?? "", origin: origin?.name ?? "" };
+  }, [client, industries, origins]);
 
   const reviewsAmount = useMemo(() => {
     const reviewsWithGoogleId = reviews.filter(
@@ -151,11 +164,11 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         <div className="col-span-4 flex flex-col gap-4">
           <div className="flex gap-1.5">
             <span className="font-medium">Client Origin:</span>
-            <span className="">{client.origin}</span>
+            <span className="">{nameValues.origin}</span>
           </div>
           <div className="flex gap-1.5">
             <span className="font-medium">Industry:</span>
-            <span className="">{client.industry}</span>
+            <span className="">{nameValues.industry}</span>
           </div>
           <div className="flex gap-1.5">
             <span className="font-medium">Unit Cost:</span>
