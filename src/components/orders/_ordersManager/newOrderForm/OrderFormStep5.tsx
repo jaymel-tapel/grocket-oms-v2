@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useMemo } from "react";
 import { useOrderForm } from "./NewOrderFormContext";
 import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
@@ -10,10 +10,18 @@ type FormProps = {
 
 const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   const navigate = useNavigate();
-  const { seller, client, company, reviews, orderDate, setOrderDate } =
-    useOrderForm();
-  const [remarks, setRemarks] = useState("");
-  const [isConfirmationEmail, setIsConfirmation] = useState(true);
+  const {
+    seller,
+    client,
+    company,
+    reviews,
+    orderDate,
+    remarks,
+    sendConfirmation,
+    setOrderDate,
+    setRemarks,
+    setConfirmation,
+  } = useOrderForm();
 
   const { mutateAsync: createOrder } = useCreateOrder();
 
@@ -51,8 +59,6 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
       return newObj;
     });
 
-    console.log(reviewsPayload);
-
     if (orderDate) {
       formData.append("order_date", orderDate);
     }
@@ -65,12 +71,17 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
       formData.append("thirdPartyId", client.phone);
     }
 
+    if (remarks) {
+      formData.append("remarks", remarks);
+    }
+
     formData.append("seller_email", seller.email);
     formData.append("seller_name", seller.name);
     formData.append("client_email", client.email);
     formData.append("client_name", client.name);
     formData.append("company_name", company.name);
     formData.append("company_url", company.url);
+    formData.append("send_confirmation", JSON.stringify(sendConfirmation));
     formData.append("unit_cost", JSON.stringify(client.unit_cost));
     formData.append("sourceId", JSON.stringify(client.origin));
     formData.append("industryId", JSON.stringify(client.industry));
@@ -175,7 +186,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
             <input
               type="text"
               id="remarks"
-              value={remarks}
+              defaultValue={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
             />
@@ -186,8 +197,8 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
               name="confirmationEmail"
               type="checkbox"
               className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
-              checked={isConfirmationEmail}
-              onChange={() => setIsConfirmation(!isConfirmationEmail)}
+              checked={sendConfirmation}
+              onChange={() => setConfirmation(!sendConfirmation)}
             />
             <label className="text-black text-sm">
               Send Order Confirmation Detail
