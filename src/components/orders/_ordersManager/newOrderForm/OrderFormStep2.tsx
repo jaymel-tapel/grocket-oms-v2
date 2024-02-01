@@ -39,7 +39,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   });
 
   const handleChange = (field: keyof typeof client, value: string | number) => {
-    console.log(value);
     setClient((prev) => ({
       ...prev,
       [field]: value,
@@ -193,6 +192,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
               <select
                 id="origin"
                 autoComplete="off"
+                defaultValue={client.origin}
                 {...register("origin", {
                   onChange: (e) => handleChange("origin", e.target.value),
                 })}
@@ -228,6 +228,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
               <select
                 id="industry"
                 autoComplete="off"
+                defaultValue={client.industry}
                 {...register("industry", {
                   onChange: (e) => handleChange("industry", e.target.value),
                 })}
