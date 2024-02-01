@@ -55,12 +55,11 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     setCompany({ name: foundCompany.name, url: foundCompany.url });
   };
 
-  const onSubmit: SubmitHandler<SelectCompanySchema> = (data) => {
+  const onSubmit: SubmitHandler<SelectCompanySchema> = () => {
     // data.name here is returning the ID because of how our select component can only pass primitives
     // and we need the ID as identifier for our handleSelect function.
     // We can just try to do the find method
     // here as well to make it much cleaner
-    setCompany(data);
     setStep(4);
   };
 
