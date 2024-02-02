@@ -31,7 +31,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
 
-  const nameValues = useMemo(() => {
+  const labels = useMemo(() => {
     const industry = industries?.find((item) => item.id === client.industry);
     const origin = origins?.find((item) => item.id === client.origin);
 
@@ -164,11 +164,11 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         <div className="col-span-4 flex flex-col gap-4">
           <div className="flex gap-1.5">
             <span className="font-medium">Client Origin:</span>
-            <span className="">{nameValues.origin}</span>
+            <span className="">{labels.origin}</span>
           </div>
           <div className="flex gap-1.5">
             <span className="font-medium">Industry:</span>
-            <span className="">{nameValues.industry}</span>
+            <span className="">{labels.industry}</span>
           </div>
           <div className="flex gap-1.5">
             <span className="font-medium">Unit Cost:</span>

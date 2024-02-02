@@ -52,6 +52,47 @@ export const useGetCompanies = (companyId: number | undefined) => {
   });
 };
 
+type Ratings = {
+  company: string;
+  address: string;
+  rating: string;
+  totalReviews: number;
+  ratingCount: number[];
+};
+
+export const useGetCompanyRatings = () => {
+  const [ratings, setRatings] = useState<Ratings>();
+
+  const { mutateAsync: getGoogleRatings, isPending: isFetchingRatings } =
+    useMutation({
+      mutationFn: (payload: { url: string }) => {
+        return axios.post(SCRAPER_URL + "/v2/fetch-review-stats", payload, {
+          headers: getHeaders(),
+        });
+      },
+      onSuccess: ({ data }) => {
+        const company = {
+          company: data?.placeInfo?.title,
+          address: data?.placeInfo?.address,
+          rating: data?.placeInfo?.rating,
+          totalReviews: data?.placeInfo?.reviews,
+          ratingCount: data.reviews,
+        };
+
+        setRatings(company);
+      },
+      onError: () => {
+        setRatings(undefined);
+      },
+    });
+
+  return {
+    ratings,
+    getGoogleRatings,
+    isFetchingRatings,
+  };
+};
+
 export const useGetCompanyReviews = () => {
   const [companyReviews, setCompanyReviews] = useState<GoogleReview[]>([]);
 
@@ -77,7 +118,7 @@ export const useGetCompanyReviews = () => {
       setCompanyReviews(data);
     },
     onError: (err) => {
-      toast(err.message);
+      toast.error(err.message);
     },
   });
 

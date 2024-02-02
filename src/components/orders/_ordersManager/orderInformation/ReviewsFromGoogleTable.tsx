@@ -1,13 +1,13 @@
 import React from "react";
-import Table from "../../tools/table/Table";
-import TableHead from "../../tools/table/TableHead";
-import TableRow from "../../tools/table/TableRow";
-import TableHeadCell from "../../tools/table/TableHeadCell";
-import TableBody from "../../tools/table/TableBody";
-import TableBodyCell from "../../tools/table/TableBodyCell";
-import StarsIcons from "../../tools/stars/StarIcons";
-import { GoogleReview } from "../../../services/queries/companyQueries";
-import Spinner from "../../tools/spinner/Spinner";
+import Table from "../../../tools/table/Table";
+import TableHead from "../../../tools/table/TableHead";
+import TableRow from "../../../tools/table/TableRow";
+import TableHeadCell from "../../../tools/table/TableHeadCell";
+import TableBody from "../../../tools/table/TableBody";
+import TableBodyCell from "../../../tools/table/TableBodyCell";
+import StarsIcons from "../../../tools/stars/StarIcons";
+import { GoogleReview } from "../../../../services/queries/companyQueries";
+import Spinner from "../../../tools/spinner/Spinner";
 
 const COLUMNS = ["NAME", "RATING", "REVIEW", "ACTION"];
 

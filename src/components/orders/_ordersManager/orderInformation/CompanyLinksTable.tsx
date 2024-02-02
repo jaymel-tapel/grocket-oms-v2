@@ -1,11 +1,11 @@
 import React from "react";
-import Table from "../../tools/table/Table";
-import TableHead from "../../tools/table/TableHead";
-import TableRow from "../../tools/table/TableRow";
-import TableHeadCell from "../../tools/table/TableHeadCell";
-import TableBody from "../../tools/table/TableBody";
-import TableBodyCell from "../../tools/table/TableBodyCell";
-import TableContainer from "../../tools/table/TableContainer";
+import Table from "../../../tools/table/Table";
+import TableHead from "../../../tools/table/TableHead";
+import TableRow from "../../../tools/table/TableRow";
+import TableHeadCell from "../../../tools/table/TableHeadCell";
+import TableBody from "../../../tools/table/TableBody";
+import TableBodyCell from "../../../tools/table/TableBodyCell";
+import TableContainer from "../../../tools/table/TableContainer";
 
 const COLUMNS = ["ID", "COMPANY NAME", "URL", "ACTION"];
 

@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Table from "../../tools/table/Table";
-import TableHead from "../../tools/table/TableHead";
-import TableRow from "../../tools/table/TableRow";
-import TableHeadCell from "../../tools/table/TableHeadCell";
-import TableBody from "../../tools/table/TableBody";
-import TableBodyCell from "../../tools/table/TableBodyCell";
-import { Button } from "../../tools/buttons/Button";
-import { PendingReview } from "../../../services/queries/companyQueries";
+import Table from "../../../tools/table/Table";
+import TableHead from "../../../tools/table/TableHead";
+import TableRow from "../../../tools/table/TableRow";
+import TableHeadCell from "../../../tools/table/TableHeadCell";
+import TableBody from "../../../tools/table/TableBody";
+import TableBodyCell from "../../../tools/table/TableBodyCell";
+import { Button } from "../../../tools/buttons/Button";
+import { PendingReview } from "../../../../services/queries/companyQueries";
 
 const COLUMNS = ["ID", "NAME", "REVIEW STATUS", "ORIGIN", "ACTION"];
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CompanyLinksTable from "../../orders/orderInformation/CompanyLinksTable";
+import CompanyLinksTable from "../../orders/_ordersManager/orderInformation/CompanyLinksTable";
 import { Button } from "../../tools/buttons/Button";
 
 const ClientFormCompanies: React.FC = () => {

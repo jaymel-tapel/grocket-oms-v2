@@ -1,13 +1,13 @@
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
-import OrderReviewsTable from "../orderInformation/OrderReviewsTable";
-import { useOrderForm } from "./NewOrderFormContext";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "../../../tools/buttons/Button";
-import ReviewsFromGoogleTable from "../orderInformation/ReviewsFromGoogleTable";
 import {
+  Company,
   PendingReview,
   useGetCompanyReviews,
 } from "../../../../services/queries/companyQueries";
+import ReviewsFromGoogleTable from "./ReviewsFromGoogleTable";
 import toast from "react-hot-toast";
+import OrderReviewsTable from "./OrderReviewsTable";
 
 const ADD_REVIEW_METHODS = [
   "Select From Reviews",
@@ -15,17 +15,15 @@ const ADD_REVIEW_METHODS = [
 ] as const;
 
 type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
-
-type FormProps = {
-  children: ReactNode;
+type Props = {
+  company: Company;
+  reviews: PendingReview[];
 };
 
-const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
-  const { setStep, reviews, setReviews, company } = useOrderForm();
+const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
     "Select From Reviews"
   );
-
   const [name, setName] = useState("");
   const [noOfReviews, setNoOfReviews] = useState(10);
 
@@ -68,20 +66,13 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
       newReview.google_review_id = google_review_id;
     }
 
-    setReviews([...reviews, newReview]);
+    // setReviews([...reviews, newReview]);
 
     setName("");
   };
 
   const handleDeleteReview = (reviewId: number) => {
-    setReviews(reviews.filter((review) => review.id !== reviewId));
-  };
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (reviews.length === 0) return;
-
-    setStep(5);
+    console.log(reviewId);
   };
 
   useEffect(() => {
@@ -90,8 +81,8 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
   }, []);
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="-mt-8">
+    <div className="border-b border-grGray-dark">
+      <div className="mt-4">
         <OrderReviewsTable
           reviews={reviews}
           deleteReview={handleDeleteReview}
@@ -158,7 +149,7 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
         )}
 
         <div
-          className={`mt-4 mb-12 flex ${
+          className={`mt-4 flex ${
             selectedMethod === "Select From Reviews"
               ? "justify-end"
               : "justify-between"
@@ -168,27 +159,17 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
             <div className="flex gap-4 items-end">
               <div className="flex flex-col gap-1">
                 <span className="text-sm font-medium">Name</span>
-                <input
-                  type="text"
-                  className="border rounded-sm w-[20rem]"
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <input type="text" className="border rounded-sm w-[20rem]" />
               </div>
-              <Button
-                type="button"
-                variant="black"
-                onClick={() => handleAddReview()}
-              >
+              <Button type="button" variant="black">
                 Add Review
               </Button>
             </div>
           )}
         </div>
       </div>
-
-      {children}
-    </form>
+    </div>
   );
 };
 
-export default OrderFormStep4;
+export default OrderInformationReviews;
