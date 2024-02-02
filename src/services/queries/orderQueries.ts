@@ -1,10 +1,16 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getHeaders } from "../../utils/utils";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Pagination } from "./accountsQueries";
 import { Client } from "./clientsQueries";
-import { Company } from "./companyQueries";
+import { Company, PendingReview } from "./companyQueries";
+import { OrderInformationSchema } from "../../pages/orders/ordersManager/Order";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const ORDERS_URL = API_URL + "/orders";
@@ -27,6 +33,7 @@ export type Order = {
   date_paid: string | null;
   invoice_image: string | null;
   orderReviewCount: number;
+  orderReviews: PendingReview[];
   client: Client;
   company: Company;
 };
@@ -81,7 +88,13 @@ export const useGetAllOrders = (search?: OrdersParams) => {
   return useQuery(getAllOrdersOptions(search));
 };
 
+export const useGetOrder = (id: number) => {
+  return useQuery(getOrderOption(id));
+};
+
 export const useCreateOrder = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["create-order"],
     mutationFn: async (payload: FormData) => {
@@ -89,6 +102,26 @@ export const useCreateOrder = () => {
     },
     onSuccess: () => {
       toast.success("Order created!");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
+export const useUpdateOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: {
+      payload: OrderInformationSchema & { companyId: number; brandId: number };
+      orderId: number;
+    }) => {
+      return axios.patch(ORDERS_URL + `/${arg.orderId}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Order updated!");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
 };

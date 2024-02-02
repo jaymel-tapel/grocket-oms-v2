@@ -1,0 +1,163 @@
+import React, { useState } from "react";
+import { Button } from "../../../components/tools/buttons/Button";
+import OrderInformationForm from "../../../components/orders/_ordersManager/orderInformation/OrderInformationForm";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PlusIcon } from "@heroicons/react/20/solid";
+import OrderInformationCompanies from "../../../components/orders/_ordersManager/orderInformation/OrderInformationCompanies";
+import OrderInformationReviews from "../../../components/orders/_ordersManager/orderInformation/OrderInformationReviews";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  useGetOrder,
+  useUpdateOrder,
+} from "../../../services/queries/orderQueries";
+import { orderRoute } from "../../routeTree";
+import Spinner from "../../../components/tools/spinner/Spinner";
+
+const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
+type View = (typeof VIEWS)[number];
+
+const orderInformationSchema = z.object({
+  seller_name: z.string(),
+  seller_email: z.string().email().min(1, { message: "Invalid Email Address" }),
+  client_name: z.string(),
+  client_email: z.string().email().min(1, { message: "Invalid Email Address" }),
+  phone: z.string().optional().catch(""),
+  thirdPartyId: z.string().optional().nullable(),
+  sourceId: z.coerce.number().min(1).catch(1),
+  industryId: z.coerce.number().min(1).catch(41),
+  unit_cost: z.coerce.number().min(1).catch(10),
+  company_name: z.string(),
+  company_url: z.string(),
+});
+
+export type OrderInformationSchema = z.infer<typeof orderInformationSchema>;
+
+const Order: React.FC = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<View>("Order Information");
+  const { orderId } = orderRoute.useParams();
+
+  const { data: order } = useGetOrder(orderId);
+  const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<OrderInformationSchema>({
+    resolver: zodResolver(orderInformationSchema),
+    values: order && {
+      client_email: order.client.email,
+      client_name: order.client.name,
+      company_name: order.company.name,
+      company_url: order.company.url,
+      industryId: order.client.clientInfo.industryId,
+      seller_name: order.client.seller.name,
+      seller_email: order.client.seller.email,
+      sourceId: order.client.clientInfo.sourceId,
+      unit_cost: order.unit_cost,
+      phone: order.client.phone,
+      thirdPartyId: order.client.clientInfo.thirdPartyId,
+    },
+  });
+
+  const handleTabClick = (view: View) => {
+    setActiveTab(view);
+  };
+
+  const handleBack = () => {
+    navigate({ to: "/orders/orders_manager" });
+  };
+
+  const onSubmit: SubmitHandler<OrderInformationSchema> = async (data) => {
+    if (!order) return;
+    console.log(data);
+    const response = await updateOrder({
+      payload: { ...data, companyId: order.companyId, brandId: 1 },
+      orderId,
+    });
+
+    if (response.status === 200) {
+      handleBack();
+    }
+  };
+
+  return (
+    <div>
+      <span
+        className="text-grBlue-light font-medium cursor-pointer"
+        onClick={handleBack}
+      >
+        Back
+      </span>
+
+      <div className="mt-10 p-10 pt-6 bg-white shadow-md">
+        <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
+          {VIEWS.map((view, index) => {
+            const isActive = activeTab === view;
+
+            return (
+              <Button
+                key={index}
+                variant={isActive ? "default" : "inactive"}
+                onClick={() => handleTabClick(view)}
+              >
+                {view}
+              </Button>
+            );
+          })}
+        </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {activeTab === "Order Information" && (
+            <OrderInformationForm
+              control={control}
+              errors={errors}
+              order={order}
+            />
+          )}
+
+          {activeTab === "Companies" && (
+            <OrderInformationCompanies
+              control={control}
+              company={order?.company}
+              companies={order?.client.companies ?? []}
+              errors={errors}
+            />
+          )}
+
+          {activeTab === "Reviews" && order && (
+            <OrderInformationReviews
+              reviews={order.orderReviews}
+              company={order.company}
+            />
+          )}
+
+          <div className="mt-4 flex gap-4 flex-col md:flex-row justify-between">
+            <Button type="button" variant="delete">
+              Delete
+            </Button>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Button type="button" variant="green">
+                <PlusIcon className="w-3 h-3 mr-1" /> Create Task
+              </Button>
+              <Button type="submit" disabled={isUpdating}>
+                {isUpdating ? (
+                  <>
+                    <Spinner />
+                    Updating
+                  </>
+                ) : (
+                  "Update Order"
+                )}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Order;
