@@ -15,11 +15,17 @@ const Index: React.FC = () => {
   };
 
   if (isLoading) {
-    return <Spinner className="py-40 px-40" />;
+    return (
+      <>
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      </>
+    );
   }
 
   if (!data || !Array.isArray(data)) {
-    return <p>Error loading brands</p>;
+    return <p className="text-center">Error loading brands</p>;
   }
 
   return (

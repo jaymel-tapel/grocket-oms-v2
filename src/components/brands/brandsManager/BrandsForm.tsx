@@ -52,6 +52,10 @@ const BrandsForm: React.FC<FormProps> = ({ brands, brandId }) => {
     }
   };
 
+  const handleCancel = () => {
+    navigate({ to: "/brands/brands_manager" });
+  };
+
   return (
     <form
       className="bg-white w-full max-w-[40rem]"
@@ -167,13 +171,13 @@ const BrandsForm: React.FC<FormProps> = ({ brands, brandId }) => {
         </div>
       </div>
       <div className="p-8 flex justify-end gap-4 ">
-        <Button type="button" variant="noBorder">
+        <Button onClick={handleCancel} type="button" variant="noBorder">
           Cancel
         </Button>
         <Button type="submit" disabled={isBrandCreating || isBrandUpdating}>
           {isBrandCreating || isBrandUpdating ? (
             <>
-              <Spinner /> Submitting
+              Submitting <Spinner />
             </>
           ) : (
             "Submit"
