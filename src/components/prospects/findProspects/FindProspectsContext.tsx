@@ -3,6 +3,7 @@ import { Prospect } from "../../../services/queries/prospectsQueries";
 
 type ProspectFinder = {
   search: string;
+  location: string;
   limit: number;
 };
 
@@ -28,7 +29,7 @@ export type FindProspectsContext = {
 
 export const FindProspectsContext = createContext<FindProspectsContext>({
   step: 1,
-  prospectFinder: { search: "", limit: 1 },
+  prospectFinder: { search: "", location: "", limit: 1 },
   isScraping: false,
   prospects: [],
   selectedProspects: [],
@@ -53,6 +54,7 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
   const [step, setStep] = useState(1);
   const [prospectFinder, setProspectFinder] = useState<ProspectFinder>({
     search: "",
+    location: "",
     limit: 1,
   });
   const [isScraping, setIsScraping] = useState(false);

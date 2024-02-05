@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrapeProspects } from "../../../services/queries/prospectsQueries";
 
 const step1Schema = z.object({
+  location: z.string(),
   search: z.string(),
   limit: z.coerce.number(),
 });
@@ -78,6 +79,33 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
             )}
           </div>
         </div>
+        <div>
+          <label
+            htmlFor="prospectLocation"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Location
+          </label>
+          <div className="w-full mt-2">
+            <input
+              type="text"
+              id="prospectLocation"
+              defaultValue={prospectFinder.location}
+              {...register("location", {
+                onChange: (e) => handleChange("search", e.target.value),
+              })}
+              className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                errors.location && "border-red-500"
+              }`}
+            />
+            {errors.location && (
+              <p className="text-xs italic text-red-500 mt-2">
+                {errors.location?.message}
+              </p>
+            )}
+          </div>
+        </div>
+
         <div>
           <label
             htmlFor="prospectLimit"
