@@ -30,7 +30,6 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
     },
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
-      console.log("accept file zero:", file);
       setImageFile(Object.assign(file, { preview: URL.createObjectURL(file) }));
     },
   });
@@ -65,6 +64,10 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
         navigate({ to: "/brands/brands_manager" });
       }
     }
+  };
+
+  const handleCancel = () => {
+    navigate({ to: "/brands/brands_manager" });
   };
 
   return (
@@ -128,7 +131,7 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
         </div>
 
         <div className="flex gap-4 justify-end">
-          <Button type="button" variant="noBorder">
+          <Button onClick={handleCancel} type="button" variant="noBorder">
             Cancel
           </Button>
           <Button
@@ -138,7 +141,7 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
           >
             {isPending ? (
               <>
-                <Spinner /> Saving
+                Saving <Spinner />
               </>
             ) : (
               "Save"

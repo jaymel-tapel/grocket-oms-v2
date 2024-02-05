@@ -21,7 +21,8 @@ export type Tasks = {
   remarks: string;
   email: string;
   note: string;
-  task: { taskNotes: { note: string } };
+  taskNotes: { note: string } /* taskNote here is for taskForm */;
+  task: { taskNotes: { note: string } } /* This one is for dashboard */;
   taskAccountant: {
     taskId: number;
     description: string;
