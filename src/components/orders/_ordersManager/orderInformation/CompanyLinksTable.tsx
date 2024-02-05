@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Table from "../../../tools/table/Table";
 import TableHead from "../../../tools/table/TableHead";
 import TableRow from "../../../tools/table/TableRow";
@@ -6,6 +6,9 @@ import TableHeadCell from "../../../tools/table/TableHeadCell";
 import TableBody from "../../../tools/table/TableBody";
 import TableBodyCell from "../../../tools/table/TableBodyCell";
 import TableContainer from "../../../tools/table/TableContainer";
+import { useDeleteClientCompany } from "../../../../services/queries/clientsQueries";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import Spinner from "../../../tools/spinner/Spinner";
 
 const COLUMNS = ["ID", "COMPANY NAME", "URL", "ACTION"];
 
@@ -16,9 +19,30 @@ type CompanyLinksTableProps = {
     url: string;
     valid_url?: boolean;
   }[];
+  handleDeleteLocal?: (index: number) => void;
 };
 
-const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({ companies }) => {
+const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
+  companies,
+  handleDeleteLocal,
+}) => {
+  const [identifier, setIdentifier] = useState<number | null>(null);
+
+  const { mutateAsync: deleteCompany, isPending } = useDeleteClientCompany();
+
+  const handleDeleteClick = async (id: number | undefined, index: number) => {
+    if (id === undefined) {
+      if (!handleDeleteLocal) return;
+
+      handleDeleteLocal(index);
+    } else {
+      setIdentifier(id);
+      await deleteCompany(id);
+    }
+
+    setIdentifier(null);
+  };
+
   return (
     <TableContainer className="border-x-0 shadow-none">
       <Table>
@@ -36,7 +60,16 @@ const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({ companies }) => {
                 <TableBodyCell>{company.id}</TableBodyCell>
                 <TableBodyCell>{company.name}</TableBodyCell>
                 <TableBodyCell>{company.url}</TableBodyCell>
-                {/* <TableBodyCell></TableBodyCell> */}
+                <TableBodyCell>
+                  {identifier === company.id && isPending ? (
+                    <Spinner />
+                  ) : (
+                    <TrashIcon
+                      className="h-4 w-4 text-red-500 cursor-pointer"
+                      onClick={() => handleDeleteClick(company.id, index)}
+                    />
+                  )}
+                </TableBodyCell>
               </TableRow>
             );
           })}
