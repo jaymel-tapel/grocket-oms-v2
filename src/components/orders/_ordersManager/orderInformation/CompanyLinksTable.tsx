@@ -31,6 +31,8 @@ const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
   const { mutateAsync: deleteCompany, isPending } = useDeleteClientCompany();
 
   const handleDeleteClick = async (id: number | undefined, index: number) => {
+    if (!window.confirm("Delete this company from client?")) return;
+
     if (id === undefined) {
       if (!handleDeleteLocal) return;
 

@@ -73,8 +73,8 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
     setName("");
   };
 
-  const handleDeleteReview = (reviewId: number) => {
-    setReviews(reviews.filter((review) => review.id !== reviewId));
+  const handleDeleteReview = (index: number) => {
+    setReviews(reviews.filter((_, reviewIndex) => reviewIndex !== index));
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +94,7 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
       <div className="-mt-8">
         <OrderReviewsTable
           reviews={reviews}
-          deleteReview={handleDeleteReview}
+          handleDeleteLocal={handleDeleteReview}
         />
       </div>
 
