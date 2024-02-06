@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
 import { Button } from "../../../components/tools/buttons/Button";
+import { getActiveFilterLabel } from "../../../utils/utils";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -37,6 +38,10 @@ const Index = () => {
 
     return { data: data.data, pagination: data.meta };
   }, [data]);
+
+  const activeFilterLabel = useMemo(() => {
+    return getActiveFilterLabel(filter);
+  }, [filter]);
 
   const handleAddOrder = () => {
     navigate({ to: "/orders/orders_manager/new" });
@@ -118,6 +123,7 @@ const Index = () => {
             />
             <FiltersButton
               activeFilter={filter}
+              label={activeFilterLabel}
               filterOptions={ordersFilters}
               handleChange={handleFilterChange}
             />

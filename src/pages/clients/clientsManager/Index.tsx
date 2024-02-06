@@ -9,6 +9,7 @@ import { debounce } from "lodash";
 import { useGetAllClients } from "../../../services/queries/clientsQueries";
 import ClientsManagersTable from "../../../components/clients/clientsManager/ClientsManagerTable";
 import { ClientsFiltersType, clientsFilters } from "../../routeFilters";
+import { getActiveFilterLabel } from "../../../utils/utils";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -37,6 +38,10 @@ const Index = () => {
 
     return { data: data.data, pagination: data.meta };
   }, [data]);
+
+  const activeFilterLabel = useMemo(() => {
+    return getActiveFilterLabel(filter);
+  }, [filter]);
 
   const handleCreateAccount = () => {
     navigate({ to: "/clients/clients_manager/new" });
@@ -118,6 +123,7 @@ const Index = () => {
             />
             <FiltersButton
               activeFilter={filter}
+              label={activeFilterLabel}
               filterOptions={clientsFilters}
               handleChange={handleFilterChange}
             />

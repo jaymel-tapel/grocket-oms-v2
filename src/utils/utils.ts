@@ -97,3 +97,30 @@ export const getPaginationRange = (
     return [1, "... ", ...middleRange, " ...", totalPage];
   }
 };
+
+export const getActiveFilterLabel = (filter: string | undefined) => {
+  switch (filter) {
+    case "id":
+      return "ID";
+    case "email":
+      return "Email";
+    case "order_id":
+      return "Order ID";
+    case "company":
+      return "Company";
+    case "payment_status":
+      return "Payment Status";
+    case "review_status":
+      return "Review Status";
+    case "reviewer_name":
+      return "Reviewer Name";
+    case "client":
+      return "Client";
+    case "seller":
+      return "Seller";
+    case "remarks":
+      return "Remarks";
+    default:
+      return "";
+  }
+};

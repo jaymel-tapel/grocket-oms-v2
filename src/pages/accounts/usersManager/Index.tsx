@@ -9,6 +9,7 @@ import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import { UsersFiltersType, usersFilters } from "../../routeFilters";
 import { debounce } from "lodash";
 import UsersManagerTable from "../../../components/accounts/usersManager/UsersManagerTable";
+import { getActiveFilterLabel } from "../../../utils/utils";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -37,6 +38,10 @@ const Index = () => {
 
     return { data: data.data, pagination: data.meta };
   }, [data]);
+
+  const activeFilterLabel = useMemo(() => {
+    return getActiveFilterLabel(filter);
+  }, [filter]);
 
   const handleCreateAccount = () => {
     navigate({ to: "/accounts/users_manager/new" });
@@ -118,6 +123,7 @@ const Index = () => {
             />
             <FiltersButton
               activeFilter={filter}
+              label={activeFilterLabel}
               filterOptions={usersFilters}
               handleChange={handleFilterChange}
             />

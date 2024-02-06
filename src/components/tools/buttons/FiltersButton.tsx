@@ -16,19 +16,21 @@ type Props = {
   handleChange: (
     filter: UsersFiltersType | ClientsFiltersType | OrdersFiltersType
   ) => void;
+  label?: string;
 };
 
 const FiltersButton: React.FC<Props> = ({
   activeFilter,
   filterOptions,
   handleChange,
+  label = "",
 }) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        <Menu.Button className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-400 whitespace-nowrap shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
           <FunnelIcon className="h-4 w-4 text-gray-400" aria-hidden="true" />
-          Filters
+          {label.length > 0 ? label : "Filters"}
         </Menu.Button>
       </div>
 
