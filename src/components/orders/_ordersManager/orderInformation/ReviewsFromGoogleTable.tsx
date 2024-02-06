@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Table from "../../../tools/table/Table";
 import TableHead from "../../../tools/table/TableHead";
 import TableRow from "../../../tools/table/TableRow";
@@ -8,23 +8,42 @@ import TableBodyCell from "../../../tools/table/TableBodyCell";
 import StarsIcons from "../../../tools/stars/StarIcons";
 import { GoogleReview } from "../../../../services/queries/companyQueries";
 import Spinner from "../../../tools/spinner/Spinner";
+import { Button } from "../../../tools/buttons/Button";
 
 const COLUMNS = ["NAME", "RATING", "REVIEW", "ACTION"];
 
 type TableProps = {
   reviews: GoogleReview[];
   addReview: (name?: string, google_review_id?: string) => void;
-  isPending: boolean;
+  isPending?: boolean;
+  isNewOrder?: boolean;
 };
 
 const ReviewsFromGoogleTable: React.FC<TableProps> = ({
   reviews,
   addReview,
   isPending,
+  isNewOrder = true,
 }) => {
-  const handleAddReview = (name: string, google_review_id: string) => {
+  const [identifier, setIdentifier] = useState<number | null>(null);
+
+  const handleAddReview = (
+    name: string,
+    google_review_id: string,
+    index: number
+  ) => {
+    if (!isNewOrder) {
+      setIdentifier(index);
+    }
+
     addReview(name, google_review_id);
   };
+
+  useEffect(() => {
+    if (!isPending) {
+      setIdentifier(null);
+    }
+  }, [isPending]);
 
   return (
     <Table>
@@ -59,13 +78,22 @@ const ReviewsFromGoogleTable: React.FC<TableProps> = ({
                 <StarsIcons stars={review.rating} showLabels={false} />
               </TableBodyCell>
               <TableBodyCell>{review.description}</TableBodyCell>
-              <TableBodyCell
-                className="text-grBlue-dark cursor-pointer font-medium whitespace-nowrap"
-                onClick={() =>
-                  handleAddReview(review.name, review.google_review_id)
-                }
-              >
-                Add Review
+              <TableBodyCell className="text-grBlue-dark font-medium whitespace-nowrap">
+                <Button
+                  variant={"noBorder"}
+                  onClick={() =>
+                    handleAddReview(review.name, review.google_review_id, index)
+                  }
+                  className="p-0 text-grBlue-dark"
+                >
+                  {identifier === index && isPending ? (
+                    <>
+                      <Spinner /> Adding review...
+                    </>
+                  ) : (
+                    "Add Review"
+                  )}
+                </Button>
               </TableBodyCell>
             </TableRow>
           );

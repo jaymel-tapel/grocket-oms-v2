@@ -7,6 +7,9 @@ import TableBody from "../../../tools/table/TableBody";
 import TableBodyCell from "../../../tools/table/TableBodyCell";
 import { Button } from "../../../tools/buttons/Button";
 import { PendingReview } from "../../../../services/queries/companyQueries";
+import Spinner from "../../../tools/spinner/Spinner";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { useDeleteOrderReview } from "../../../../services/queries/orderQueries";
 
 const COLUMNS = ["ID", "NAME", "REVIEW STATUS", "ORIGIN", "ACTION"];
 
@@ -16,22 +19,25 @@ const emailTemplates = [
 ];
 
 type Checkbox = {
-  id: number;
+  id?: number;
   checked: boolean;
 };
 
 type Props = {
   reviews: PendingReview[];
   isNewOrder?: boolean;
-  deleteReview: (reviewId: number) => void;
+  handleDeleteLocal?: (index: number) => void;
 };
 
 const OrderReviewsTable: React.FC<Props> = ({
   isNewOrder = true,
   reviews,
-  deleteReview,
+  handleDeleteLocal,
 }) => {
+  const [identifier, setIdentifier] = useState<number | null>(null);
   const [checkBoxes, setCheckBoxes] = useState<Checkbox[]>([]);
+
+  const { mutateAsync: deleteReview, isPending } = useDeleteOrderReview();
 
   const isOneReviewChecked = useMemo(() => {
     return checkBoxes.some((checkbox) => checkbox.checked);
@@ -56,7 +62,7 @@ const OrderReviewsTable: React.FC<Props> = ({
     }
   };
 
-  const handleCheckReview = (id: number) => {
+  const handleCheckReview = (id?: number) => {
     setCheckBoxes((prevState) =>
       prevState.map((checkbox) =>
         checkbox.id === id
@@ -64,6 +70,21 @@ const OrderReviewsTable: React.FC<Props> = ({
           : checkbox
       )
     );
+  };
+
+  const handleDeleteClick = async (id: number | undefined, index: number) => {
+    if (!window.confirm("Do you wish to delete this review?")) return;
+
+    if (id === undefined) {
+      if (!handleDeleteLocal) return;
+
+      handleDeleteLocal(index);
+    } else {
+      setIdentifier(id);
+      await deleteReview(id);
+    }
+
+    setIdentifier(null);
   };
 
   useEffect(() => {
@@ -120,13 +141,15 @@ const OrderReviewsTable: React.FC<Props> = ({
                 {!isNewOrder && (
                   <>
                     <TableBodyCell>
-                      <input
-                        id={review.name}
-                        type="checkbox"
-                        className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
-                        checked={isChecked}
-                        onChange={() => handleCheckReview(review.id)}
-                      />
+                      {review.id && (
+                        <input
+                          id={review.name}
+                          type="checkbox"
+                          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
+                          checked={isChecked}
+                          onChange={() => handleCheckReview(review.id)}
+                        />
+                      )}
                     </TableBodyCell>
                     <TableBodyCell>{review.id}</TableBodyCell>
                   </>
@@ -138,9 +161,16 @@ const OrderReviewsTable: React.FC<Props> = ({
                 </TableBodyCell>
                 <TableBodyCell
                   className="text-[#DC3545] cursor-pointer font-medium whitespace-nowrap"
-                  onClick={() => deleteReview(review.id)}
+                  onClick={() => handleDeleteClick(review.id, index)}
                 >
-                  Delete
+                  {identifier === review.id && isPending ? (
+                    <Spinner />
+                  ) : (
+                    <TrashIcon
+                      className="h-4 w-4 text-red-500 cursor-pointer"
+                      onClick={() => handleDeleteClick(review.id, index)}
+                    />
+                  )}
                 </TableBodyCell>
               </TableRow>
             );

@@ -22,7 +22,7 @@ export type Company = {
 };
 
 export type PendingReview = {
-  id: number;
+  id?: number;
   name: string;
   rating?: number;
   review?: string;

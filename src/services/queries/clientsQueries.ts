@@ -9,6 +9,7 @@ import { getHeaders } from "../../utils/utils";
 import { Pagination, User } from "./accountsQueries";
 import { ClientFormSchema } from "../../components/clients/clientsManager/ClientForm";
 import { Company } from "./companyQueries";
+import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CLIENTS_URL = API_URL + "/clients";
@@ -201,6 +202,7 @@ export const useDeleteClientCompany = () => {
       });
     },
     onSuccess: () => {
+      toast.success("Company deleted!");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },

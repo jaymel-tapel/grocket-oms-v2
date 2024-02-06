@@ -14,6 +14,7 @@ import { OrderInformationSchema } from "../../pages/orders/ordersManager/Order";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const ORDERS_URL = API_URL + "/orders";
+const REVIEWS_URL = API_URL + "/order-reviews";
 
 export type Order = {
   id: number;
@@ -92,6 +93,8 @@ export const useGetOrder = (id: number) => {
   return useQuery(getOrderOption(id));
 };
 
+// POST / Create
+
 export const useCreateOrder = () => {
   const queryClient = useQueryClient();
 
@@ -107,6 +110,32 @@ export const useCreateOrder = () => {
   });
 };
 
+type ReviewPayload = {
+  name: string;
+  status: string;
+  google_review_id?: string;
+  orderId: number;
+};
+
+export const useAddOrderReview = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["create-order"],
+    mutationFn: async (payload: ReviewPayload) => {
+      return axios.post(REVIEWS_URL, payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: (_, { orderId }) => {
+      toast.success("Order updated with new review!");
+      queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
+    },
+  });
+};
+
+// PATCH / PUT
+
 export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
 
@@ -121,6 +150,24 @@ export const useUpdateOrder = () => {
     },
     onSuccess: () => {
       toast.success("Order updated!");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
+// DELETE
+
+export const useDeleteOrderReview = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (reviewId: number) => {
+      return await axios.delete(REVIEWS_URL + `/${reviewId}`, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Review deleted!");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
