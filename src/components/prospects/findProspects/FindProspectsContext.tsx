@@ -17,12 +17,14 @@ export type FindProspectsContext = {
   prospectFinder: ProspectFinder;
   isScraping: boolean;
   prospects: Prospect[];
+  hasWebsites: boolean;
   selectedProspects: Prospect[];
   prospectsEmails: ProspectsEmails[];
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setProspectFinder: React.Dispatch<React.SetStateAction<ProspectFinder>>;
   setIsScraping: React.Dispatch<React.SetStateAction<boolean>>;
   setProspects: React.Dispatch<React.SetStateAction<Prospect[]>>;
+  setHasWebsites: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedProspects: React.Dispatch<React.SetStateAction<Prospect[]>>;
   setProspectsEmail: React.Dispatch<React.SetStateAction<ProspectsEmails[]>>;
 };
@@ -32,12 +34,14 @@ export const FindProspectsContext = createContext<FindProspectsContext>({
   prospectFinder: { search: "", location: "", limit: 1 },
   isScraping: false,
   prospects: [],
+  hasWebsites: true,
   selectedProspects: [],
   prospectsEmails: [],
   setStep: () => {},
   setProspectFinder: () => {},
   setIsScraping: () => {},
   setProspects: () => {},
+  setHasWebsites: () => {},
   setSelectedProspects: () => {},
   setProspectsEmail: () => {},
 });
@@ -59,6 +63,7 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
   });
   const [isScraping, setIsScraping] = useState(false);
   const [prospects, setProspects] = useState<Prospect[]>([]);
+  const [hasWebsites, setHasWebsites] = useState(true);
   const [selectedProspects, setSelectedProspects] = useState<Prospect[]>([]);
   const [prospectsEmails, setProspectsEmail] = useState<ProspectsEmails[]>([]);
 
@@ -69,12 +74,14 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
         prospectFinder,
         isScraping,
         prospects,
+        hasWebsites,
         selectedProspects,
         prospectsEmails,
         setStep,
         setIsScraping,
         setProspectFinder,
         setProspects,
+        setHasWebsites,
         setSelectedProspects,
         setProspectsEmail,
       }}
