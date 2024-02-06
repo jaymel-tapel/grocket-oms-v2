@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import axios from "axios";
 import { getHeaders } from "../../utils/utils";
-import { Pagination, User } from "./accountsQueries";
+import { Pagination } from "./accountsQueries";
 import { ClientFormSchema } from "../../components/clients/clientsManager/ClientForm";
 import { Company } from "./companyQueries";
 import toast from "react-hot-toast";
@@ -34,7 +34,6 @@ export type Client = {
   name: string;
   email: string;
   sellerId: number;
-  seller: User;
   companies: Company[];
   clientInfo: ClientInfo;
   phone: undefined | string;

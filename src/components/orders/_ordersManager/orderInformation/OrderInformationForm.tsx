@@ -36,7 +36,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
             aria-hidden="true"
           />
           <div className="text-sm flex flex-col">
-            <span>{order?.client.seller.name}</span>
+            <span>{order?.seller.name}</span>
             <span>SELLER</span>
           </div>
         </div>
