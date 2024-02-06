@@ -7,7 +7,7 @@ import {
 import { getHeaders } from "../../utils/utils";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Pagination } from "./accountsQueries";
+import { Pagination, User } from "./accountsQueries";
 import { Client } from "./clientsQueries";
 import { Company, PendingReview } from "./companyQueries";
 import { OrderInformationSchema } from "../../pages/orders/ordersManager/Order";
@@ -18,6 +18,9 @@ const REVIEWS_URL = API_URL + "/order-reviews";
 
 export type Order = {
   id: number;
+  client: Client;
+  seller: User;
+  sellerId: number;
   clientId: number;
   companyId: number;
   createdAt: string;
@@ -35,7 +38,6 @@ export type Order = {
   invoice_image: string | null;
   orderReviewCount: number;
   orderReviews: PendingReview[];
-  client: Client;
   company: Company;
 };
 
