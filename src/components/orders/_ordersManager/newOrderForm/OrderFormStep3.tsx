@@ -23,11 +23,11 @@ type FormProps = {
 };
 
 const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { client, setStep, company, setCompany, companies } =
+  const { client, setStep, company, setCompany, companies, setCompanies } =
     useOrderForm() as OrderFormContext;
 
   const companyLinks = useMemo(() => {
-    if (!client.id) {
+    if (!client.id && company.name) {
       return [company];
     } else if (companies) {
       return companies;
@@ -113,6 +113,16 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     // add new company query here later
   };
 
+  const handleDeleteLocal = (index: number) => {
+    const filteredCompanies = companyLinks.filter(
+      (_, companyIndex) => index !== companyIndex
+    );
+    setValue("name", "");
+    setValue("url", "");
+    setCompany({ name: "", url: "" });
+    setCompanies(filteredCompanies);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="my-8 grid grid-cols-2 gap-x-12 gap-y-4">
@@ -175,7 +185,10 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
 
       <div>
         <span className="font-medium text-sm block mb-4">Company Links</span>
-        <CompanyLinksTable companies={companyLinks} />
+        <CompanyLinksTable
+          companies={companyLinks}
+          handleDeleteLocal={handleDeleteLocal}
+        />
       </div>
 
       <div className="my-8">

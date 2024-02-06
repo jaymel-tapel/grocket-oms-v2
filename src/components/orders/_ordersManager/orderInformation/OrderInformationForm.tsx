@@ -1,5 +1,5 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import React, { useMemo } from "react";
+import React from "react";
 import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/20/solid";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { OrderInformationSchema } from "../../../../pages/orders/ordersManager/Order";
@@ -26,16 +26,16 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
 
-  const labels = useMemo(() => {
-    const industry = industries?.find(
-      (item) => item.id === order?.client.clientInfo.industryId
-    );
-    const origin = origins?.find(
-      (item) => item.id === order?.client.clientInfo.sourceId
-    );
+  // const labels = useMemo(() => {
+  //   const industry = industries?.find(
+  //     (item) => item.id === order?.client.clientInfo.industryId
+  //   );
+  //   const origin = origins?.find(
+  //     (item) => item.id === order?.client.clientInfo.sourceId
+  //   );
 
-    return { industry: industry?.name ?? "", origin: origin?.name ?? "" };
-  }, [order, industries, origins]);
+  //   return { industry: industry?.name ?? "", origin: origin?.name ?? "" };
+  // }, [order, industries, origins]);
 
   return (
     <div className="border-b border-grGray-dark">
@@ -72,7 +72,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
           </div>
         </div>
 
-        <div className="mt-4 text-sm flex gap-12">
+        {/* <div className="mt-4 text-sm flex gap-12">
           <div className="flex flex-col">
             <span className="font-medium">Client Origin</span>
             <div className="px-2 py-1 text-xs bg-[#3CA745] text-white rounded-md w-[10rem] flex justify-center">
@@ -93,7 +93,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               {order?.unit_cost}
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div>
           <div className="py-4 grid grid-cols-3 gap-x-12 gap-y-4">
@@ -179,6 +179,113 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 {errors.phone && (
                   <p className="text-xs italic text-red-500 mt-2">
                     {errors.phone?.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="sourceId"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Client Origin
+              </label>
+              <div className="w-full mt-2">
+                <Controller
+                  name="sourceId"
+                  control={control}
+                  render={({ field }) => (
+                    <select
+                      id="origin"
+                      autoComplete="off"
+                      {...field}
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                        errors.sourceId && "border-red-500"
+                      }`}
+                    >
+                      <option disabled>Select Origin</option>
+                      {origins?.map((origin, index) => {
+                        return (
+                          <option value={`${origin.id}`} key={index}>
+                            {origin.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  )}
+                />
+                {errors.sourceId && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.sourceId?.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="industryId"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Client Industry
+              </label>
+              <div className="w-full mt-2">
+                <Controller
+                  name="industryId"
+                  control={control}
+                  render={({ field }) => (
+                    <select
+                      id="industry"
+                      autoComplete="off"
+                      {...field}
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                        errors.industryId && "border-red-500"
+                      }`}
+                    >
+                      <option disabled>Select Origin</option>
+                      {industries?.map((industry, index) => {
+                        return (
+                          <option value={`${industry.id}`} key={index}>
+                            {industry.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  )}
+                />
+                {errors.industryId && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.industryId?.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="unit_cost"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Unit Cost
+              </label>
+              <div className="w-full mt-2">
+                <Controller
+                  name="unit_cost"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="number"
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                        errors.phone && "border-red-500"
+                      }`}
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.unit_cost && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.unit_cost?.message}
                   </p>
                 )}
               </div>

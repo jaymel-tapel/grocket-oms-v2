@@ -12,6 +12,7 @@ import { Company } from "./companyQueries";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CLIENTS_URL = API_URL + "/clients";
+const COMPANIES_URL = API_URL + "/companies";
 
 type ClientInfo = {
   id: string;
@@ -149,6 +150,28 @@ export const useCreateClient = () => {
   });
 };
 
+type NewCompanyPayload = {
+  clientId: number;
+  name: string;
+  url: string;
+};
+
+export const useAddClientCompany = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: NewCompanyPayload) => {
+      return await axios.post(COMPANIES_URL, payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+  });
+};
+
 // -- PATCH / PUT requests
 
 export const useUpdateClient = () => {
@@ -161,6 +184,24 @@ export const useUpdateClient = () => {
       });
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+  });
+};
+
+// DELETE
+
+export const useDeleteClientCompany = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (companyId: number) => {
+      return await axios.delete(COMPANIES_URL + `/${companyId}`, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },
   });

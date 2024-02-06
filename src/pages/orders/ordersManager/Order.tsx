@@ -45,6 +45,7 @@ const Order: React.FC = () => {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<OrderInformationSchema>({
     resolver: zodResolver(orderInformationSchema),
@@ -62,6 +63,11 @@ const Order: React.FC = () => {
       thirdPartyId: order.client.clientInfo.thirdPartyId,
     },
   });
+
+  const handleSetCompanyValues = (company: { name: string; url: string }) => {
+    setValue("company_name", company.name);
+    setValue("company_url", company.url);
+  };
 
   const handleTabClick = (view: View) => {
     setActiveTab(view);
@@ -124,6 +130,7 @@ const Order: React.FC = () => {
               company={order?.company}
               companies={order?.client.companies ?? []}
               errors={errors}
+              handleSetCompanyValues={handleSetCompanyValues}
             />
           )}
 

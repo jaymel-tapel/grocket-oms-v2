@@ -1,12 +1,10 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Client } from "./clientsQueries";
 import { getHeaders } from "../../utils/utils";
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const API_URL = import.meta.env.VITE_API_URL;
-const COMPANIES_URL = API_URL + "/companies";
 const SCRAPER_URL = "https://google-review-rating-scraper.onrender.com/api";
 
 export type Company = {
@@ -39,18 +37,18 @@ export type GoogleReview = {
   description: string;
 };
 
-export const useGetCompanies = (companyId: number | undefined) => {
-  return useQuery({
-    enabled: companyId ? true : false,
-    queryKey: ["companies", companyId],
-    queryFn: async (): Promise<Company[]> => {
-      const response = await axios.get(COMPANIES_URL + `/${companyId}`, {
-        headers: getHeaders(),
-      });
-      return response.data;
-    },
-  });
-};
+// export const useGetCompanies = (companyId: number | undefined) => {
+//   return useQuery({
+//     enabled: companyId ? true : false,
+//     queryKey: ["companies", companyId],
+//     queryFn: async (): Promise<Company[]> => {
+//       const response = await axios.get(COMPANIES_URL + `/${companyId}`, {
+//         headers: getHeaders(),
+//       });
+//       return response.data;
+//     },
+//   });
+// };
 
 type Ratings = {
   company: string;
