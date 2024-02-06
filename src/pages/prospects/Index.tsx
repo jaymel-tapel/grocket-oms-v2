@@ -5,7 +5,7 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate({ to: "/prospects/find" });
+    navigate({ to: "/find-prospects" });
   };
 
   return (

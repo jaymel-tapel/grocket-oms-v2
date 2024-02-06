@@ -1,13 +1,14 @@
 import FindProspectsProvider from "../../components/prospects/findProspects/FindProspectsContext";
 import FindProspectsForm from "../../components/prospects/findProspects/FindProspectsForm";
+import LoggedSection from "../../components/sections/LoggedSection";
 
 const FindProspects = () => {
   return (
-    <div>
+    <LoggedSection>
       <FindProspectsProvider>
         <FindProspectsForm />
       </FindProspectsProvider>
-    </div>
+    </LoggedSection>
   );
 };
 

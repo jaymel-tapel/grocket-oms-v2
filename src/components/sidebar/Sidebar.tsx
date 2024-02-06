@@ -75,10 +75,10 @@ const navigation = [
   },
   {
     name: "Prospects",
-    to: "/clients",
+    to: "/prospects/",
     icon: MagnifyingGlassIcon,
     children: [
-      { name: "Find Prospects", to: "/prospects/find" },
+      { name: "Find Prospects", to: "/find-prospects" },
       { name: "My Prospects", to: "/prospects" },
       { name: "Email Templates", to: "#" },
     ],
