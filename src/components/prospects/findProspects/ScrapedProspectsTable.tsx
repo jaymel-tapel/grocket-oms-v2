@@ -25,6 +25,8 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
+    step,
+    hasWebsites,
     prospects,
     setProspects,
     selectedProspects,
@@ -38,6 +40,29 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
 
     return prospects.slice(firstProspectIndex, lastProspectIndex);
   }, [prospects, currentPage]);
+
+  const showWebsite = useCallback(
+    (index: number) => {
+      if (hasWebsites) {
+        return prospects[index]?.website;
+      }
+
+      const status = prospects[index]?.status;
+
+      if (status === "queued" && step === 2) {
+        return "Queued";
+      } else if (status === "pending") {
+        return "In Progress";
+      } else if (status === "success") {
+        return prospects[index].website;
+      } else if (status === "error") {
+        return "Error";
+      } else {
+        return "Skipped";
+      }
+    },
+    [hasWebsites, prospects, step]
+  );
 
   const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
@@ -152,8 +177,15 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                 <TableBodyCell className="text-grBlue-dark whitespace-nowrap">
                   {prospect.phone}
                 </TableBodyCell>
-                <TableBodyCell className="text-grBlue-dark max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {prospect.website}
+                <TableBodyCell
+                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis ${
+                    prospect?.status === "success" && "text-grBlue-dark"
+                  }`}
+                >
+                  <div className="flex gap-2 items-center">
+                    {prospect?.status === "pending" && <Spinner />}
+                    {showWebsite(index)}
+                  </div>
                 </TableBodyCell>
               </TableRow>
             );

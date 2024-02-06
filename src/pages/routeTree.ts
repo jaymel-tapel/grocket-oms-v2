@@ -399,8 +399,8 @@ const prospectsIndexRoute = new Route({
 });
 
 const findProspectsRoute = new Route({
-  getParentRoute: () => prospectsRoute,
-  path: "find",
+  getParentRoute: () => protectedRoute,
+  path: "find-prospects",
   component: lazyRouteComponent(() => import("./prospects/FindProspects")),
 });
 
@@ -485,7 +485,8 @@ const routeTree = rootRoute.addChildren([
       inactiveUsersRoute,
     ]),
 
-    prospectsRoute.addChildren([prospectsIndexRoute, findProspectsRoute]),
+    prospectsRoute.addChildren([prospectsIndexRoute]),
+    findProspectsRoute,
 
     brandsRoute.addChildren([
       brandsManagerRoute,
