@@ -7,6 +7,10 @@ import FindProspectsFormStep2 from "./FindProspectsFormStep2";
 import FindProspectsFormStep3 from "./FindProspectsFormStep3";
 import FindProspectsFormStep4 from "./FindProspectsFormStep4";
 import { useMemo } from "react";
+import {
+  useScrapeProspectEmails,
+  useScrapeProspectWebsite,
+} from "../../../services/queries/prospectsQueries";
 
 const FindProspectsForm = () => {
   const { step } = useFindProspectsContext();
@@ -49,6 +53,9 @@ const ProspectFormNavigation = () => {
   const { step, setStep, selectedProspects, prospectsEmails } =
     useFindProspectsContext();
 
+  const { stopScrapeWebsite } = useScrapeProspectWebsite();
+  const { stopScrapeEmails } = useScrapeProspectEmails();
+
   const finalCsvData = useMemo(() => {
     // const mappedData = selectedProspects.map((prospect, index) => [
     //   prospect.businessName,
@@ -90,6 +97,14 @@ const ProspectFormNavigation = () => {
   }, [prospectsEmails, selectedProspects]);
 
   const handlePrevious = () => {
+    if (step === 1 || step === 3) {
+      stopScrapeWebsite();
+    }
+
+    if (step === 4) {
+      stopScrapeEmails();
+    }
+
     setStep(step - 1);
   };
 

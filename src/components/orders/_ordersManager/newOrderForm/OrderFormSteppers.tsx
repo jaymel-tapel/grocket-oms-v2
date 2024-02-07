@@ -23,7 +23,7 @@ const OrderFormSteppers = () => {
   const isStepDone = useMemo(() => {
     return [
       !isEmpty(seller),
-      !isEmpty(client),
+      client.email.length > 0 && client.name.length > 0,
       !isEmpty(company),
       reviews.length > 0,
     ];

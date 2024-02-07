@@ -31,6 +31,7 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
 
   useEffect(() => {
     if (!hasWebsites) {
+      console.log(hasWebsites);
       scrapeWebsite();
     }
     //eslint-disable-next-line

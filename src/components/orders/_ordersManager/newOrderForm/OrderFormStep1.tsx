@@ -29,9 +29,11 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
     formState: { errors },
   } = useForm<SelectSellerSchema>({
     resolver: zodResolver(selectSellerSchema),
+    values: seller,
   });
 
   const sellerEmail = watch("email");
+
   const debouncedEmail = useDebounce(sellerEmail, 500);
 
   const { data: sellers } = useGetAllSellers({
@@ -44,6 +46,10 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
       ...prev,
       [field]: value,
     }));
+
+    if (field === "email") {
+      setValue("email", value as string);
+    }
   };
 
   const handleEmailSelect = (email: string) => {
@@ -61,7 +67,6 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   };
 
   const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
-    console.log(data);
     setSeller(data);
     setStep(2);
   };
@@ -69,7 +74,6 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <span className="font-bold text-sm">Seller Information</span>
-
       <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
         <div>
           <label
@@ -107,6 +111,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
           <AutoComplete
             suggestions={sellers?.data.map((seller) => seller.email) ?? []}
             type="email"
+            defaultValue={seller.email}
             value={seller.email}
             handleChange={(value) => handleChange("email", value)}
             handleSelect={(value) => handleEmailSelect(value)}

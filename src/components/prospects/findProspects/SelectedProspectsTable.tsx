@@ -27,28 +27,31 @@ const SelectedProspectsTable = () => {
     return selectedProspects.slice(firstProspectIndex, lastProspectIndex);
   }, [selectedProspects, currentPage]);
 
-  const handlePageChange = (value: number | PaginationNavs) => {
-    if (typeof value === "number") {
-      setCurrentPage(value);
-      return;
-    }
-
-    const lastPage = Math.ceil(selectedProspects.length / itemsPerPage);
-
-    if (value === "first") {
-      setCurrentPage(1);
-    } else if (value === "prev") {
-      if (currentPage !== 1) {
-        setCurrentPage(currentPage - 1);
+  const handlePageChange = useCallback(
+    (value: number | PaginationNavs) => {
+      if (typeof value === "number") {
+        setCurrentPage(value);
+        return;
       }
-    } else if (value === "next") {
-      if (currentPage !== lastPage) {
-        setCurrentPage(currentPage + 1);
+
+      const lastPage = Math.ceil(selectedProspects.length / itemsPerPage);
+
+      if (value === "first") {
+        setCurrentPage(1);
+      } else if (value === "prev") {
+        if (currentPage !== 1) {
+          setCurrentPage(currentPage - 1);
+        }
+      } else if (value === "next") {
+        if (currentPage !== lastPage) {
+          setCurrentPage(currentPage + 1);
+        }
+      } else if (value === "last") {
+        setCurrentPage(lastPage);
       }
-    } else if (value === "last") {
-      setCurrentPage(lastPage);
-    }
-  };
+    },
+    [currentPage, selectedProspects]
+  );
 
   const showEmails = useCallback(
     (index: number) => {
@@ -80,7 +83,7 @@ const SelectedProspectsTable = () => {
       handlePageChange("next");
     }
     //eslint-disable-next-line
-  }, [paginatedProspects]);
+  }, [paginatedProspects, handlePageChange]);
 
   return (
     <TableContainer shadowOff={true}>
