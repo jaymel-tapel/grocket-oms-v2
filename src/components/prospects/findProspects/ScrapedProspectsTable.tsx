@@ -98,6 +98,20 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     //eslint-disable-next-line
   }, [isMutating]);
 
+  useEffect(() => {
+    if (!hasWebsites) {
+      if (
+        paginatedProspects.every(
+          (prospect) =>
+            prospect.status === "success" || prospect.status === "error"
+        )
+      ) {
+        handlePageChange("next");
+      }
+    }
+    //eslint-disable-next-line
+  }, [hasWebsites, paginatedProspects]);
+
   const isChecked = useCallback(
     (prospectId: number) => {
       return selectedProspects.some((prospect) => prospect.id === prospectId);
@@ -179,12 +193,15 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                 </TableBodyCell>
                 <TableBodyCell
                   className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis ${
-                    prospect?.status === "success" && "text-grBlue-dark"
+                    prospects[prospect.id - 1]?.status === "success" &&
+                    "text-grBlue-dark"
                   }`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospect?.status === "pending" && <Spinner />}
-                    {showWebsite(index)}
+                    {prospects[prospect.id - 1]?.status === "pending" && (
+                      <Spinner />
+                    )}
+                    {showWebsite(prospect.id - 1)}
                   </div>
                 </TableBodyCell>
               </TableRow>

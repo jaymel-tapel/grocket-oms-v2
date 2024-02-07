@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Table from "../../tools/table/Table";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
@@ -70,6 +70,18 @@ const SelectedProspectsTable = () => {
     [prospectsEmails, step]
   );
 
+  useEffect(() => {
+    if (
+      paginatedProspects.every(
+        (prospect) =>
+          prospect.status === "success" || prospect.status === "error"
+      )
+    ) {
+      handlePageChange("next");
+    }
+    //eslint-disable-next-line
+  }, [paginatedProspects]);
+
   return (
     <TableContainer shadowOff={true}>
       <Table>
@@ -94,15 +106,15 @@ const SelectedProspectsTable = () => {
                 </TableBodyCell>
                 <TableBodyCell
                   className={`${
-                    prospectsEmails[index]?.emails?.length > 0 &&
+                    prospectsEmails[prospect.id - 1]?.emails?.length > 0 &&
                     "text-grBlue-dark"
                   }`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospectsEmails[index]?.status === "pending" && (
+                    {prospectsEmails[prospect.id - 1]?.status === "pending" && (
                       <Spinner />
                     )}
-                    {showEmails(index)}
+                    {showEmails(prospect.id - 1)}
                   </div>
                 </TableBodyCell>
               </TableRow>
