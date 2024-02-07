@@ -4,7 +4,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode } from "react";
 import { useDebounce } from "../../../../hooks/useDebounce";
-// import { debounce } from "lodash";
+import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
+import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -19,13 +20,12 @@ type FormProps = {
 
 const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
-  // const [isEmailFocused, setIsEmailFocused] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
-    // setValue,
+    setValue,
     formState: { errors },
   } = useForm<SelectSellerSchema>({
     resolver: zodResolver(selectSellerSchema),
@@ -33,42 +33,35 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
 
   const sellerEmail = watch("email");
   const debouncedEmail = useDebounce(sellerEmail, 500);
-  console.log(debouncedEmail);
 
-  // const { data: sellers } = useGetAllSellers({
-  //   keyword: debouncedEmail,
-  //   perPage: 5,
-  // });
+  const { data: sellers } = useGetAllSellers({
+    keyword: debouncedEmail,
+    perPage: 5,
+  });
 
-  const handleChange = (field: keyof typeof seller, value: typeof field) => {
+  const handleChange = (field: keyof typeof seller, value) => {
     setSeller((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  // const handleFocus = (method: "blur" | "focus") => {
-  //   if (method === "blur") {
-  //     const debounceBlur = debounce(() => setIsEmailFocused(false), 100);
-  //     debounceBlur();
-  //     return;
-  //   }
+  const handleEmailSelect = (email: string) => {
+    const seller = sellers?.data.find((seller) => seller.email === email);
+    if (!seller) return;
 
-  //   setIsEmailFocused(true);
-  // };
+    setSeller({
+      id: seller.id,
+      name: seller.name,
+      email: seller.email,
+    });
 
-  // const handleEmailSelect = (seller: { id: number, name: string, email: string }) => {
-  //   setSeller({
-  //     id: seller.id,
-  //     name: seller.name,
-  //     email: seller.email,
-  //   });
-
-  //   setValue("name", seller.name);
-  //   setValue("email", seller.email);
-  // };
+    setValue("name", seller.name);
+    setValue("email", seller.email);
+  };
 
   const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
+    console.log(data);
     setSeller(data);
     setStep(2);
   };
@@ -107,28 +100,22 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
         <div>
           <label
             htmlFor="sellerEmail"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="mb-2 block text-sm font-medium leading-6 text-gray-900"
           >
             Email
           </label>
-          <div className="w-full mt-2">
-            <input
-              type="email"
-              id="sellerEmail"
-              defaultValue={seller.email}
-              {...register("email", {
-                onChange: (e) => handleChange("email", e.target.value),
-              })}
-              className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                errors.email && "border-red-500"
-              }`}
-            />
-            {errors.email && (
-              <p className="text-xs italic text-red-500 mt-2">
-                {errors.email?.message}
-              </p>
-            )}
-          </div>
+          <AutoComplete
+            suggestions={sellers?.data.map((seller) => seller.email) ?? []}
+            type="email"
+            value={seller.email}
+            handleChange={(value) => handleChange("email", value)}
+            handleSelect={(value) => handleEmailSelect(value)}
+          />
+          {errors.email && (
+            <p className="text-xs italic text-red-500 mt-2">
+              {errors.email?.message}
+            </p>
+          )}
         </div>
       </div>
 

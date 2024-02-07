@@ -2,15 +2,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import {
-  Client,
-  useGetAllClients,
+  useGetClientBySellers,
   useGetClientIndustries,
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
 import { useDebounce } from "../../../../hooks/useDebounce";
-import { debounce } from "lodash";
+import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 
 const selectClientSchema = z.object({
   name: z.string(),
@@ -29,9 +28,8 @@ type FormProps = {
 };
 
 const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
-  const { setStep, client, setClient, setCompanies } =
+  const { setStep, seller, client, setClient, setCompanies } =
     useOrderForm() as OrderFormContext;
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
 
@@ -48,9 +46,9 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   const clientEmail = watch("email");
   const debouncedEmail = useDebounce(clientEmail, 500);
 
-  const { data: clients } = useGetAllClients({
+  const { data: clients } = useGetClientBySellers({
     keyword: debouncedEmail,
-    perPage: 5,
+    sellerId: seller.id,
   });
 
   const handleChange = (field: keyof typeof client, value: string | number) => {
@@ -60,17 +58,10 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     }));
   };
 
-  const handleFocus = (method: "blur" | "focus") => {
-    if (method === "blur") {
-      const debounceBlur = debounce(() => setIsEmailFocused(false), 100);
-      debounceBlur();
-      return;
-    }
+  const handleEmailSelect = (email: string) => {
+    const client = clients?.find((client) => client.email === email);
+    if (!client) return;
 
-    setIsEmailFocused(true);
-  };
-
-  const handleEmailSelect = (client: Client) => {
     setClient({
       id: client.id,
       name: client.name,
@@ -136,7 +127,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
                   errors.name && "border-red-500"
                 }`}
-                disabled={client.id ? true : false}
               />
               {errors.name && (
                 <p className="text-xs italic text-red-500 mt-2">
@@ -153,35 +143,13 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
               Email
             </label>
             <div className="w-full mt-2 relative">
-              <input
+              <AutoComplete
+                suggestions={clients?.map((client) => client.email) ?? []}
                 type="email"
-                id="clientEmail"
-                defaultValue={client.email}
-                {...register("email", {
-                  onChange: (e) => handleChange("email", e.target.value),
-                })}
-                onFocus={() => handleFocus("focus")}
-                onBlur={() => handleFocus("blur")}
-                autoComplete="off"
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.email && "border-red-500"
-                }`}
+                value={client.email}
+                handleChange={(value) => handleChange("email", value)}
+                handleSelect={(value) => handleEmailSelect(value)}
               />
-              {isEmailFocused && clients?.data && (
-                <div className="absolute w-full bg-white border border-gray-300">
-                  {clients.data.map((client, index) => {
-                    return (
-                      <div
-                        key={index}
-                        className="p-2 cursor-pointer hover:bg-grBlue-base hover:text-white"
-                        onClick={() => handleEmailSelect(client)}
-                      >
-                        {client.email}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
               {errors.email && (
                 <p className="text-xs italic text-red-500 mt-2">
                   {errors.email?.message}
