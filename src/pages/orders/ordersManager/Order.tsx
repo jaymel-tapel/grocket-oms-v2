@@ -14,6 +14,7 @@ import {
 } from "../../../services/queries/orderQueries";
 import { orderRoute } from "../../routeTree";
 import Spinner from "../../../components/tools/spinner/Spinner";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
 type View = (typeof VIEWS)[number];
@@ -46,6 +47,7 @@ const Order: React.FC = () => {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<OrderInformationSchema>({
     resolver: zodResolver(orderInformationSchema),
@@ -64,6 +66,9 @@ const Order: React.FC = () => {
     },
   });
 
+  const clientEmail = watch("client_email");
+  const debouncedEmail = useDebounce(clientEmail, 500);
+
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
     setValue("company_name", company.name);
     setValue("company_url", company.url);
@@ -79,7 +84,7 @@ const Order: React.FC = () => {
 
   const onSubmit: SubmitHandler<OrderInformationSchema> = async (data) => {
     if (!order) return;
-    console.log(data);
+
     const response = await updateOrder({
       payload: { ...data, companyId: order.companyId, brandId: 1 },
       orderId,
@@ -121,6 +126,7 @@ const Order: React.FC = () => {
               control={control}
               errors={errors}
               order={order}
+              debouncedEmail={debouncedEmail}
             />
           )}
 

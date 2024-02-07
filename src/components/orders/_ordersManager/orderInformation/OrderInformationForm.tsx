@@ -7,9 +7,11 @@ import { Order } from "../../../../services/queries/orderQueries";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
+  useGetClientBySellers,
   useGetClientIndustries,
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
+import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 
 dayjs.extend(utc);
 
@@ -17,15 +19,24 @@ type OrderInformationFormProps = {
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   order?: Order;
+  debouncedEmail?: string;
+  sellerId?: number;
 };
 
 const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   control,
   errors,
   order,
+  debouncedEmail,
+  sellerId,
 }) => {
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
+
+  const { data: clients } = useGetClientBySellers({
+    sellerId,
+    keyword: debouncedEmail ?? "",
+  });
 
   return (
     <div className="border-b border-grGray-dark">
@@ -104,13 +115,18 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="client_email"
                   control={control}
-                  render={({ field }) => (
-                    <input
-                      type="text"
-                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
-                        errors.client_email && "border-red-500"
-                      }`}
-                      {...field}
+                  render={({ field: { onChange, ...fieldProps } }) => (
+                    // <input
+                    //   type="text"
+                    //   className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                    //     errors.client_email && "border-red-500"
+                    //   }`}
+                    //   {...field}
+                    // />
+                    <AutoComplete
+                      suggestions={clients?.map((client) => client.email) ?? []}
+                      {...fieldProps}
+                      handleChange={(value) => onChange(value)}
                     />
                   )}
                 />

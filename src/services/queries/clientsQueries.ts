@@ -109,6 +109,23 @@ export const useGetClient = (id: number) => {
   return useQuery(getClientOption(id));
 };
 
+export const useGetClientBySellers = (params: {
+  sellerId?: number;
+  keyword: string;
+}) => {
+  return useQuery({
+    enabled: params.sellerId ? true : false,
+    queryKey: ["clients-by-seller", params.keyword],
+    queryFn: async (): Promise<Client[]> => {
+      const response = await axios.get(CLIENTS_URL + "/search", {
+        headers: getHeaders(),
+        params,
+      });
+      return response.data;
+    },
+  });
+};
+
 export const useGetClientIndustries = () => {
   return useQuery({
     queryKey: ["industries"],
