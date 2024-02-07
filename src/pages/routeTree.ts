@@ -255,7 +255,7 @@ const clientsManagerRoute = new Route({
         keyword: z.string().optional(),
         from: z.string().optional(),
         to: z.string().optional(),
-        filter: z.enum(["id", "email"]).optional(),
+        filter: z.enum(["id", "email", "seller"]).optional(),
         page: z.number().optional().catch(1),
         perPage: z.number().optional().catch(10),
       })
