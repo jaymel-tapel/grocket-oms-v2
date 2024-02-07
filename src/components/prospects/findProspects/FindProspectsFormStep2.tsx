@@ -15,7 +15,7 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
   const { setStep, selectedProspects, hasWebsites } =
     useFindProspectsContext() as FindProspectsContext;
 
-  const { scrapeWebsite } = useScrapeProspectWebsite();
+  const { scrapeWebsite, stopScrapeWebsite } = useScrapeProspectWebsite();
 
   const handleSubmmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,6 +25,7 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
       return;
     }
 
+    stopScrapeWebsite();
     setStep(3);
   };
 

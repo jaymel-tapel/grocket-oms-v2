@@ -30,7 +30,7 @@ export type FindProspectsContext = {
 };
 
 export const FindProspectsContext = createContext<FindProspectsContext>({
-  step: 1,
+  step: 10,
   prospectFinder: { search: "", location: "", limit: 1 },
   isScraping: false,
   prospects: [],
@@ -59,7 +59,7 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
   const [prospectFinder, setProspectFinder] = useState<ProspectFinder>({
     search: "",
     location: "",
-    limit: 1,
+    limit: 10,
   });
   const [isScraping, setIsScraping] = useState(false);
   const [prospects, setProspects] = useState<Prospect[]>([]);
