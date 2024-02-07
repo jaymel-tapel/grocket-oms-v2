@@ -20,7 +20,7 @@ export type Prospect = {
 
 type ScrapeProspectsResponse = {
   message: string;
-  hasWebsite: boolean;
+  hasWebSites: boolean;
   results: Prospect[];
 };
 
@@ -49,7 +49,7 @@ export const useScrapeProspects = () => {
       setIsScraping(true);
     },
     onSuccess: (data) => {
-      const hasWebsite = data.hasWebsite;
+      const hasWebsite = data.hasWebSites;
 
       const prospectsWithId: Prospect[] = data.results.map(
         (prospect, index) => {

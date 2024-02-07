@@ -41,6 +41,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     setValue,
   } = useForm<SelectClientSchema>({
     resolver: zodResolver(selectClientSchema),
+    values: client,
   });
 
   const clientEmail = watch("email");

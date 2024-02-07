@@ -64,28 +64,31 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     [hasWebsites, prospects, step]
   );
 
-  const handlePageChange = (value: number | PaginationNavs) => {
-    if (typeof value === "number") {
-      setCurrentPage(value);
-      return;
-    }
-
-    const lastPage = Math.ceil(prospects.length / itemsPerPage);
-
-    if (value === "first") {
-      setCurrentPage(1);
-    } else if (value === "prev") {
-      if (currentPage !== 1) {
-        setCurrentPage(currentPage - 1);
+  const handlePageChange = useCallback(
+    (value: number | PaginationNavs) => {
+      if (typeof value === "number") {
+        setCurrentPage(value);
+        return;
       }
-    } else if (value === "next") {
-      if (currentPage !== lastPage) {
-        setCurrentPage(currentPage + 1);
+
+      const lastPage = Math.ceil(prospects.length / itemsPerPage);
+
+      if (value === "first") {
+        setCurrentPage(1);
+      } else if (value === "prev") {
+        if (currentPage !== 1) {
+          setCurrentPage(currentPage - 1);
+        }
+      } else if (value === "next") {
+        if (currentPage !== lastPage) {
+          setCurrentPage(currentPage + 1);
+        }
+      } else if (value === "last") {
+        setCurrentPage(lastPage);
       }
-    } else if (value === "last") {
-      setCurrentPage(lastPage);
-    }
-  };
+    },
+    [currentPage, prospects]
+  );
 
   const isMutating = useIsMutating({ mutationKey: ["scrape-prospects"] });
 
@@ -109,8 +112,8 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
         handlePageChange("next");
       }
     }
-    //eslint-disable-next-line
-  }, [hasWebsites, paginatedProspects]);
+    // eslint-disable-next-line
+  }, [hasWebsites, paginatedProspects, handlePageChange]);
 
   const isChecked = useCallback(
     (prospectId: number) => {

@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { useFindProspectsContext } from "./FindProspectsContext";
 import { isEmpty } from "../../../utils/utils";
-import { useScrapeProspectEmails } from "../../../services/queries/prospectsQueries";
+import {
+  useScrapeProspectEmails,
+  useScrapeProspectWebsite,
+} from "../../../services/queries/prospectsQueries";
 
 const steps = [
   { id: 1, name: "Enter Keywords" },
@@ -18,6 +21,7 @@ const FindProspectsStepper = () => {
     prospects,
   } = useFindProspectsContext();
 
+  const { stopScrapeWebsite } = useScrapeProspectWebsite();
   const { stopScrapeEmails } = useScrapeProspectEmails();
 
   const isStepDone = useMemo(() => {
@@ -31,6 +35,10 @@ const FindProspectsStepper = () => {
 
   const handleClick = (step: number) => {
     setStep(step);
+
+    if (step === 1 || step === 3) {
+      stopScrapeWebsite();
+    }
 
     if (step === 4) {
       stopScrapeEmails();
