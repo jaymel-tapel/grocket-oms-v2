@@ -124,10 +124,18 @@ export const taskRoute = new Route({
   component: lazyRouteComponent(() => import("./dashboard/NewTask")),
 });
 
-const newTaskRoute = new Route({
+export const newTaskRoute = new Route({
   getParentRoute: () => tasksRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./dashboard/NewTask")),
+  validateSearch: z.object({
+    orderParams: z
+      .object({
+        orderId: z.coerce.number().optional(),
+        clientEmail: z.string().optional(),
+      })
+      .optional(),
+  }).parse,
 });
 
 const ordersRoute = new Route({

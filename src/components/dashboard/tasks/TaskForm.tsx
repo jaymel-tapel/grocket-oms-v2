@@ -7,7 +7,7 @@ import {
   useGetTask,
   useUpdateTasks,
 } from "../../../services/queries/taskQueries";
-import { taskRoute } from "../../../pages/routeTree";
+import { newTaskRoute, taskRoute } from "../../../pages/routeTree";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
 import { useEffect } from "react";
@@ -20,6 +20,7 @@ const TaskSchema = z.object({
   remarks: z.string(),
   description: z.string(),
   note: z.string(),
+  orderId: z.coerce.number().optional().nullable(),
 });
 
 export type taskSchema = z.infer<typeof TaskSchema>;
@@ -27,6 +28,7 @@ export type taskSchema = z.infer<typeof TaskSchema>;
 const TaskForm: React.FC = () => {
   const { taskId } = taskRoute.useParams();
   const { data: tasks } = useGetTask(taskId ?? "");
+  const { orderParams } = newTaskRoute.useSearch();
 
   const navigate = useNavigate();
   const { mutateAsync: createTasks, isPending: isCreating } = useCreateTasks();
@@ -52,6 +54,11 @@ const TaskForm: React.FC = () => {
             : "",
           note: tasks?.taskNotes[0]?.note || "",
         }
+      : orderParams
+      ? {
+          orderId: orderParams.orderId,
+          email: orderParams.clientEmail,
+        }
       : undefined,
   });
 
@@ -71,10 +78,15 @@ const TaskForm: React.FC = () => {
   }, [taskId, tasks, reset]);
 
   const onSubmit: SubmitHandler<taskSchema> = async (data) => {
+    const payload = {
+      ...data,
+      ...(data.orderId != null && { orderId: data.orderId }),
+    };
+
     try {
       const response = taskId
-        ? await updateTasks({ taskId, payload: data })
-        : await createTasks(data);
+        ? await updateTasks({ taskId, payload })
+        : await createTasks(payload);
 
       if (response.status === 200 || response.status === 201) {
         navigate({ to: "/tasks" });
@@ -124,14 +136,15 @@ const TaskForm: React.FC = () => {
               </div>
               <div className="mb-4 w-5/12 max-sm:w-11/12">
                 <label
-                  htmlFor="taskId"
+                  htmlFor="orderId"
                   className="block text-sm font-medium text-black"
                 >
                   Order ID
                 </label>
                 <input
                   type="number"
-                  id="taskId"
+                  id="orderId"
+                  {...register("orderId")}
                   className="block w-full mb-2 mt-2 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
                 />
               </div>

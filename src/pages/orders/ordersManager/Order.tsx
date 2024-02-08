@@ -93,6 +93,20 @@ const Order: React.FC = () => {
     handleBack();
   };
 
+  const handleCreateTask = () => {
+    navigate({
+      to: "/tasks/new",
+      search: () => {
+        return {
+          orderParams: {
+            orderId: order?.id,
+            clientEmail: order?.client?.email,
+          },
+        };
+      },
+    });
+  };
+
   const onSubmit: SubmitHandler<OrderInformationSchema> = async (data) => {
     if (!order) return;
 
@@ -175,7 +189,7 @@ const Order: React.FC = () => {
               )}
             </Button>
             <div className="flex flex-col md:flex-row gap-4">
-              <Button type="button" variant="green">
+              <Button type="button" variant="green" onClick={handleCreateTask}>
                 <PlusIcon className="w-3 h-3 mr-1" /> Create Task
               </Button>
               <Button type="submit" disabled={isUpdating}>
