@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -46,6 +46,18 @@ const DashboardTasks: React.FC = () => {
   const tasksToDisplay =
     activeButton === "currentTasks" ? tasksActive : tasksCompleted;
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (activeButton === "currentTasks") {
+        refetchActiveTasks();
+      } else {
+        refetchCompletedTasks();
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [activeButton, taskState, refetchActiveTasks, refetchCompletedTasks]);
+
   const navigate = useNavigate();
 
   const handleTasks = () => {
@@ -71,8 +83,6 @@ const DashboardTasks: React.FC = () => {
           }, 3000);
         };
         hideTasks();
-        refetchCompletedTasks();
-        refetchActiveTasks();
       } else if (action === "Active") {
         activeTask(taskId);
         const hideTasks = () => {
@@ -82,8 +92,6 @@ const DashboardTasks: React.FC = () => {
           }, 3000);
         };
         hideTasks();
-        refetchCompletedTasks();
-        refetchActiveTasks();
       } else if (action === "Delete") {
         deleteTask(taskId);
         setHiddenTasks([...hiddenTasks, taskId]);
