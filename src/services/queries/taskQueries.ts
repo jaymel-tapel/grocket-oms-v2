@@ -7,6 +7,7 @@ import {
 import axios from "axios";
 import { getHeaders } from "../../utils/utils";
 import { taskSchema } from "../../components/dashboard/tasks/TaskForm";
+import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const TASKS_URL = API_URL + "/tasks";
@@ -20,6 +21,7 @@ export type Tasks = {
   description: string;
   remarks: string;
   email: string;
+  status: string;
   note: string;
   taskNotes: { note: string } /* taskNote here is for taskForm */;
   task: { taskNotes: { note: string } } /* This one is for dashboard */;
@@ -29,6 +31,7 @@ export type Tasks = {
     email: string;
     remarks: string;
     task_date: string;
+    status: string;
     title: string;
   } | null;
   taskSeller: {
@@ -36,6 +39,7 @@ export type Tasks = {
     description: string;
     email: string;
     remarks: string;
+    status: string;
     task_date: string;
     title: string;
   } | null;
@@ -160,30 +164,34 @@ export const useCompleteTasks = () => {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      try {
-        queryClient.setQueryData<TaskResponse>(["tasks"], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            nodes: oldData.nodes.map((task) =>
-              task.id === id ? { ...task, completed: true } : task
-            ),
-          };
-        });
-
-        const response = await axios.patch(
-          TASKS_URL + `/complete/${id}`,
-          {},
-          { headers: getHeaders() }
-        );
-
-        return response.data;
-      } catch (error) {
-        queryClient.invalidateQueries({ queryKey: ["tasks"] });
-        throw error;
-      }
+      return await axios.patch(
+        TASKS_URL + `/complete/${id}`,
+        {},
+        { headers: getHeaders() }
+      );
     },
-    onSettled: () => {
+    onSuccess: () => {
+      toast.success("Task updated");
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+};
+
+// -- Update for Active tasks
+
+export const useActiveTasks = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return await axios.patch(
+        TASKS_URL + `/active/${id}`,
+        {},
+        { headers: getHeaders() }
+      );
+    },
+    onSuccess: () => {
+      toast.success("Task updated");
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
@@ -196,38 +204,27 @@ export const useDeleteTask = () => {
 
   return useMutation({
     mutationFn: async (taskId: number) => {
-      try {
-        queryClient.setQueryData<TaskResponse>(["tasksActive"], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            nodes: oldData.nodes.filter((task) => task.id !== taskId),
-          };
-        });
-
-        queryClient.setQueryData<Tasks>(["tasks", taskId], (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-          };
-        });
-
-        const response = await axios.delete(TASKS_URL + `/${taskId}`, {
-          headers: getHeaders(),
-        });
-
-        return response.data;
-      } catch (error) {
-        queryClient.invalidateQueries({ queryKey: ["tasksActive"] });
-        queryClient.invalidateQueries({ queryKey: ["tasks", taskId] });
-
-        throw error;
-      }
+      return await axios.delete(TASKS_URL + `/${taskId}`, {
+        headers: getHeaders(),
+      });
     },
+    onMutate: async (taskId: number) => {
+      const previousTasks = queryClient.getQueryData(["tasks"]);
 
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasksActive"] });
+      queryClient.setQueryData(
+        ["tasks"],
+        (oldTasks: Tasks[] | undefined) =>
+          oldTasks && oldTasks.filter((task) => task.id !== taskId)
+      );
+
+      return () => queryClient.setQueryData(["tasks"], previousTasks);
+    },
+    onSuccess: () => {
+      toast.success("Task deleted");
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onError: () => {
+      toast.error("Error deleting task");
     },
   });
 };
