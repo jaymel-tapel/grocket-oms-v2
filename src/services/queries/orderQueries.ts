@@ -65,6 +65,16 @@ const getAllOrders = async (params?: OrdersParams): Promise<OrdersResponse> => {
   return response.data;
 };
 
+const getDeletedOrders = async (
+  params?: OrdersParams
+): Promise<OrdersResponse> => {
+  const response = await axios.get(ORDERS_URL + "/deleted", {
+    params,
+    headers: getHeaders(),
+  });
+  return response.data;
+};
+
 const getOrder = async (id: number): Promise<Order> => {
   const response = await axios.get(ORDERS_URL + `/${id}`, {
     headers: getHeaders(),
@@ -76,6 +86,13 @@ export const getAllOrdersOptions = (search?: OrdersParams) => {
   return {
     queryKey: ["orders", search],
     queryFn: () => getAllOrders(search),
+  };
+};
+
+export const getDeletedOrdersOptions = (search?: OrdersParams) => {
+  return {
+    queryKey: ["deleted-orders", search],
+    queryFn: () => getDeletedOrders(search),
   };
 };
 
@@ -93,6 +110,10 @@ export const useGetAllOrders = (search?: OrdersParams) => {
 
 export const useGetOrder = (id: number) => {
   return useQuery(getOrderOption(id));
+};
+
+export const useGetDeletedOrders = (search?: OrdersParams) => {
+  return useQuery(getDeletedOrdersOptions(search));
 };
 
 // POST / Create

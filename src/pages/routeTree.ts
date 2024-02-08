@@ -12,6 +12,7 @@ import { isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
 import {
   getAllOrdersOptions,
+  getDeletedOrdersOptions,
   getOrderOption,
 } from "../services/queries/orderQueries";
 import { z } from "zod";
@@ -220,9 +221,48 @@ export const orderRoute = new Route({
   component: lazyRouteComponent(() => import("./orders/ordersManager/Order")),
 });
 
-const deletedOrdersRoute = new Route({
+export const deletedOrdersRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "deleted",
+  validateSearch: z.object({
+    searchDeletedOrders: z
+      .object({
+        keyword: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        filter: z
+          .enum([
+            "order_id",
+            "company",
+            "payment_status",
+            "review_status",
+            "reviewer_name",
+            "client",
+            "seller",
+            "remarks",
+          ])
+          .optional(),
+        page: z.number().optional().catch(1),
+        perPage: z.number().optional().catch(10),
+      })
+      .optional(),
+  }).parse,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+      searchDeletedOrders: {
+        ...search.searchDeletedOrders,
+      },
+    }),
+  ],
+  loaderDeps: ({ search }) => ({
+    searchDeletedOrders: search.searchDeletedOrders,
+  }),
+  loader: async ({ context: { queryClient }, deps }) => {
+    queryClient.ensureQueryData(
+      getDeletedOrdersOptions(deps.searchDeletedOrders)
+    );
+  },
   component: lazyRouteComponent(() => import("./orders/DeletedOrders")),
 });
 

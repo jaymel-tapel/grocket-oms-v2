@@ -48,10 +48,9 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   const handleFileChange = async (e) => {
     if (!order) return;
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0]; // Get the file from the input
+      const file = e.target.files[0];
       setImageFile(file);
       const formData = new FormData();
-      console.log(file);
       formData.append("image", file);
       await uploadInvoice({ orderId: order.id, payload: formData });
     }
