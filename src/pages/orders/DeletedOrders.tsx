@@ -24,10 +24,17 @@ const DeletedOrders: React.FC = () => {
   }, [data]);
 
   return (
-    <DeletedOrdersTable
-      orders={deletedOrders.data}
-      pagination={deletedOrders.pagination}
-    />
+    <div>
+      <div className="mt-4 mb-6">
+        <span className="flex gap-2">
+          <p>Orders</p> / <p className="text-[#41B2E9]">Deleted Orders</p>
+        </span>
+      </div>
+      <DeletedOrdersTable
+        orders={deletedOrders.data}
+        pagination={deletedOrders.pagination}
+      />
+    </div>
   );
 };
 
