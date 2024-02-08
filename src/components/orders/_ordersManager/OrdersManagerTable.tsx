@@ -62,9 +62,9 @@ const OrdersManagerTable: React.FC<TableProps> = ({
   };
 
   useEffect(() => {
-    /* @ts-expect-error idk why this is giving error all of a sudden */
     navigate({
       to: "/orders/orders_manager",
+      /* @ts-expect-error idk why this is giving error all of a sudden */
       search: ({ searchOrders }) => {
         return {
           searchOrders: {
