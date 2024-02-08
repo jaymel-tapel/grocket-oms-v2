@@ -76,7 +76,6 @@ const OrderInformationCompanies: React.FC<Props> = ({
 
   const handleAddCompany = () => {
     if (!company) return;
-    console.log(company);
 
     if (newCompanyErrors.name.error || newCompanyErrors.url.error) {
       setShowErrors(true);

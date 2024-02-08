@@ -124,3 +124,29 @@ export const getActiveFilterLabel = (filter: string | undefined) => {
       return "";
   }
 };
+
+type ColorKey = "default" | "lightBlue" | "green" | "orange" | "yellow" | "red";
+
+type PaymentStatus = {
+  label: string;
+  color: ColorKey;
+};
+
+export const getPaymentStatus = (status: string): PaymentStatus => {
+  switch (status) {
+    case "NEW":
+      return { label: "New", color: "default" };
+    case "PR1":
+      return { label: "Reminder 1", color: "yellow" };
+    case "PR2":
+      return { label: "Reminder 2", color: "orange" };
+    case "SENT_INVOICE":
+      return { label: "Sent Invoice", color: "lightBlue" };
+    case "PAID":
+      return { label: "Paid", color: "green" };
+    case "UNPAID":
+      return { label: "Unpaid", color: "red" };
+    default:
+      return { label: "New", color: "default" };
+  }
+};

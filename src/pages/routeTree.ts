@@ -148,7 +148,6 @@ const ordersIndexRoute = new Route({
   getParentRoute: () => ordersRoute,
   path: "/",
   beforeLoad: async () => {
-    console.log("redirect");
     throw redirect({ to: "/orders/orders_report" });
   },
 });
