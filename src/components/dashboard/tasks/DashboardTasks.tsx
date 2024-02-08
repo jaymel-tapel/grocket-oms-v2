@@ -47,15 +47,29 @@ const DashboardTasks: React.FC = () => {
     activeButton === "currentTasks" ? tasksActive : tasksCompleted;
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (activeButton === "currentTasks") {
-        refetchActiveTasks();
-      } else {
-        refetchCompletedTasks();
-      }
-    }, 2000);
+    let fetchInterval;
+    let timeout;
 
-    return () => clearInterval(interval);
+    const startFetching = () => {
+      fetchInterval = setInterval(() => {
+        if (activeButton === "currentTasks") {
+          refetchActiveTasks();
+        } else {
+          refetchCompletedTasks();
+        }
+      }, 1000);
+
+      timeout = setTimeout(() => {
+        clearInterval(fetchInterval);
+      }, 6000);
+    };
+
+    startFetching();
+
+    return () => {
+      clearInterval(fetchInterval);
+      clearTimeout(timeout);
+    };
   }, [activeButton, taskState, refetchActiveTasks, refetchCompletedTasks]);
 
   const navigate = useNavigate();
