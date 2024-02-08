@@ -14,9 +14,9 @@ import { useEffect } from "react";
 
 const TaskSchema = z.object({
   name: z.string(),
-  task_date: z.string().min(1, { message: "Date required" }),
+  task_date: z.string().min(1, { message: "Date Required" }),
   email: z.string().nullable(),
-  title: z.string().min(1, { message: "Task name required" }),
+  title: z.string().min(1, { message: "Task Name Required" }),
   remarks: z.string(),
   description: z.string(),
   note: z.string(),
@@ -114,10 +114,10 @@ const TaskForm: React.FC = () => {
         </div>
       </div>
       <div className="rounded-sm w-auto h-auto border bg-white shadow-lg ">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <ul className="flex flex-col mt-14 ml-14">
-            <li className="flex w-auto gap-[5.5rem] max-sm:flex-col ">
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+            <li className="mb-8 grid grid-cols-2 w-full gap-y-8 max-sm:grid-cols-1">
+              <div>
                 <label
                   htmlFor="taskdate"
                   className="block text-sm font-medium text-black"
@@ -127,14 +127,14 @@ const TaskForm: React.FC = () => {
                 <input
                   type="date"
                   id="taskdate"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
                   {...register("task_date")}
+                  className={`block mb-2 mt-2 w-10/12 max-sm:w-11/12 max-sm:mb-0 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 `}
                 />
                 <span className="px-1 text-red-500">
                   {errors.task_date?.message}
                 </span>
               </div>
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
                   htmlFor="orderId"
                   className="block text-sm font-medium text-black"
@@ -144,27 +144,24 @@ const TaskForm: React.FC = () => {
                 <input
                   type="number"
                   id="orderId"
-                  {...register("orderId")}
-                  className="block w-full mb-2 mt-2 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
+                  className={`block mt-2 w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 `}
                 />
               </div>
-            </li>
-            <li className="flex w-auto gap-[5.5rem] max-sm:flex-col ">
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
-                  htmlFor="taskName"
+                  htmlFor="businessName"
                   className="block text-sm font-medium text-black"
                 >
                   Business Name
                 </label>
                 <input
                   type="text"
-                  id="taskName"
-                  className="block w-full mb-2 mt-2 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
+                  id="businessName"
                   {...register("name")}
+                  className={`block mt-2 w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 `}
                 />
               </div>
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
                   htmlFor="taskEmail"
                   className="block text-sm font-medium text-black"
@@ -172,49 +169,47 @@ const TaskForm: React.FC = () => {
                   Client Email Address
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   id="taskEmail"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
                   {...register("email")}
+                  className={`block mt-2 w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 `}
                 />
               </div>
             </li>
-            <li className="border-t mt-12 mr-[5.5rem] mb-10 max-sm:w-11/12"></li>
-
+            <li className="border-t w-11/12 mt-10 mr-[5.5rem] max-lg:mr-[5rem] mb-10  max-sm:w-11/12"></li>
             <li className="mb-8">
               <p className="font-bold text-black text-sm">Task Details</p>
             </li>
-
-            <li className="flex w-auto gap-[5.5rem] mb-9 max-sm:flex-col ">
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+            <li className="mb-8 grid grid-cols-2 w-full max-sm:grid-cols-1">
+              <div>
                 <label
-                  htmlFor="taskName"
+                  htmlFor="taskname"
                   className="block text-sm font-medium text-black"
                 >
                   Task Name
                 </label>
                 <input
                   type="text"
-                  id="taskName"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
+                  id="taskname"
                   {...register("title")}
+                  className={`block mb-2 mt-2 w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 `}
                 />
                 <span className="px-1 text-red-500">
                   {errors.title?.message}
                 </span>
               </div>
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
-                  htmlFor="taskRemarks"
+                  htmlFor="remarks"
                   className="block text-sm font-medium text-black"
                 >
                   Remarks
                 </label>
                 <input
                   type="text"
-                  id="taskRemarks"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
+                  id="remarks"
                   {...register("remarks")}
+                  className={`block mt-2 w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 `}
                 />
               </div>
             </li>
@@ -243,22 +238,21 @@ const TaskForm: React.FC = () => {
                   htmlFor="taskNote"
                   className="block text-sm font-medium leading-6 text-black"
                 >
-                  Personal note
+                  Personal Note
                 </label>
                 <div className="mt-2">
                   <textarea
                     id="taskNote"
-                    placeholder=" "
                     className="block w-full h-[197px] rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm sm:leading-6"
                     {...register("note")}
                   />
                 </div>
               </div>
             </li>
-            <li className="border-t mt-12 mr-[5.5rem] mb-8 max-sm:w-11/12"></li>
+            <li className="border-t w-11/12 mb-8"></li>
 
-            <li className="mr-[5.5rem] mb-12">
-              <div className="flex justify-between  mb-4 gap-4 max-sm:flex-col max-sm:ml-12 max-sm:justify-center">
+            <li className="w-11/12 mb-12">
+              <div className="flex justify-between  mb-4 gap-4 max-sm:flex-col max-sm:justify-center">
                 <Button onClick={handleClose} variant="delete">
                   Cancel
                 </Button>
