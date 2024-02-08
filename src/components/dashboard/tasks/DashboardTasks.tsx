@@ -11,6 +11,7 @@ import {
   TrashIcon,
 } from "../../tools/svg/DashboardTasksLogos";
 import {
+  useActiveTasks,
   useCompleteTasks,
   useDeleteTask,
   useGetAllTasksActive,
@@ -22,18 +23,24 @@ import Spinner from "../../tools/spinner/Spinner";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
+  const [taskState, setTaskState] = useState("Completed");
+  const [hiddenTasks, setHiddenTasks] = useState<number[]>([]);
+  const [hideCompleted, setHideCompleted] = useState<number[]>([]);
   const {
     data: { nodes: tasksActive = [] } = {},
     isLoading: activeLoading,
     isError: activeError,
+    refetch: refetchActiveTasks,
   } = useGetAllTasksActive();
 
   const {
     data: { nodes: tasksCompleted = [] } = {},
     isLoading: completedLoading,
     isError: completedError,
+    refetch: refetchCompletedTasks,
   } = useGetAllTasksCompleted();
   const { mutate: completeTask } = useCompleteTasks();
+  const { mutate: activeTask } = useActiveTasks();
   const { mutate: deleteTask } = useDeleteTask();
 
   const tasksToDisplay =
@@ -52,13 +59,34 @@ const DashboardTasks: React.FC = () => {
 
   const handleTaskAction = async (
     taskId: number,
-    action: "Completed" | "Delete"
+    action: "Completed" | "Delete" | "Active"
   ) => {
     try {
       if (action === "Completed") {
-        await completeTask(taskId);
+        completeTask(taskId);
+        const hideTasks = () => {
+          setHideCompleted([...hideCompleted, taskId]);
+          setTimeout(() => {
+            setHideCompleted([]);
+          }, 3000);
+        };
+        hideTasks();
+        refetchCompletedTasks();
+        refetchActiveTasks();
+      } else if (action === "Active") {
+        activeTask(taskId);
+        const hideTasks = () => {
+          setHideCompleted([...hideCompleted, taskId]);
+          setTimeout(() => {
+            setHideCompleted([]);
+          }, 3000);
+        };
+        hideTasks();
+        refetchCompletedTasks();
+        refetchActiveTasks();
       } else if (action === "Delete") {
-        await deleteTask(taskId);
+        deleteTask(taskId);
+        setHiddenTasks([...hiddenTasks, taskId]);
       } else {
         console.error(`Invalid action: ${action}`);
       }
@@ -71,7 +99,11 @@ const DashboardTasks: React.FC = () => {
   };
 
   if (activeLoading || completedLoading) {
-    return <Spinner className="text-center" />;
+    return (
+      <p className="text-center">
+        Loading task. <Spinner />
+      </p>
+    );
   }
 
   if (activeError || completedError) {
@@ -85,14 +117,20 @@ const DashboardTasks: React.FC = () => {
           <div className="flex gap-7 max-md:flex-col">
             <Button
               type="button"
-              onClick={() => setActiveButtton("currentTasks")}
+              onClick={() => {
+                setActiveButtton("currentTasks");
+                refetchActiveTasks();
+              }}
               variant={activeButton === "currentTasks" ? "default" : "inactive"}
             >
               Current Tasks
             </Button>
             <Button
               type="button"
-              onClick={() => setActiveButtton("completedTasks")}
+              onClick={() => {
+                setActiveButtton("completedTasks");
+                refetchCompletedTasks();
+              }}
               variant={
                 activeButton === "completedTasks" ? "default" : "inactive"
               }
@@ -116,7 +154,12 @@ const DashboardTasks: React.FC = () => {
             tasksToDisplay.map((task, i) => (
               <div
                 key={i}
-                className="flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border shadow-lg border-stroke shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1"
+                className={` ${
+                  hideCompleted.includes(task.taskId) ||
+                  hiddenTasks.includes(task.taskId)
+                    ? "hidden"
+                    : ""
+                }  flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border  border-stroke hover:shadow-lg shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1 `}
               >
                 <div className="grid grid-cols-2 gap-56  max-lg:grid-cols-1 max-lg:gap-0 ">
                   <div className="max-lg:gap-0">
@@ -125,26 +168,33 @@ const DashboardTasks: React.FC = () => {
                       {task.description}
                     </p>
                     <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
-                      <div className="gap-6 mt-2 flex">
+                      <div className="gap-6 mt-2 flex ">
                         {[CheckCircle, PencilAlt, TrashIcon].map(
                           (icon, iconIndex) => (
                             <button
                               key={iconIndex}
                               onClick={() => {
                                 if (icon === CheckCircle) {
-                                  handleTaskAction(task.taskId, "Completed");
+                                  const newTaskState =
+                                    taskState === "Active"
+                                      ? "Completed"
+                                      : "Active";
+                                  setTaskState(newTaskState);
+                                  handleTaskAction(task.taskId, newTaskState);
                                 } else if (icon === PencilAlt) {
                                   handleClick(task.taskId);
                                 } else if (icon === TrashIcon) {
                                   handleTaskAction(task.taskId, "Delete");
                                 }
                               }}
+                              className="hover:scale-125 transition-transform"
                             >
                               {icon}
                             </button>
                           )
                         )}
                       </div>
+
                       <span className="border-r-2 max-lg:hidden"></span>
                       <div className="gap-6 mt-2 flex">
                         {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
@@ -161,10 +211,12 @@ const DashboardTasks: React.FC = () => {
                               params={{ taskId: task.taskId }}
                               className="mt-2"
                             >
-                              <button>{icon}</button>
+                              <button className="hover:scale-125 transition-transform">
+                                {icon}
+                              </button>
                             </Link>
                           )
-                        )}{" "}
+                        )}
                       </div>
                     </div>
                   </div>
@@ -205,8 +257,8 @@ const DashboardTasks: React.FC = () => {
               </div>
             ))
           ) : (
-            <div className="flex items-center justify-center">
-              <Spinner />
+            <div className="flex items-center justify-center gap-2">
+              <p>No task available.</p>
             </div>
           )}
         </div>
