@@ -65,6 +65,16 @@ const getAllOrders = async (params?: OrdersParams): Promise<OrdersResponse> => {
   return response.data;
 };
 
+const getDeletedOrders = async (
+  params?: OrdersParams
+): Promise<OrdersResponse> => {
+  const response = await axios.get(ORDERS_URL + "/deleted", {
+    params,
+    headers: getHeaders(),
+  });
+  return response.data;
+};
+
 const getOrder = async (id: number): Promise<Order> => {
   const response = await axios.get(ORDERS_URL + `/${id}`, {
     headers: getHeaders(),
@@ -76,6 +86,13 @@ export const getAllOrdersOptions = (search?: OrdersParams) => {
   return {
     queryKey: ["orders", search],
     queryFn: () => getAllOrders(search),
+  };
+};
+
+export const getDeletedOrdersOptions = (search?: OrdersParams) => {
+  return {
+    queryKey: ["deleted-orders", search],
+    queryFn: () => getDeletedOrders(search),
   };
 };
 
@@ -93,6 +110,10 @@ export const useGetAllOrders = (search?: OrdersParams) => {
 
 export const useGetOrder = (id: number) => {
   return useQuery(getOrderOption(id));
+};
+
+export const useGetDeletedOrders = (search?: OrdersParams) => {
+  return useQuery(getDeletedOrdersOptions(search));
 };
 
 // POST / Create
@@ -136,6 +157,22 @@ export const useAddOrderReview = () => {
   });
 };
 
+export const useUploadOrderInvoice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: { orderId: number; payload: FormData }) => {
+      return axios.post(ORDERS_URL + `/upload/${arg.orderId}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: (_, { orderId }) => {
+      toast.success("Order updated with new review!");
+      queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
+    },
+  });
+};
+
 // PATCH / PUT
 
 export const useUpdateOrder = () => {
@@ -158,6 +195,22 @@ export const useUpdateOrder = () => {
 };
 
 // DELETE
+
+export const useDeleteOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderId: number) => {
+      return await axios.delete(ORDERS_URL + `/${orderId}`, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Order deleted!");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};
 
 export const useDeleteOrderReview = () => {
   const queryClient = useQueryClient();

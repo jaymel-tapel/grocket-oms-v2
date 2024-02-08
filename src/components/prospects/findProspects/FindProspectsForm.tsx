@@ -57,14 +57,6 @@ const ProspectFormNavigation = () => {
   const { stopScrapeEmails } = useScrapeProspectEmails();
 
   const finalCsvData = useMemo(() => {
-    // const mappedData = selectedProspects.map((prospect, index) => [
-    //   prospect.businessName,
-    //   prospect.rating,
-    //   prospect.phone,
-    //   prospect.website,
-    //   prospectsEmails[index]?.emails?.join(", "),
-    // ]);
-
     const mappedData: Array<string[]> = [];
 
     selectedProspects.forEach((prospect, index) => {
