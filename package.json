@@ -13,6 +13,7 @@
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.3",
+    "@radix-ui/react-popover": "^1.0.7",
     "@tailwindcss/forms": "^0.5.7",
     "@tanstack/react-query": "^5.8.3",
     "@tanstack/react-router": "^0.0.1-beta.279",
@@ -23,6 +24,7 @@
     "dayjs": "^1.11.10",
     "debounce": "^1.2.1",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.323.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-csv": "^2.2.2",
@@ -32,6 +34,7 @@
     "react-hot-toast": "^2.4.1",
     "sass": "^1.69.5",
     "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {
