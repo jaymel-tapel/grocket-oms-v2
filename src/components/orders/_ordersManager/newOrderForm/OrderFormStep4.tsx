@@ -166,13 +166,22 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
         >
           {selectedMethod === "Manually Add Review" && (
             <div className="flex gap-4 items-end">
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium">Name</span>
-                <input
-                  type="text"
-                  className="border rounded-sm w-[20rem]"
-                  onChange={(e) => setName(e.target.value)}
-                />
+              <div>
+                <label
+                  htmlFor="reviewer_name"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Name
+                </label>
+                <div className="w-[20rem] mt-2">
+                  <input
+                    type="text"
+                    id="reviewer_name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                  />
+                </div>
               </div>
               <Button
                 type="button"
