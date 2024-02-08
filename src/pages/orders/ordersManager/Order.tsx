@@ -9,6 +9,7 @@ import OrderInformationCompanies from "../../../components/orders/_ordersManager
 import OrderInformationReviews from "../../../components/orders/_ordersManager/orderInformation/OrderInformationReviews";
 import { useNavigate } from "@tanstack/react-router";
 import {
+  useDeleteOrder,
   useGetOrder,
   useUpdateOrder,
 } from "../../../services/queries/orderQueries";
@@ -20,6 +21,7 @@ const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
 type View = (typeof VIEWS)[number];
 
 const orderInformationSchema = z.object({
+  seller_id: z.number(),
   seller_name: z.string(),
   seller_email: z.string().email().min(1, { message: "Invalid Email Address" }),
   client_name: z.string(),
@@ -42,6 +44,7 @@ const Order: React.FC = () => {
 
   const { data: order } = useGetOrder(orderId);
   const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
+  const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder();
 
   const {
     control,
@@ -52,6 +55,7 @@ const Order: React.FC = () => {
   } = useForm<OrderInformationSchema>({
     resolver: zodResolver(orderInformationSchema),
     values: order && {
+      seller_id: order.sellerId,
       client_email: order.client.email,
       client_name: order.client.name,
       company_name: order.company.name,
@@ -80,6 +84,13 @@ const Order: React.FC = () => {
 
   const handleBack = () => {
     navigate({ to: "/orders/orders_manager" });
+  };
+
+  const handleDelete = () => {
+    if (!window.confirm("Delete this order?")) return;
+
+    deleteOrder(orderId);
+    handleBack();
   };
 
   const onSubmit: SubmitHandler<OrderInformationSchema> = async (data) => {
@@ -148,8 +159,20 @@ const Order: React.FC = () => {
           )}
 
           <div className="mt-4 flex gap-4 flex-col md:flex-row justify-between">
-            <Button type="button" variant="delete">
-              Delete
+            <Button
+              type="button"
+              variant="delete"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Spinner />
+                  Deleting
+                </>
+              ) : (
+                "Delete"
+              )}
             </Button>
             <div className="flex flex-col md:flex-row gap-4">
               <Button type="button" variant="green">

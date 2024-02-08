@@ -1,9 +1,12 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import React from "react";
+import React, { useState } from "react";
 import { ArrowUpTrayIcon, DocumentIcon } from "@heroicons/react/20/solid";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { OrderInformationSchema } from "../../../../pages/orders/ordersManager/Order";
-import { Order } from "../../../../services/queries/orderQueries";
+import {
+  Order,
+  useUploadOrderInvoice,
+} from "../../../../services/queries/orderQueries";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
@@ -30,6 +33,8 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   debouncedEmail,
   sellerId,
 }) => {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
 
@@ -37,6 +42,20 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
     sellerId,
     keyword: debouncedEmail ?? "",
   });
+
+  const { mutateAsync: uploadInvoice } = useUploadOrderInvoice();
+
+  const handleFileChange = async (e) => {
+    if (!order) return;
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]; // Get the file from the input
+      setImageFile(file);
+      const formData = new FormData();
+      console.log(file);
+      formData.append("image", file);
+      await uploadInvoice({ orderId: order.id, payload: formData });
+    }
+  };
 
   return (
     <div className="border-b border-grGray-dark">
@@ -61,11 +80,40 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
       <div className="py-4">
         <div className="flex justify-between">
           <span className="font-medium">Client Information</span>
-          <div className="flex gap-12">
-            <div className="cursor-pointer flex gap-2 items-center text-xs text-blue-700">
-              <ArrowUpTrayIcon className="h-4 w-4" />
-              <span className="font-medium">Upload Invoice</span>
-            </div>
+          <div className="flex items-center gap-12">
+            {order?.invoice_image ? (
+              <a
+                href={order.invoice_image}
+                download={order.invoice_image.split(".")[0]}
+                target={"_blank"}
+                rel="noreferrer"
+                className="text-xs text-blue-700 font-medium"
+              >
+                Download Invoice
+              </a>
+            ) : (
+              <div>
+                <label
+                  htmlFor="invoiceInput"
+                  className="cursor-pointer flex gap-2 items-center text-xs text-blue-700 font-medium"
+                >
+                  {imageFile?.name ? (
+                    imageFile.name
+                  ) : (
+                    <>
+                      <ArrowUpTrayIcon className="h-4 w-4" />
+                      Upload Invoice
+                    </>
+                  )}
+                </label>
+                <input
+                  id="invoiceInput"
+                  type="file"
+                  className="font-medium hidden"
+                  onChange={(e) => handleFileChange(e)}
+                />
+              </div>
+            )}
             <div className="cursor-pointer flex gap-2 items-center text-xs text-green-500">
               <DocumentIcon className="h-4 w-4" />
               <span className="font-medium">Generate Invoice PDF</span>
