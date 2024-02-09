@@ -178,14 +178,14 @@ const DashboardTasks: React.FC = () => {
                     </p>
                     <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
                       <div className="gap-6 mt-2 flex ">
-                        <span
-                          className="hover:scale-125 transition-transform mt-2"
+                        <button
+                          className="hover:scale-125 transition-transform "
                           onClick={() => {
                             handleTaskToggle(task.taskId);
                           }}
                         >
                           {CheckCircle}
-                        </span>
+                        </button>
                         <button
                           type="button"
                           className="hover:scale-125 transition-transform"
