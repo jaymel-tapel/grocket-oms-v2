@@ -15,6 +15,7 @@ const TASKS_URL = API_URL + "/tasks";
 export type Tasks = {
   id: number;
   taskId: number;
+  orderId: number;
   name: string;
   task_date: string;
   title: string;
@@ -27,6 +28,7 @@ export type Tasks = {
   task: { taskNotes: { note: string } } /* This one is for dashboard */;
   taskAccountant: {
     taskId: number;
+    orderId: number;
     description: string;
     email: string;
     remarks: string;
@@ -36,6 +38,7 @@ export type Tasks = {
   } | null;
   taskSeller: {
     taskId: number;
+    orderId: number;
     description: string;
     email: string;
     remarks: string;
