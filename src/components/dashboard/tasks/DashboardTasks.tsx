@@ -20,12 +20,15 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
+import dayjs from "dayjs";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
-  const [taskState, setTaskState] = useState("Completed");
+  const [taskState, setTaskState] = useState<"Active" | "Completed">(
+    "Completed"
+  );
+
   const [hiddenTasks, setHiddenTasks] = useState<number[]>([]);
-  const [hideCompleted, setHideCompleted] = useState<number[]>([]);
   const {
     data: { nodes: tasksActive = [] } = {},
     isLoading: activeLoading,
@@ -39,8 +42,8 @@ const DashboardTasks: React.FC = () => {
     isError: completedError,
     refetch: refetchCompletedTasks,
   } = useGetAllTasksCompleted();
-  const { mutate: completeTask } = useCompleteTasks();
-  const { mutate: activeTask } = useActiveTasks();
+  const { mutateAsync: completeTask } = useCompleteTasks();
+  const { mutateAsync: activeTask } = useActiveTasks();
   const { mutate: deleteTask } = useDeleteTask();
 
   const tasksToDisplay =
@@ -70,8 +73,7 @@ const DashboardTasks: React.FC = () => {
       clearInterval(fetchInterval);
       clearTimeout(timeout);
     };
-  }, [activeButton, taskState, refetchActiveTasks, refetchCompletedTasks]);
-
+  }, [activeButton, refetchActiveTasks, refetchCompletedTasks]);
   const navigate = useNavigate();
 
   const handleTasks = () => {
@@ -83,40 +85,28 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 
-  const handleTaskAction = async (
-    taskId: number,
-    action: "Completed" | "Delete" | "Active"
-  ) => {
+  const handleTaskToggle = async (taskId: number) => {
     try {
-      if (action === "Completed") {
-        completeTask(taskId);
-        const hideTasks = () => {
-          setHideCompleted([...hideCompleted, taskId]);
-          setTimeout(() => {
-            setHideCompleted([]);
-          }, 3000);
-        };
-        hideTasks();
-      } else if (action === "Active") {
-        activeTask(taskId);
-        const hideTasks = () => {
-          setHideCompleted([...hideCompleted, taskId]);
-          setTimeout(() => {
-            setHideCompleted([]);
-          }, 3000);
-        };
-        hideTasks();
-      } else if (action === "Delete") {
-        deleteTask(taskId);
-        setHiddenTasks([...hiddenTasks, taskId]);
-      } else {
-        console.error(`Invalid action: ${action}`);
+      if (taskState === "Completed") {
+        await activeTask(taskId);
+        setTaskState("Active");
+      } else if (taskState === "Active") {
+        await completeTask(taskId);
+        setTaskState("Completed");
       }
     } catch (error) {
-      console.error(
-        `Error ${action === "Completed" ? "Completing" : "Deleting"} task:`,
-        error
-      );
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const handleDelete = async (taskId: number, action: "Delete") => {
+    try {
+      if (action === "Delete") {
+        deleteTask(taskId);
+        setHiddenTasks([...hiddenTasks, taskId]);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
   };
 
@@ -177,10 +167,7 @@ const DashboardTasks: React.FC = () => {
               <div
                 key={i}
                 className={` ${
-                  hideCompleted.includes(task.taskId) ||
-                  hiddenTasks.includes(task.taskId)
-                    ? "hidden"
-                    : ""
+                  hiddenTasks.includes(task.taskId) ? "hidden" : ""
                 }  flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border  border-stroke hover:shadow-lg shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1 `}
               >
                 <div className="grid grid-cols-2 gap-56  max-lg:grid-cols-1 max-lg:gap-0 ">
@@ -191,30 +178,32 @@ const DashboardTasks: React.FC = () => {
                     </p>
                     <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
                       <div className="gap-6 mt-2 flex ">
-                        {[CheckCircle, PencilAlt, TrashIcon].map(
-                          (icon, iconIndex) => (
-                            <button
-                              key={iconIndex}
-                              onClick={() => {
-                                if (icon === CheckCircle) {
-                                  const newTaskState =
-                                    taskState === "Active"
-                                      ? "Completed"
-                                      : "Active";
-                                  setTaskState(newTaskState);
-                                  handleTaskAction(task.taskId, newTaskState);
-                                } else if (icon === PencilAlt) {
-                                  handleClick(task.taskId);
-                                } else if (icon === TrashIcon) {
-                                  handleTaskAction(task.taskId, "Delete");
-                                }
-                              }}
-                              className="hover:scale-125 transition-transform"
-                            >
-                              {icon}
-                            </button>
-                          )
-                        )}
+                        <span
+                          className="hover:scale-125 transition-transform mt-2"
+                          onClick={() => {
+                            handleTaskToggle(task.taskId);
+                          }}
+                        >
+                          {CheckCircle}
+                        </span>
+                        <button
+                          type="button"
+                          className="hover:scale-125 transition-transform"
+                          onClick={() => {
+                            handleClick(task.taskId);
+                          }}
+                        >
+                          {PencilAlt}
+                        </button>
+                        <button
+                          type="button"
+                          className="hover:scale-125 transition-transform"
+                          onClick={() => {
+                            handleDelete(task.taskId, "Delete");
+                          }}
+                        >
+                          {TrashIcon}
+                        </button>
                       </div>
 
                       <span className="border-r-2 max-lg:hidden"></span>
@@ -243,10 +232,12 @@ const DashboardTasks: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="w-96 ml-40 max-lg:ml-0 max-md:gap-10 max-lg:pb-10">
+                  <div className="w-96 ml-72 max-lg:ml-0 max-md:gap-10 max-lg:pb-10">
                     <div className="flex gap-2 ">
                       {CalendarIcon}
-                      <p className="text-black">{task.task_date}</p>
+                      <p className="text-black">
+                        {dayjs(task.task_date).format("YYYY-DD-MM")}
+                      </p>
                     </div>
                     <div className="flex gap-2 mt-4">
                       {LinkIcon}
