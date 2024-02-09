@@ -116,106 +116,119 @@ const TaskForm: React.FC = () => {
       <div className="rounded-sm w-auto h-auto border bg-white shadow-lg ">
         <form onSubmit={handleSubmit(onSubmit)}>
           <ul className="flex flex-col mt-14 ml-14">
-            <li className="flex w-auto gap-[5.5rem] max-sm:flex-col ">
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+            <li className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4 max-sm:grid-cols-1">
+              <div>
                 <label
                   htmlFor="taskdate"
-                  className="block text-sm font-medium text-black"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Date
                 </label>
-                <input
-                  type="date"
-                  id="taskdate"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
-                  {...register("task_date")}
-                />
-                <span className="px-1 text-red-500">
-                  {errors.task_date?.message}
-                </span>
+                <div className="w-full mt-2">
+                  <input
+                    type="date"
+                    id="taskdate"
+                    {...register("task_date")}
+                    className={`block w-11/12 mb-4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
+                  />
+
+                  <span className="text-xs italic text-red-500 mt-2">
+                    {errors.task_date?.message}
+                  </span>
+                </div>
               </div>
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
                   htmlFor="orderId"
-                  className="block text-sm font-medium text-black"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Order ID
                 </label>
-                <input
-                  type="number"
-                  id="orderId"
-                  {...register("orderId")}
-                  className="block w-full mb-2 mt-2 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
-                />
+                <div className="w-full mt-2">
+                  <input
+                    type="text"
+                    id="orderId"
+                    {...register("orderId")}
+                    className={`block w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
+                  />
+                </div>
               </div>
-            </li>
-            <li className="flex w-auto gap-[5.5rem] max-sm:flex-col ">
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
                   htmlFor="taskName"
-                  className="block text-sm font-medium text-black"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Business Name
                 </label>
-                <input
-                  type="text"
-                  id="taskName"
-                  className="block w-full mb-2 mt-2 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
-                  {...register("name")}
-                />
+                <div className="w-full mt-2">
+                  <input
+                    type="text"
+                    id="taskName"
+                    {...register("name")}
+                    className={`block w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
+                  />
+                </div>
               </div>
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
                   htmlFor="taskEmail"
-                  className="block text-sm font-medium text-black"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Client Email Address
                 </label>
-                <input
-                  type="email"
-                  id="taskEmail"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
-                  {...register("email")}
-                />
+                <div className="w-full mt-2">
+                  <input
+                    type="text"
+                    id="taskEmail"
+                    {...register("email")}
+                    className={`block w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
+                  />
+                </div>
               </div>
             </li>
+
             <li className="border-t mt-12 mr-[5.5rem] mb-10 max-sm:w-11/12"></li>
 
             <li className="mb-8">
               <p className="font-bold text-black text-sm">Task Details</p>
             </li>
 
-            <li className="flex w-auto gap-[5.5rem] mb-9 max-sm:flex-col ">
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+            <li className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4 max-sm:grid-cols-1">
+              <div>
                 <label
                   htmlFor="taskName"
-                  className="block text-sm font-medium text-black"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Task Name
                 </label>
-                <input
-                  type="text"
-                  id="taskName"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
-                  {...register("title")}
-                />
-                <span className="px-1 text-red-500">
-                  {errors.title?.message}
-                </span>
+                <div className="w-full mt-2">
+                  <input
+                    type="text"
+                    id="taskName"
+                    {...register("title")}
+                    className={`block w-11/12 mb-4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
+                  />
+
+                  <span className="text-xs italic text-red-500 mt-2">
+                    {errors.title?.message}
+                  </span>
+                </div>
               </div>
-              <div className="mb-4 w-5/12 max-sm:w-11/12">
+              <div>
                 <label
                   htmlFor="taskRemarks"
-                  className="block text-sm font-medium text-black"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Remarks
                 </label>
-                <input
-                  type="text"
-                  id="taskRemarks"
-                  className="block w-full mt-2 mb-4 sm:leading-6 rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm"
-                  {...register("remarks")}
-                />
+                <div className="w-full mt-2">
+                  <input
+                    type="text"
+                    id="taskRemarks"
+                    {...register("remarks")}
+                    className={`block w-10/12  max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
+                  />
+                </div>
               </div>
             </li>
 
