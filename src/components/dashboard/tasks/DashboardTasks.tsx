@@ -179,7 +179,7 @@ const DashboardTasks: React.FC = () => {
                     <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
                       <div className="gap-6 mt-2 flex ">
                         <button
-                          className="hover:scale-125 transition-transform mt-2"
+                          className="hover:scale-125 transition-transform "
                           onClick={() => {
                             handleTaskToggle(task.taskId);
                           }}
