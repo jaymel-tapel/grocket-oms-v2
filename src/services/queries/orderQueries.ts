@@ -55,6 +55,42 @@ export type OrdersParams = {
   perPage?: number;
 };
 
+type OrderReportParams = {
+  startRange?: string;
+  endRange?: string;
+  sellerId?: number;
+};
+
+type OrderReportResponse = {
+  total_orders: number;
+  total_paid_orders: number;
+  avg_amount_of_reviews: number;
+  avg_unit_cost: number;
+  orders: {
+    date: string;
+    count: number;
+  }[];
+  paidOrders: {
+    date: string;
+    count: number;
+  }[];
+};
+
+type OrderGraphResponse = {
+  orderPaymentStatus: {
+    count: number;
+    amount: number;
+    percentage: number;
+    payment_status: string;
+  }[];
+  orderReviewStatus: {
+    count: number;
+    amount: number;
+    percentage: number;
+    order_review_status: string;
+  }[];
+};
+
 // -- GET requests
 
 const getAllOrders = async (params?: OrdersParams): Promise<OrdersResponse> => {
@@ -114,6 +150,32 @@ export const useGetOrder = (id: number) => {
 
 export const useGetDeletedOrders = (search?: OrdersParams) => {
   return useQuery(getDeletedOrdersOptions(search));
+};
+
+export const useGetOrderReport = (search?: OrderReportParams) => {
+  return useQuery({
+    queryKey: ["order-stats", search],
+    queryFn: async (): Promise<OrderReportResponse> => {
+      const response = await axios.get(ORDERS_URL + "/report", {
+        headers: getHeaders(),
+        params: search,
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useGetOrderGraph = (search?: OrderReportParams) => {
+  return useQuery({
+    queryKey: ["order-graph", search],
+    queryFn: async (): Promise<OrderGraphResponse> => {
+      const response = await axios.get(ORDERS_URL + "/graph", {
+        headers: getHeaders(),
+        params: search,
+      });
+      return response.data;
+    },
+  });
 };
 
 // POST / Create
