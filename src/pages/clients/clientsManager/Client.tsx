@@ -1,8 +1,8 @@
-import ClientForm from "../../components/clients/clientsManager/ClientForm";
-import { useGetClient } from "../../services/queries/clientsQueries";
-import { clientRoute } from "../routeTree";
+import ClientForm from "../../../components/clients/clientsManager/ClientForm";
+import { useGetClient } from "../../../services/queries/clientsQueries";
+import { clientRoute } from "../../routeTree";
 
-const NewClient = () => {
+const Client = () => {
   const { clientId } = clientRoute.useParams();
   const { data: client } = useGetClient(clientId);
 
@@ -23,4 +23,4 @@ const NewClient = () => {
   );
 };
 
-export default NewClient;
+export default Client;
