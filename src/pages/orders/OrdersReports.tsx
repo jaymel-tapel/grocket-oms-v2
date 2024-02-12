@@ -25,8 +25,6 @@ const OrdersReports = () => {
   const { data: reportData } = useGetOrderReport();
   const { data: orderGraph } = useGetOrderGraph();
 
-  console.log(orderGraph);
-
   const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
     setSearchFilter(newFilter);
   };

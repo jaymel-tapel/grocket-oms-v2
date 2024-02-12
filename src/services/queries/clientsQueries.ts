@@ -67,6 +67,26 @@ export type ClientsParams = {
   perPage?: number;
 };
 
+type ClientReportParams = {
+  startRange?: string;
+  endRange?: string;
+  sellerId?: number;
+};
+
+type ClientReportResponse = {
+  total_clients: number;
+  new_clients: number;
+  clientsLoggedIn: number;
+  newClientsResult: {
+    date: string;
+    count: number;
+  }[];
+  inactiveClientsResult: {
+    date: string;
+    count: number;
+  }[];
+};
+
 // -- GET requests
 
 const getAllClients = async (
@@ -149,6 +169,19 @@ export const useGetClientOrigins = () => {
       return response.data;
     },
     staleTime: Infinity,
+  });
+};
+
+export const useGetClientReport = (search?: ClientReportParams) => {
+  return useQuery({
+    queryKey: ["client-report", search],
+    queryFn: async (): Promise<ClientReportResponse> => {
+      const response = await axios.get(CLIENTS_URL + "/report", {
+        headers: getHeaders(),
+        params: search,
+      });
+      return response.data;
+    },
   });
 };
 

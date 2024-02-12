@@ -6,20 +6,25 @@ import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { Pagination } from "../../../services/queries/accountsQueries";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { Client } from "../../../services/queries/clientsQueries";
 import TablePagination, {
   PaginationNavs,
 } from "../../tools/table/TablePagination";
 
+dayjs.extend(utc);
+
 const COLUMNS = [
   "ID",
   "EMAIL",
   "NAME",
-  "ORDERS",
-  "TOTAL AMOUNT",
+  // "ORDERS",
+  // "TOTAL AMOUNT",
   "DATE REGISTERED",
+  "ACTIONS",
 ];
 
 const itemsPerPage = 10;
@@ -104,12 +109,21 @@ const ClientsManagersTable: React.FC<TableProps> = ({
               <TableBodyCell className="text-center">
                 {client.name}
               </TableBodyCell>
-              <TableBodyCell className="text-center capitalize">
-                1
+              {/* <TableBodyCell className="text-center capitalize">
+                1 
               </TableBodyCell>
-              <TableBodyCell className="text-center">$149</TableBodyCell>
+              <TableBodyCell className="text-center">$149</TableBodyCell> */}
               <TableBodyCell className="text-center">
-                {client.createdAt}
+                {dayjs(client?.createdAt).local().format("MM-DD-YYYY")}
+              </TableBodyCell>
+              <TableBodyCell className="text-center">
+                <Link
+                  to="/clients/clients_manager/$clientId"
+                  params={{ clientId: client.id }}
+                  className="text-blue-500"
+                >
+                  View
+                </Link>
               </TableBodyCell>
             </TableRow>
           ))}

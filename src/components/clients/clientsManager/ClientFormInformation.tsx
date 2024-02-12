@@ -1,16 +1,12 @@
-const origins = [
-  { _id: 1, name: "Test Origin 1" },
-  { _id: 2, name: "Test Origin 2" },
-  { _id: 3, name: "Test Origin 3" },
-] as const;
-
-const industries = [
-  { _id: 1, name: "Test Industry 1" },
-  { _id: 2, name: "Test Industry 2" },
-  { _id: 3, name: "Test Industry 3" },
-] as const;
+import {
+  useGetClientIndustries,
+  useGetClientOrigins,
+} from "../../../services/queries/clientsQueries";
 
 function ClientFormInformation(props) {
+  const { data: industries } = useGetClientIndustries();
+  const { data: origins } = useGetClientOrigins();
+
   return (
     <>
       <div className="flex flex-col gap-4 border-b border-b-gray-300">
@@ -148,7 +144,7 @@ function ClientFormInformation(props) {
                 <option disabled>Select Origin</option>
                 {origins?.map((origin, index) => {
                   return (
-                    <option value={`${origin._id}`} key={index}>
+                    <option value={`${origin.id}`} key={index}>
                       {origin.name}
                     </option>
                   );
@@ -181,7 +177,7 @@ function ClientFormInformation(props) {
                 <option disabled>Select Industry</option>
                 {industries?.map((industry, index) => {
                   return (
-                    <option value={`${industry._id}`} key={index}>
+                    <option value={`${industry.id}`} key={index}>
                       {industry.name}
                     </option>
                   );

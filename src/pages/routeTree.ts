@@ -341,13 +341,17 @@ export const clientRoute = new Route({
   loader: async ({ context: { queryClient }, params: { clientId } }) => {
     queryClient.ensureQueryData(getClientOption(clientId));
   },
-  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
+  component: lazyRouteComponent(
+    () => import("./clients/clientsManager/Client")
+  ),
 });
 
 const newClientRoute = new Route({
   getParentRoute: () => clientsManagerRoute,
   path: "new",
-  component: lazyRouteComponent(() => import("./clients/NewClient")),
+  component: lazyRouteComponent(
+    () => import("./clients/clientsManager/Client")
+  ),
 });
 
 const accountsRoute = new Route({
