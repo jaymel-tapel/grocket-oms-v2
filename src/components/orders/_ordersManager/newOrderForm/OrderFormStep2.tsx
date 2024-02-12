@@ -48,7 +48,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   const debouncedEmail = useDebounce(clientEmail, 500);
 
   const { data: clients } = useGetClientBySellers({
-    keyword: debouncedEmail,
+    keyword: "",
     sellerId: seller.id,
   });
 
@@ -85,7 +85,23 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
   };
 
-  const onSubmit: SubmitHandler<SelectClientSchema> = () => {
+  const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
+    const client = clients?.find((client) => client.email === clientEmail);
+    console.log(data);
+
+    if (client) {
+      setClient({
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        industry: client.clientInfo.industryId ?? 41,
+        origin: client.clientInfo.sourceId ?? 1,
+        phone: client.phone ?? "",
+        unit_cost: client.clientInfo.default_unit_cost ?? 10,
+        third_party_id: client.clientInfo.thirdPartyId ?? "",
+      });
+    }
+
     setStep(3);
   };
 
@@ -112,6 +128,28 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
         <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
           <div>
             <label
+              htmlFor="clientEmail"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Email
+            </label>
+            <div className="w-full mt-2 relative">
+              <AutoComplete
+                suggestions={clients?.map((client) => client.email) ?? []}
+                type="email"
+                value={client.email}
+                handleChange={(value) => handleChange("email", value)}
+                handleSelect={(value) => handleEmailSelect(value)}
+              />
+              {errors.email && (
+                <p className="text-xs italic text-red-500 mt-2">
+                  {errors.email?.message}
+                </p>
+              )}
+            </div>
+          </div>
+          <div>
+            <label
               htmlFor="clientName"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
@@ -132,28 +170,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
               {errors.name && (
                 <p className="text-xs italic text-red-500 mt-2">
                   {errors.name?.message}
-                </p>
-              )}
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="clientEmail"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email
-            </label>
-            <div className="w-full mt-2 relative">
-              <AutoComplete
-                suggestions={clients?.map((client) => client.email) ?? []}
-                type="email"
-                value={client.email}
-                handleChange={(value) => handleChange("email", value)}
-                handleSelect={(value) => handleEmailSelect(value)}
-              />
-              {errors.email && (
-                <p className="text-xs italic text-red-500 mt-2">
-                  {errors.email?.message}
                 </p>
               )}
             </div>
@@ -239,7 +255,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 autoComplete="off"
                 defaultValue={client.origin}
                 {...register("origin", {
-                  onChange: (e) => handleChange("origin", e.target.value),
+                  onChange: (e) =>
+                    handleChange("origin", parseInt(e.target.value)),
                 })}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.origin && "border-red-500"
@@ -275,7 +292,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
                 autoComplete="off"
                 defaultValue={client.industry}
                 {...register("industry", {
-                  onChange: (e) => handleChange("industry", e.target.value),
+                  onChange: (e) =>
+                    handleChange("industry", parseInt(e.target.value)),
                 })}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.industry && "border-red-500"

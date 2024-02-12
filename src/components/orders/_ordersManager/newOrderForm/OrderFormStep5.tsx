@@ -32,8 +32,10 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   const { data: origins } = useGetClientOrigins();
 
   const labels = useMemo(() => {
-    const industry = industries?.find((item) => item.id === client.industry);
-    const origin = origins?.find((item) => item.id === client.origin);
+    const industry = industries?.find(
+      (industry) => industry.id === client.industry
+    );
+    const origin = origins?.find((origin) => origin.id === client.origin);
 
     return { industry: industry?.name ?? "", origin: origin?.name ?? "" };
   }, [client, industries, origins]);

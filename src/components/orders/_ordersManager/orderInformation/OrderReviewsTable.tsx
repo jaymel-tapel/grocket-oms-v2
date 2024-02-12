@@ -74,7 +74,7 @@ const OrderReviewsTable: React.FC<Props> = ({
 
   const handleDeleteClick = async (id: number | undefined, index: number) => {
     if (!window.confirm("Do you wish to delete this review?")) return;
-
+    console.log(id);
     if (id === undefined) {
       if (!handleDeleteLocal) return;
 
@@ -134,10 +134,10 @@ const OrderReviewsTable: React.FC<Props> = ({
             </TableRow>
           )}
 
-          {reviews.map((review, index) => {
-            const isChecked = checkBoxes[index]?.checked || false;
+          {reviews.map((review, reviewIndex) => {
+            const isChecked = checkBoxes[reviewIndex]?.checked || false;
             return (
-              <TableRow key={index}>
+              <TableRow key={reviewIndex}>
                 {!isNewOrder && (
                   <>
                     <TableBodyCell>
@@ -161,14 +161,14 @@ const OrderReviewsTable: React.FC<Props> = ({
                 </TableBodyCell>
                 <TableBodyCell
                   className="text-[#DC3545] cursor-pointer font-medium whitespace-nowrap"
-                  onClick={() => handleDeleteClick(review.id, index)}
+                  onClick={() => handleDeleteClick(review.id, reviewIndex)}
                 >
                   {identifier === review.id && isPending ? (
                     <Spinner />
                   ) : (
                     <TrashIcon
                       className="h-4 w-4 text-red-500 cursor-pointer"
-                      onClick={() => handleDeleteClick(review.id, index)}
+                      onClick={() => handleDeleteClick(review.id, reviewIndex)}
                     />
                   )}
                 </TableBodyCell>

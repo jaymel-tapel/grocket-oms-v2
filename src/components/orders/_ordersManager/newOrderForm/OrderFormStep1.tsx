@@ -77,6 +77,27 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
       <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
         <div>
           <label
+            htmlFor="sellerEmail"
+            className="mb-2 block text-sm font-medium leading-6 text-gray-900"
+          >
+            Email
+          </label>
+          <AutoComplete
+            suggestions={sellers?.data.map((seller) => seller.email) ?? []}
+            type="email"
+            defaultValue={seller.email}
+            value={seller.email}
+            handleChange={(value) => handleChange("email", value)}
+            handleSelect={(value) => handleEmailSelect(value)}
+          />
+          {errors.email && (
+            <p className="text-xs italic text-red-500 mt-2">
+              {errors.email?.message}
+            </p>
+          )}
+        </div>
+        <div>
+          <label
             htmlFor="sellerName"
             className="block text-sm font-medium leading-6 text-gray-900"
           >
@@ -100,27 +121,6 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
               </p>
             )}
           </div>
-        </div>
-        <div>
-          <label
-            htmlFor="sellerEmail"
-            className="mb-2 block text-sm font-medium leading-6 text-gray-900"
-          >
-            Email
-          </label>
-          <AutoComplete
-            suggestions={sellers?.data.map((seller) => seller.email) ?? []}
-            type="email"
-            defaultValue={seller.email}
-            value={seller.email}
-            handleChange={(value) => handleChange("email", value)}
-            handleSelect={(value) => handleEmailSelect(value)}
-          />
-          {errors.email && (
-            <p className="text-xs italic text-red-500 mt-2">
-              {errors.email?.message}
-            </p>
-          )}
         </div>
       </div>
 
