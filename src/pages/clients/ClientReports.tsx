@@ -1,28 +1,28 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import StatsCards from "../../components/tools/cards/StatsCards";
-import DropdownText from "../../components/tools/dropdowntext/DropdownText";
+// import DropdownText from "../../components/tools/dropdowntext/DropdownText";
 import { useGetClientReport } from "../../services/queries/clientsQueries";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import { sliceDate } from "../../utils/utils";
 
-const filtersList = [
-  { id: "currentWeek", label: "Current Week" },
-  { id: "currentMonth", label: "Current Month" },
-  { id: "last90days", label: "Last 90 days" },
-  { id: "custom", label: "Custom" },
-];
+// const filtersList = [
+//   { id: "currentWeek", label: "Current Week" },
+//   { id: "currentMonth", label: "Current Month" },
+//   { id: "last90days", label: "Last 90 days" },
+//   { id: "custom", label: "Custom" },
+// ];
 
 const ClientReports: React.FC = () => {
-  const [searchFilter, setSearchFilter] = useState({
-    id: "currentWeek",
-    label: "Current Week",
-  });
+  // const [searchFilter, setSearchFilter] = useState({
+  //   id: "currentWeek",
+  //   label: "Current Week",
+  // });
 
   const { data: reportData } = useGetClientReport();
 
-  const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
-    setSearchFilter(newFilter);
-  };
+  // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
+  //   setSearchFilter(newFilter);
+  // };
 
   const clientStats = useMemo(() => {
     // temporary data
@@ -70,14 +70,14 @@ const ClientReports: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <DropdownText
           value={searchFilter}
           onChange={handleChangeFilter}
           list={filtersList}
           removeBorders={true}
         />
-      </div>
+      </div> */}
 
       <StatsCards stats={clientStats} />
 

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import DropdownText from "../../components/tools/dropdowntext/DropdownText";
+import { useMemo } from "react";
+// import DropdownText from "../../components/tools/dropdowntext/DropdownText";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import StatsCards from "../../components/tools/cards/StatsCards";
 import DonutChart from "../../components/tools/charts/DonutChart";
@@ -9,25 +9,25 @@ import {
 } from "../../services/queries/orderQueries";
 import { sliceDate } from "../../utils/utils";
 
-const filtersList = [
-  { id: "currentWeek", label: "Current Week" },
-  { id: "currentMonth", label: "Current Month" },
-  { id: "last90days", label: "Last 90 days" },
-  { id: "custom", label: "Custom" },
-];
+// const filtersList = [
+//   { id: "currentWeek", label: "Current Week" },
+//   { id: "currentMonth", label: "Current Month" },
+//   { id: "last90days", label: "Last 90 days" },
+//   { id: "custom", label: "Custom" },
+// ];
 
 const OrdersReports = () => {
-  const [searchFilter, setSearchFilter] = useState({
-    id: "currentWeek",
-    label: "Current Week",
-  });
+  // const [searchFilter, setSearchFilter] = useState({
+  //   id: "currentWeek",
+  //   label: "Current Week",
+  // });
 
   const { data: reportData } = useGetOrderReport();
   const { data: orderGraph } = useGetOrderGraph();
 
-  const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
-    setSearchFilter(newFilter);
-  };
+  // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
+  //   setSearchFilter(newFilter);
+  // };
 
   const orderStats = useMemo(() => {
     // temporary data
@@ -290,14 +290,14 @@ const OrdersReports = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <DropdownText
           value={searchFilter}
           onChange={handleChangeFilter}
           list={filtersList}
           removeBorders={true}
         />
-      </div>
+      </div> */}
 
       <StatsCards stats={orderStats} />
 
