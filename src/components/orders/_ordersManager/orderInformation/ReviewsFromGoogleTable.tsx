@@ -81,6 +81,7 @@ const ReviewsFromGoogleTable: React.FC<TableProps> = ({
               <TableBodyCell className="text-grBlue-dark font-medium whitespace-nowrap">
                 <Button
                   variant={"noBorder"}
+                  type="button"
                   onClick={() =>
                     handleAddReview(review.name, review.google_review_id, index)
                   }
