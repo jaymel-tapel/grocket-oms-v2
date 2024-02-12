@@ -61,7 +61,6 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
     const newReview: PendingReview = {
       name: _name ?? name,
       status: "NEU",
-      id: reviews.length,
     };
 
     if (google_review_id) {
