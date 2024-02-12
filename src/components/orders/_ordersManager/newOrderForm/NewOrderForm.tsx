@@ -10,6 +10,8 @@ import OrderFormStep4 from "./OrderFormStep4";
 import OrderFormStep5 from "./OrderFormStep5";
 import { Button } from "../../../tools/buttons/Button";
 import Spinner from "../../../tools/spinner/Spinner";
+import { useMemo } from "react";
+import { isEmpty } from "../../../../utils/utils";
 
 const NewOrderForm = () => {
   const { step } = useOrderForm();
@@ -52,7 +54,7 @@ const NewOrderForm = () => {
 export default NewOrderForm;
 
 const FormNavigation = () => {
-  const { step, setStep } = useOrderForm();
+  const { step, setStep, seller, client, company, reviews } = useOrderForm();
   const isSubmitting = useIsMutating({ mutationKey: ["create-order"] });
 
   const navigate = useNavigate();
@@ -65,6 +67,24 @@ const FormNavigation = () => {
     setStep(step - 1);
   };
 
+  const isSubmitDisabled = useMemo(() => {
+    if (step === 1 && !isEmpty(seller)) {
+      return false;
+    } else if (
+      step === 2 &&
+      client.email.length > 0 &&
+      client.name.length > 0
+    ) {
+      return false;
+    } else if (step === 3 && !isEmpty(company)) {
+      return false;
+    } else if (step === 4 && reviews.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [seller, client, company, reviews, step]);
+
   return (
     <div className="pt-8 border-t border-t-gray-300 flex justify-between">
       <Button type="button" variant="delete" onClick={handleCancel}>
@@ -76,7 +96,7 @@ const FormNavigation = () => {
             Previous
           </Button>
         )}
-        <Button type="submit" disabled={isSubmitting > 0}>
+        <Button type="submit" disabled={isSubmitting > 0 || isSubmitDisabled}>
           {isSubmitting > 0 && <Spinner />}
           {step < 5 ? "Next" : "Submit"}
         </Button>

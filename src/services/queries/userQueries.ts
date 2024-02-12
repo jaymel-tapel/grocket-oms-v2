@@ -21,15 +21,7 @@ export const useLogin = () => {
     },
     onSuccess: ({ data }) => {
       setAuthorization(data.access_token);
-
-      const userInfo = {
-        id: data.id,
-        name: data.name,
-        role: data.role,
-        profile_image: data.profile_image,
-      };
-
-      localStorage.setItem("user", JSON.stringify(userInfo));
+      localStorage.setItem("user", JSON.stringify(data));
     },
   });
 };
