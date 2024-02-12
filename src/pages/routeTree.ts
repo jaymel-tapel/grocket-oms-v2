@@ -341,7 +341,7 @@ export const clientRoute = new Route({
   loader: async ({ context: { queryClient }, params: { clientId } }) => {
     queryClient.ensureQueryData(getClientOption(clientId));
   },
-  component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
+  component: lazyRouteComponent(() => import("./clients/NewClient")),
 });
 
 const newClientRoute = new Route({
