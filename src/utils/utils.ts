@@ -150,3 +150,9 @@ export const getPaymentStatus = (status: string): PaymentStatus => {
       return { label: "New", color: "default" };
   }
 };
+
+export const sliceDate = (date: string) => {
+  if (!date) return "";
+
+  return date.slice(0, 10);
+};
