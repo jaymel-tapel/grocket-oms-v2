@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode } from "react";
-import { useDebounce } from "../../../../hooks/useDebounce";
 import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 
@@ -24,7 +23,6 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<SelectSellerSchema>({
@@ -32,12 +30,8 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
     values: seller,
   });
 
-  const sellerEmail = watch("email");
-
-  const debouncedEmail = useDebounce(sellerEmail, 500);
-
   const { data: sellers } = useGetAllSellers({
-    keyword: debouncedEmail,
+    keyword: "",
     perPage: 5,
   });
 
@@ -67,7 +61,16 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   };
 
   const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
-    setSeller(data);
+    const seller = sellers?.data.find((seller) => seller.email === data.email);
+
+    if (seller) {
+      setSeller({
+        id: seller.id,
+        name: seller.name,
+        email: seller.email,
+      });
+    }
+
     setStep(2);
   };
 
@@ -85,7 +88,6 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
           <AutoComplete
             suggestions={sellers?.data.map((seller) => seller.email) ?? []}
             type="email"
-            defaultValue={seller.email}
             value={seller.email}
             handleChange={(value) => handleChange("email", value)}
             handleSelect={(value) => handleEmailSelect(value)}
