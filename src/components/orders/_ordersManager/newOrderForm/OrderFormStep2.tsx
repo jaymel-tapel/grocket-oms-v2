@@ -85,9 +85,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
   };
 
-  const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
+  const onSubmit: SubmitHandler<SelectClientSchema> = () => {
     const client = clients?.find((client) => client.email === clientEmail);
-    console.log(data);
 
     if (client) {
       setClient({
@@ -100,6 +99,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
         unit_cost: client.clientInfo.default_unit_cost ?? 10,
         third_party_id: client.clientInfo.thirdPartyId ?? "",
       });
+
+      setCompanies(client.companies);
     }
 
     setStep(3);
