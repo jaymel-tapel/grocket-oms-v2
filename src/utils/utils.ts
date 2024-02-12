@@ -50,6 +50,7 @@ export type UserLocalInfo = {
   name: string;
   role: string;
   profile_image: string;
+  email: string;
 };
 
 export const getUserInfo = (): UserLocalInfo | undefined => {

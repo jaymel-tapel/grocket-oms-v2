@@ -2,9 +2,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
+import { UserLocalInfo, getUserInfo } from "../../../../utils/utils";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -19,6 +20,8 @@ type FormProps = {
 
 const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
+
+  const user = getUserInfo() as UserLocalInfo;
 
   const {
     register,
@@ -74,6 +77,20 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
     setStep(2);
   };
 
+  useEffect(() => {
+    if (user.role === "SELLER") {
+      setValue("email", user.email ?? "");
+      setValue("name", user.name);
+
+      setSeller({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      });
+    }
+    //eslint-disable-next-line
+  }, [user]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <span className="font-bold text-sm">Seller Information</span>
@@ -91,6 +108,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
             value={seller.email}
             handleChange={(value) => handleChange("email", value)}
             handleSelect={(value) => handleEmailSelect(value)}
+            disabled={user.role === "SELLER"}
           />
           {errors.email && (
             <p className="text-xs italic text-red-500 mt-2">
@@ -116,6 +134,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
               className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                 errors.name && "border-red-500"
               }`}
+              disabled={user.role === "SELLER"}
             />
             {errors.name && (
               <p className="text-xs italic text-red-500 mt-2">
