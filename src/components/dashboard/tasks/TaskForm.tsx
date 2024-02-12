@@ -78,10 +78,11 @@ const TaskForm: React.FC = () => {
   }, [taskId, tasks, reset]);
 
   const onSubmit: SubmitHandler<taskSchema> = async (data) => {
-    const payload = {
-      ...data,
-      ...(data.orderId != null && { orderId: data.orderId }),
-    };
+    const payload = { ...data };
+
+    if (!data.orderId) {
+      delete payload.orderId;
+    }
 
     try {
       const response = taskId
