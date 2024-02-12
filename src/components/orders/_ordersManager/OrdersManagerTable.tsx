@@ -35,8 +35,8 @@ const COLUMNS = [
 
 const PAYMENT_STATUS = [
   { label: "New", payload: "NEW", color: "default" },
-  { label: "Reminder1", payload: "PR1", color: "yellow" },
-  { label: "Reminder2", payload: "PR2", color: "orange" },
+  { label: "Reminder 1", payload: "PR1", color: "yellow" },
+  { label: "Reminder 2", payload: "PR2", color: "orange" },
   { label: "Sent Invoice", payload: "SENT INVOICE", color: "lightBlue" },
   { label: "Paid", payload: "PAID", color: "green" },
   { label: "Unpaid", payload: "UNPAID", color: "red" },
@@ -142,77 +142,83 @@ const OrdersManagerTable: React.FC<TableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {orders.length === 0 && (
+          {orders.length === 0 ? (
             <TableRow>
               <TableBodyCell className="text-center text-gray-500" colSpan={7}>
                 No data found.
               </TableBodyCell>
             </TableRow>
-          )}
-          {orders.map((order, i) => {
-            const paymentStatus = getPaymentStatus(order.payment_status);
-            const isUpdatingOrder = isUpdating && identifier === order.id;
+          ) : (
+            orders.map((order, i) => {
+              const paymentStatus = getPaymentStatus(order.payment_status);
+              const isUpdatingOrder = isUpdating && identifier === order.id;
 
-            return (
-              <TableRow
-                key={i}
-                className="cursor-pointer"
-                onClick={() => handleRowClick(order.id)}
-              >
-                <TableBodyCell>
-                  {dayjs(order.createdAt).format("MM-DD-YYYY")}
-                </TableBodyCell>
-                <TableBodyCell>{order.id}</TableBodyCell>
-                <TableBodyCell>{order.client.name}</TableBodyCell>
-                <TableBodyCell>{order.total_price}</TableBodyCell>
-                <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
-                <TableBodyCell>
-                  {isUpdatingOrder ? (
-                    <Pill bgColor={paymentStatus.color}>
-                      <Spinner />
-                      {paymentStatus.label}
-                    </Pill>
-                  ) : (
-                    <Popover>
-                      <PopoverAnchor asChild>
-                        <PopoverTrigger asChild>
-                          <Pill
-                            onClick={(e) => e.stopPropagation()}
-                            bgColor={paymentStatus.color}
-                          >
-                            {paymentStatus.label}
-                          </Pill>
-                        </PopoverTrigger>
-                      </PopoverAnchor>
-                      <PopoverContent className="w-80" align="start">
-                        <div className="flex flex-wrap gap-4">
-                          {PAYMENT_STATUS.map((status, statusIndex) => {
-                            return (
-                              <Pill
-                                key={statusIndex}
-                                bgColor={status.color}
-                                className="cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handlePaymentStatusChange(
-                                    status.payload,
-                                    order
-                                  );
-                                }}
-                              >
-                                {status.label}
-                              </Pill>
-                            );
-                          })}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                </TableBodyCell>
-                <TableBodyCell>{order.remarks}</TableBodyCell>
-              </TableRow>
-            );
-          })}
+              return (
+                <TableRow
+                  key={i}
+                  className="cursor-pointer"
+                  onClick={() => handleRowClick(order.id)}
+                >
+                  <TableBodyCell>
+                    {dayjs(order.createdAt).format("MM-DD-YYYY")}
+                  </TableBodyCell>
+                  <TableBodyCell>{order.id}</TableBodyCell>
+                  <TableBodyCell>{order.client.name}</TableBodyCell>
+                  <TableBodyCell>{order.total_price}</TableBodyCell>
+                  <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
+                  <TableBodyCell>
+                    {isUpdatingOrder ? (
+                      <Pill bgColor={paymentStatus.color}>
+                        <Spinner />
+                        {paymentStatus.label}
+                      </Pill>
+                    ) : (
+                      <Popover>
+                        <PopoverAnchor asChild>
+                          <PopoverTrigger asChild>
+                            <Pill
+                              onClick={(e) => e.stopPropagation()}
+                              bgColor={paymentStatus.color}
+                            >
+                              {paymentStatus.label}
+                            </Pill>
+                          </PopoverTrigger>
+                        </PopoverAnchor>
+                        <PopoverContent className="max-w-80" align="start">
+                          <div className="flex flex-wrap gap-4">
+                            {PAYMENT_STATUS.map((status, statusIndex) => {
+                              const isActiveStatus =
+                                status.payload === order.payment_status;
+                              return (
+                                <Pill
+                                  key={statusIndex}
+                                  bgColor={status.color}
+                                  variant={
+                                    isActiveStatus ? "default" : "outline"
+                                  }
+                                  className="cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePaymentStatusChange(
+                                      status.payload,
+                                      order
+                                    );
+                                  }}
+                                >
+                                  {status.label}
+                                </Pill>
+                              );
+                            })}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </TableBodyCell>
+                  <TableBodyCell>{order.remarks}</TableBodyCell>
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
       <TablePagination
