@@ -22,6 +22,7 @@ type BarLineChartProps = {
   height?: number;
   chartColors: string[];
   chartType: "area" | "bar";
+  decimalPlaces?: number;
 };
 
 const BarLineChart: React.FC<BarLineChartProps> = ({
@@ -32,6 +33,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
   label,
   height = 350,
   chartType = "area",
+  decimalPlaces = 0,
 }) => {
   const optimalColumnWidthPercent = useMemo(
     () => 20 + 60 / (1 + 30 * Math.exp(-chartData.length / 3)),
@@ -140,6 +142,13 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
           style: { fontSize: chartType === "bar" ? "0.5rem" : undefined },
         },
       },
+      yaxis: {
+        labels: {
+          formatter: (value) => {
+            return value.toFixed(decimalPlaces);
+          },
+        },
+      },
       plotOptions: {
         bar: {
           // distributed: true,
@@ -147,7 +156,13 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
         },
       },
     };
-  }, [disableLegends, chartColors, chartType, optimalColumnWidthPercent]);
+  }, [
+    disableLegends,
+    chartColors,
+    chartType,
+    optimalColumnWidthPercent,
+    decimalPlaces,
+  ]);
 
   return (
     <div className="pt-6 px-4 rounded-sm border border-stroke bg-white shadow-md h-full">
