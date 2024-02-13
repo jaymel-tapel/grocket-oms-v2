@@ -53,6 +53,8 @@ export type OrdersParams = {
   filter?: string;
   page?: number;
   perPage?: number;
+  code?: string;
+  showDeleted?: boolean;
 };
 
 type OrderReportParams = {
@@ -104,7 +106,7 @@ const getAllOrders = async (params?: OrdersParams): Promise<OrdersResponse> => {
 const getDeletedOrders = async (
   params?: OrdersParams
 ): Promise<OrdersResponse> => {
-  const response = await axios.get(ORDERS_URL + "/deleted", {
+  const response = await axios.get(ORDERS_URL, {
     params,
     headers: getHeaders(),
   });
@@ -120,6 +122,7 @@ const getOrder = async (id: number): Promise<Order> => {
 
 export const getAllOrdersOptions = (search?: OrdersParams) => {
   return {
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["orders", search],
     queryFn: () => getAllOrders(search),
   };
@@ -127,7 +130,8 @@ export const getAllOrdersOptions = (search?: OrdersParams) => {
 
 export const getDeletedOrdersOptions = (search?: OrdersParams) => {
   return {
-    queryKey: ["deleted-orders", search],
+    enabled: search?.code !== undefined ? true : false,
+    queryKey: ["orders", search],
     queryFn: () => getDeletedOrders(search),
   };
 };

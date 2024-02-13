@@ -10,6 +10,8 @@ import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
 import { Button } from "../../../components/tools/buttons/Button";
 import { getActiveFilterLabel } from "../../../utils/utils";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../../services/queries/brandsQueries";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const Index = () => {
   const dateTo = searchOrders?.to;
   const filter = searchOrders?.filter;
 
+  const [selectedBrand] = useAtom(brandAtom);
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
 
   const orders = useMemo(() => {
@@ -97,6 +100,34 @@ const Index = () => {
     return () => handleKeywordChange.cancel();
     //eslint-disable-next-line
   }, [keywordDraft]);
+
+  useEffect(() => {
+    if (selectedBrand) {
+      navigate({
+        search: (old) => {
+          return {
+            ...old,
+            searchOrders: {
+              ...old?.searchOrders,
+              code: selectedBrand?.code,
+            },
+          };
+        },
+        replace: true,
+      });
+    }
+    //eslint-disable-next-line
+  }, [selectedBrand]);
+
+  if (!selectedBrand) {
+    return (
+      <div className="h-[75vh] flex items-center justify-center">
+        <span className="text-slate-500">
+          Select a brand before you can start viewing orders.
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div>

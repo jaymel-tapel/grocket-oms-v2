@@ -8,13 +8,9 @@ import {
 } from "@tanstack/react-router";
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
-import { isAuth } from "../utils/utils";
+import { getLocalStorageBrand, isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
-import {
-  getAllOrdersOptions,
-  getDeletedOrdersOptions,
-  getOrderOption,
-} from "../services/queries/orderQueries";
+import { getOrderOption } from "../services/queries/orderQueries";
 import { z } from "zod";
 import {
   getAllUsersOptions,
@@ -25,6 +21,8 @@ import {
   getClientOption,
 } from "../services/queries/clientsQueries";
 import { getBrandOption } from "../services/queries/brandsQueries";
+
+const selectedBrand = getLocalStorageBrand();
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -181,6 +179,8 @@ const ordersManagerRoute = new Route({
           .optional(),
         page: z.number().optional().catch(1),
         perPage: z.number().optional().catch(10),
+        code: z.string().optional(),
+        showDeleted: z.boolean().optional(),
       })
       .optional(),
   }).parse,
@@ -189,15 +189,17 @@ const ordersManagerRoute = new Route({
       ...search,
       searchOrders: {
         ...search.searchOrders,
+        code: selectedBrand && selectedBrand.code,
+        showDeleted: false,
       },
     }),
   ],
-  loaderDeps: ({ search }) => ({
-    searchOrders: search.searchOrders,
-  }),
-  loader: async ({ context: { queryClient }, deps }) => {
-    queryClient.ensureQueryData(getAllOrdersOptions(deps.searchOrders));
-  },
+  // loaderDeps: ({ search }) => ({
+  //   searchOrders: search.searchOrders,
+  // }),
+  // loader: async ({ context: { queryClient }, deps }) => {
+  //   queryClient.ensureQueryData(getAllOrdersOptions(deps.searchOrders));
+  // },
   component: lazyRouteComponent(
     () => import("./orders/ordersManager/OrdersManager")
   ),
@@ -251,6 +253,8 @@ export const deletedOrdersRoute = new Route({
           .optional(),
         page: z.number().optional().catch(1),
         perPage: z.number().optional().catch(10),
+        code: z.string().optional(),
+        showDeleted: z.boolean().optional(),
       })
       .optional(),
   }).parse,
@@ -259,17 +263,19 @@ export const deletedOrdersRoute = new Route({
       ...search,
       searchDeletedOrders: {
         ...search.searchDeletedOrders,
+        code: selectedBrand && selectedBrand.code,
+        showDeleted: true,
       },
     }),
   ],
-  loaderDeps: ({ search }) => ({
-    searchDeletedOrders: search.searchDeletedOrders,
-  }),
-  loader: async ({ context: { queryClient }, deps }) => {
-    queryClient.ensureQueryData(
-      getDeletedOrdersOptions(deps.searchDeletedOrders)
-    );
-  },
+  // loaderDeps: ({ search }) => ({
+  //   searchDeletedOrders: search.searchDeletedOrders,
+  // }),
+  // loader: async ({ context: { queryClient }, deps }) => {
+  //   queryClient.ensureQueryData(
+  //     getDeletedOrdersOptions(deps.searchDeletedOrders)
+  //   );
+  // },
   component: lazyRouteComponent(() => import("./orders/DeletedOrders")),
 });
 
