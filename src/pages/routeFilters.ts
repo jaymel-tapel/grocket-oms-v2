@@ -15,8 +15,6 @@ export const ordersRouteFilters = [
   "client",
   "seller",
   "remarks",
-  "code",
-  "showDeleted",
 ];
 export const ordersFilters = [
   "order_id",
@@ -27,8 +25,6 @@ export const ordersFilters = [
   "client",
   "seller",
   "remarks",
-  "code",
-  "showDeleted",
 ] as const;
 export type OrdersFiltersType =
   | "order_id"
@@ -38,6 +34,4 @@ export type OrdersFiltersType =
   | "reviewer_name"
   | "client"
   | "seller"
-  | "remarks"
-  | "code"
-  | "showDeleted";
+  | "remarks";
