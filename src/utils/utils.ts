@@ -1,6 +1,7 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { range } from "lodash";
+import { Brands } from "../services/queries/brandsQueries";
 
 const LOCAL_STORAGE_KEY = "access_token";
 
@@ -58,6 +59,14 @@ export const getUserInfo = (): UserLocalInfo | undefined => {
 
   if (user) {
     return JSON.parse(user) as UserLocalInfo;
+  }
+};
+
+export const getLocalStorageBrand = (): Brands | undefined => {
+  const brand = localStorage.getItem("brand");
+
+  if (brand) {
+    return JSON.parse(brand);
   }
 };
 

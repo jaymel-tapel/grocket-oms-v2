@@ -2,13 +2,11 @@ import { useNavigate } from "@tanstack/react-router";
 import BrandsCard from "../../../components/brands/BrandsCard";
 import { Button } from "../../../components/tools/buttons/Button";
 import { useGetAllBrand } from "../../../services/queries/brandsQueries";
-import { brandRoute } from "../../routeTree";
 import Spinner from "../../../components/tools/spinner/Spinner";
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
-  const { brandId } = brandRoute.useParams();
-  const { data, isLoading } = useGetAllBrand(brandId);
+  const { data, isLoading } = useGetAllBrand();
 
   const handleAdd = () => {
     navigate({ to: "/brands/brands_manager/new" });
@@ -33,7 +31,7 @@ const Index: React.FC = () => {
       <div className="flex mt-4 justify-between mb-6">
         <div>
           <span className="flex gap-2">
-            <p>Brands</p> / <p className="text-[#41B2E9]">Brands Management</p>
+            <p>Brands</p> / <p className="text-[#41B2E9]">Brands Manager</p>
           </span>
         </div>
 

@@ -23,6 +23,12 @@ import {
   getUserInfo,
 } from "../../utils/utils";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
+import {
+  brandAtom,
+  useGetAllBrand,
+} from "../../services/queries/brandsQueries";
+import DropdownText from "../tools/dropdowntext/DropdownText";
+import { useAtom } from "jotai/react";
 
 const handleLogout = () => {
   cleanAuthorization();
@@ -108,7 +114,33 @@ export default function SidebarNavigation() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { location } = useRouterState();
 
+  const { data: brands } = useGetAllBrand();
+  const [selectedBrand, setSelectedBrand] = useAtom(brandAtom);
   const user = getUserInfo() as UserLocalInfo;
+
+  const brandList = useMemo(() => {
+    if (brands) {
+      const list = brands.map((brand) => {
+        return { id: brand.id, label: brand.name };
+      });
+
+      if (!selectedBrand) {
+        setSelectedBrand(brands[0]);
+      }
+
+      return list;
+    }
+
+    return [];
+    //eslint-disable-next-line
+  }, [brands, selectedBrand]);
+
+  const handleBrandChange = (newBrand: { id: number; label: string }) => {
+    const foundBrand = brands?.find((brand) => brand.id === newBrand.id);
+    if (!foundBrand) return;
+
+    setSelectedBrand(foundBrand);
+  };
 
   const activeGroup = useMemo(() => {
     if (
@@ -223,17 +255,18 @@ export default function SidebarNavigation() {
             />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <div className="flex flex-1">
-                <p className="relative flex gap-2 mt-5">
-                  G-Rocket
-                  <button
-                    type="button"
-                    className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-                  >
-                    <span className="sr-only">View notifications</span>
-                    {/* <BellIcon className="h-6 w-6" aria-hidden="true" /> */}
-                  </button>
-                </p>
+              <div className="flex flex-1 items-center">
+                <DropdownText
+                  value={
+                    selectedBrand && {
+                      id: selectedBrand.id,
+                      label: selectedBrand.name,
+                    }
+                  }
+                  onChange={handleBrandChange}
+                  list={brandList}
+                  removeBorders={true}
+                />
               </div>
 
               <div className="flex items-center gap-x-4 lg:gap-x-6">
@@ -253,7 +286,9 @@ export default function SidebarNavigation() {
                       >
                         {user?.name ?? ""}
                       </span>
-                      <span className="ml-auto">Admin</span>
+                      <span className="ml-auto capitalize">
+                        {user?.role?.toLowerCase() ?? ""}
+                      </span>
                     </div>
                     <span className="sr-only">Open user menu</span>
                     {user?.profile_image ? (
