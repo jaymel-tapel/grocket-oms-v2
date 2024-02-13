@@ -87,20 +87,25 @@ const DashboardTasks: React.FC = () => {
 
   const handleTaskToggle = async (e: React.MouseEvent, taskId: number) => {
     e.preventDefault();
-    try {
-      if (taskState === "Completed") {
-        await activeTask(taskId);
+    let error = null;
+    if (taskState === "Completed") {
+      await activeTask(taskId).catch((err) => (error = err));
+      if (!error) {
         refetchActiveTasks();
         refetchCompletedTasks();
         setTaskState("Active");
-      } else if (taskState === "Active") {
-        await completeTask(taskId);
+      } else {
+        console.error("Error updating task:", error);
+      }
+    } else if (taskState === "Active") {
+      await completeTask(taskId).catch((err) => (error = err));
+      if (!error) {
         refetchActiveTasks();
         refetchCompletedTasks();
         setTaskState("Completed");
+      } else {
+        console.error("Error updating task:", error);
       }
-    } catch (error) {
-      console.error("Error updating task:", error);
     }
   };
 
