@@ -64,7 +64,7 @@ const DashboardTasks: React.FC = () => {
 
       timeout = setTimeout(() => {
         clearInterval(fetchInterval);
-      }, 6000);
+      }, 2000);
     };
 
     startFetching();
