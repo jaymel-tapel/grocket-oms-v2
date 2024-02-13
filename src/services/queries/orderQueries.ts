@@ -22,6 +22,7 @@ export type Order = {
   seller: User;
   sellerId: number;
   clientId: number;
+  brandId: number;
   companyId: number;
   createdAt: string;
   updatedAt: string;
@@ -61,6 +62,7 @@ type OrderReportParams = {
   startRange?: string;
   endRange?: string;
   sellerId?: number;
+  code?: string;
 };
 
 type OrderReportResponse = {
@@ -158,6 +160,7 @@ export const useGetDeletedOrders = (search?: OrdersParams) => {
 
 export const useGetOrderReport = (search?: OrderReportParams) => {
   return useQuery({
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["order-stats", search],
     queryFn: async (): Promise<OrderReportResponse> => {
       const response = await axios.get(ORDERS_URL + "/report", {
@@ -171,6 +174,7 @@ export const useGetOrderReport = (search?: OrderReportParams) => {
 
 export const useGetOrderGraph = (search?: OrderReportParams) => {
   return useQuery({
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["order-graph", search],
     queryFn: async (): Promise<OrderGraphResponse> => {
       const response = await axios.get(ORDERS_URL + "/graph", {

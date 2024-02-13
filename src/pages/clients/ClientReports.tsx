@@ -4,6 +4,8 @@ import StatsCards from "../../components/tools/cards/StatsCards";
 import { useGetClientReport } from "../../services/queries/clientsQueries";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import { sliceDate } from "../../utils/utils";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../services/queries/brandsQueries";
 
 // const filtersList = [
 //   { id: "currentWeek", label: "Current Week" },
@@ -18,7 +20,10 @@ const ClientReports: React.FC = () => {
   //   label: "Current Week",
   // });
 
-  const { data: reportData } = useGetClientReport();
+  const [selectedBrand] = useAtom(brandAtom);
+  const { data: reportData } = useGetClientReport({
+    code: selectedBrand?.code,
+  });
 
   // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
   //   setSearchFilter(newFilter);

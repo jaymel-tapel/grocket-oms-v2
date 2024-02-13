@@ -111,7 +111,7 @@ const Order: React.FC = () => {
     if (!order) return;
 
     const response = await updateOrder({
-      payload: { ...data, companyId: order.companyId, brandId: 1 },
+      payload: { ...data, companyId: order.companyId, brandId: order.brandId },
       orderId,
     });
 

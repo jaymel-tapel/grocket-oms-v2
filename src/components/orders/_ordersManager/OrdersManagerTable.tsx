@@ -22,8 +22,6 @@ import {
 import Pill from "../../tools/pill/Pill";
 import { getPaymentStatus } from "../../../utils/utils";
 import Spinner from "../../tools/spinner/Spinner";
-import { useAtom } from "jotai/react";
-import { brandAtom } from "../../../services/queries/brandsQueries";
 
 const COLUMNS = [
   "DATE",
@@ -59,7 +57,6 @@ const OrdersManagerTable: React.FC<TableProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [identifier, setIdentifier] = useState<number | null>(null);
   const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
-  const [selectedBrand] = useAtom(brandAtom);
 
   const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
@@ -125,7 +122,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
       company_name: order.company.name,
       company_url: order.company.url,
       unit_cost: order.unit_cost,
-      brandId: selectedBrand?.id ?? 1,
+      brandId: order.brandId,
     };
 
     setIdentifier(order.id);

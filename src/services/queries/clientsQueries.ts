@@ -71,6 +71,7 @@ type ClientReportParams = {
   startRange?: string;
   endRange?: string;
   sellerId?: number;
+  code?: string;
 };
 
 type ClientReportResponse = {
@@ -174,6 +175,7 @@ export const useGetClientOrigins = () => {
 
 export const useGetClientReport = (search?: ClientReportParams) => {
   return useQuery({
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["client-report", search],
     queryFn: async (): Promise<ClientReportResponse> => {
       const response = await axios.get(CLIENTS_URL + "/report", {
