@@ -7,6 +7,8 @@ import {
   useGetClientIndustries,
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../../../services/queries/brandsQueries";
 
 type FormProps = {
   children: ReactNode;
@@ -30,6 +32,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
   const { mutateAsync: createOrder } = useCreateOrder();
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
+  const [selectedBrand] = useAtom(brandAtom);
 
   const labels = useMemo(() => {
     const industry = industries?.find(
@@ -90,6 +93,8 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
       formData.append("remarks", remarks);
     }
 
+    const brandId = selectedBrand?.id ?? 1;
+
     formData.append("seller_email", seller.email);
     formData.append("seller_name", seller.name);
     formData.append("client_email", client.email);
@@ -100,7 +105,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
     formData.append("unit_cost", JSON.stringify(client.unit_cost));
     formData.append("sourceId", JSON.stringify(client.origin));
     formData.append("industryId", JSON.stringify(client.industry));
-    formData.append("brandId", JSON.stringify(1));
+    formData.append("brandId", JSON.stringify(brandId));
     formData.append("orderReviews", JSON.stringify(reviewsPayload));
 
     const response = await createOrder(formData);
