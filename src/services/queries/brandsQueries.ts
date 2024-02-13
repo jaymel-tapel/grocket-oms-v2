@@ -5,12 +5,18 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { getHeaders } from "../../utils/utils";
+import { getHeaders, getLocalStorageBrand } from "../../utils/utils";
 import { BrandFormSchema } from "../../components/brands/brandsManager/BrandsForm";
 import toast from "react-hot-toast";
+import { atomWithStorage } from "jotai/utils";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BRANDS_URL = API_URL + "/brands";
+
+export const brandAtom = atomWithStorage<Brands | undefined>(
+  "brand",
+  getLocalStorageBrand()
+);
 
 export type Brands = {
   id: number;
@@ -21,12 +27,8 @@ export type Brands = {
   logo: undefined | string;
 };
 
-type BrandResponse = {
-  data: Brands[];
-};
-
 // -- Get Brands
-const getAllBrands = async (): Promise<BrandResponse> => {
+const getAllBrands = async (): Promise<Brands[]> => {
   const response = await axios.get(BRANDS_URL, {
     headers: getHeaders(),
   });
@@ -42,9 +44,9 @@ const getBrands = async (id: number): Promise<Brands> => {
   return response.data;
 };
 
-export const getAllBrandsOptions = (id: number) => {
+export const getAllBrandsOptions = () => {
   return {
-    queryKey: ["users", id],
+    queryKey: ["brands"],
     queryFn: () => getAllBrands(),
   };
 };
@@ -52,13 +54,13 @@ export const getAllBrandsOptions = (id: number) => {
 export const getBrandOption = (id: number) => {
   return queryOptions({
     enabled: id ? !isNaN(id) : false,
-    queryKey: ["users", id],
+    queryKey: ["brands", id],
     queryFn: () => getBrands(id),
   });
 };
 
-export const useGetAllBrand = (id: number) => {
-  return useQuery(getAllBrandsOptions(id));
+export const useGetAllBrand = () => {
+  return useQuery(getAllBrandsOptions());
 };
 
 export const useGetBrand = (id: number) => {
