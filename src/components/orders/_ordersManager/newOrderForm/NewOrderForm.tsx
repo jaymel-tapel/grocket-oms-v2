@@ -81,7 +81,7 @@ const FormNavigation = () => {
     } else if (step === 4 && reviews.length > 0) {
       return false;
     } else {
-      return true;
+      return false;
     }
   }, [seller, client, company, reviews, step]);
 

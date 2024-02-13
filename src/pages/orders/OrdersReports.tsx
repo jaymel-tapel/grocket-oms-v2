@@ -8,6 +8,8 @@ import {
   useGetOrderReport,
 } from "../../services/queries/orderQueries";
 import { sliceDate } from "../../utils/utils";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../services/queries/brandsQueries";
 
 // const filtersList = [
 //   { id: "currentWeek", label: "Current Week" },
@@ -22,8 +24,9 @@ const OrdersReports = () => {
   //   label: "Current Week",
   // });
 
-  const { data: reportData } = useGetOrderReport();
-  const { data: orderGraph } = useGetOrderGraph();
+  const [selectedBrand] = useAtom(brandAtom);
+  const { data: reportData } = useGetOrderReport({ code: selectedBrand?.code });
+  const { data: orderGraph } = useGetOrderGraph({ code: selectedBrand?.code });
 
   // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
   //   setSearchFilter(newFilter);
