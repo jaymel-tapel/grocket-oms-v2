@@ -110,7 +110,7 @@ export const getAllTaskOptionCompleted = (taskId?: number) => {
 
 export const getTaskOption = (id: number) => {
   return queryOptions({
-    enabled: id ? !isNaN(id) : false,
+    enabled: id > 0 ? true : false,
     queryKey: ["tasks", id],
     queryFn: () => getTasks(id),
   });

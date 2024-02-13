@@ -121,7 +121,7 @@ export const taskRoute = new Route({
   loader: async ({ context: { queryClient }, params: { taskId } }) => {
     queryClient.ensureQueryData(getTaskOption(taskId)).catch(console.log);
   },
-  component: lazyRouteComponent(() => import("./dashboard/NewTask")),
+  component: lazyRouteComponent(() => import("./dashboard/Task")),
 });
 
 export const newTaskRoute = new Route({
