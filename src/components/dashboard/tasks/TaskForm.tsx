@@ -1,13 +1,12 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useMatch, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import {
   useCreateTasks,
   useGetTask,
   useUpdateTasks,
 } from "../../../services/queries/taskQueries";
-import { taskRoute } from "../../../pages/routeTree";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
 import { useEffect } from "react";
@@ -25,10 +24,16 @@ const TaskSchema = z.object({
 
 export type taskSchema = z.infer<typeof TaskSchema>;
 
-const TaskForm: React.FC = () => {
-  const { taskId } = taskRoute.useParams();
-  const { data: tasks } = useGetTask(taskId ?? "");
-  const { search } = useMatch({ from: "/logged/tasks/$taskId" });
+type FormProps = {
+  taskId?: number;
+  orderParams?: {
+    orderId?: number;
+    clientEmail?: string;
+  };
+};
+
+const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
+  const { data: tasks } = useGetTask(taskId);
 
   const navigate = useNavigate();
   const { mutateAsync: createTasks, isPending: isCreating } = useCreateTasks();
@@ -54,10 +59,10 @@ const TaskForm: React.FC = () => {
             : "",
           note: tasks?.taskNotes[0]?.note || "",
         }
-      : search?.orderParams
+      : orderParams
       ? {
-          orderId: search.orderParams.orderId,
-          email: search.orderParams.clientEmail,
+          orderId: orderParams.orderId,
+          email: orderParams.clientEmail ?? "",
         }
       : undefined,
   });

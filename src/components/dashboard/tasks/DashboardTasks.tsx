@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -85,13 +85,18 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 
-  const handleTaskToggle = async (taskId: number) => {
+  const handleTaskToggle = async (e: React.MouseEvent, taskId: number) => {
+    e.preventDefault();
     try {
       if (taskState === "Completed") {
         await activeTask(taskId);
+        refetchActiveTasks();
+        refetchCompletedTasks();
         setTaskState("Active");
       } else if (taskState === "Active") {
         await completeTask(taskId);
+        refetchActiveTasks();
+        refetchCompletedTasks();
         setTaskState("Completed");
       }
     } catch (error) {
@@ -180,9 +185,7 @@ const DashboardTasks: React.FC = () => {
                       <div className="gap-6 mt-2 flex ">
                         <button
                           className="hover:scale-125 transition-transform "
-                          onClick={() => {
-                            handleTaskToggle(task.taskId);
-                          }}
+                          onClick={(e) => handleTaskToggle(e, task.taskId)}
                         >
                           {CheckCircle}
                         </button>
@@ -271,7 +274,7 @@ const DashboardTasks: React.FC = () => {
             ))
           ) : (
             <div className="flex items-center justify-center gap-2">
-              <p>No task available.</p>
+              <p>Fetching Tasks.</p>
             </div>
           )}
         </div>

@@ -25,7 +25,11 @@ const BrandsCard: React.FC<FormProps> = ({ brands }) => {
         <div key={i} className="bg-white h-auto ">
           <div className="flex flex-wrap justify-center">
             <div className="flex justify-center mt-10 h-16 w-52">
-              <img className="h-full w-full" src={data.logo} alt="Logo" />
+              <img
+                className="object-contain h-auto w-auto"
+                src={data.logo}
+                alt="Logo"
+              />
             </div>
           </div>
           <div className=" text-center text-black font-bold text-2xl leading-7">
