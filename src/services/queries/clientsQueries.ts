@@ -132,7 +132,7 @@ export const useGetClient = (id: number) => {
 
 export const useGetClientBySellers = (params: {
   sellerId?: number;
-  keyword: string;
+  keyword?: string;
 }) => {
   return useQuery({
     enabled: params.sellerId ? true : false,
@@ -220,6 +220,7 @@ export const useAddClientCompany = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["clients-by-seller"] });
     },
   });
 };
@@ -256,6 +257,7 @@ export const useDeleteClientCompany = () => {
       toast.success("Company deleted!");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["clients-by-seller"] });
     },
   });
 };

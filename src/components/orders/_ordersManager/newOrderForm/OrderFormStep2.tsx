@@ -48,7 +48,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
   const debouncedEmail = useDebounce(clientEmail, 500);
 
   const { data: clients } = useGetClientBySellers({
-    keyword: "",
     sellerId: seller.id,
   });
 
