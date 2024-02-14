@@ -136,7 +136,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         <div className="flex flex-col gap-2">
           <span className="font-bold">Seller</span>
           <span className="font-medium text-[1.375rem]">{seller.name}</span>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap break-all gap-1.5">
             <span className="text-gray-500 font-medium">Email:</span>
             <span className="text-gray-500">{seller.email}</span>
           </div>
@@ -146,11 +146,11 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           <span className="font-bold">Client</span>
           <span className="font-medium text-[1.375rem]">{client.name}</span>
           <div className="flex flex-col gap-0.5">
-            <div className="flex gap-1.5">
+            <div className="flex flex-wrap break-all gap-1.5">
               <span className="text-gray-500 font-medium">Email:</span>
               <span className="text-gray-500">{client.email}</span>
             </div>
-            <div className="flex gap-1.5">
+            <div className="flex flex-wrap break-all gap-1.5">
               <span className="text-gray-500 font-medium">Phone:</span>
               <span className="text-gray-500">{client.phone}</span>
             </div>
@@ -160,8 +160,8 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         <div className="flex flex-col gap-2">
           <span className="font-bold">Company</span>
           <span className="font-medium text-[1.375rem]">{company.name}</span>
-          <div className="flex gap-1.5">
-            <span className="text-gray-500 font-medium">URL:</span>
+          <div className="flex flex-wrap break-all gap-1.5">
+            {/* <span className="text-gray-500 font-medium">URL:</span> */}
             <span className="text-gray-500">{company.url}</span>
           </div>
         </div>
