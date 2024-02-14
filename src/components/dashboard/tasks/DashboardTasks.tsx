@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -47,31 +47,6 @@ const DashboardTasks: React.FC = () => {
   const tasksToDisplay =
     activeButton === "currentTasks" ? tasksActive : tasksCompleted;
 
-  useEffect(() => {
-    let fetchInterval;
-    let timeout;
-
-    const startFetching = () => {
-      fetchInterval = setInterval(() => {
-        if (activeButton === "currentTasks") {
-          refetchActiveTasks();
-        } else {
-          refetchCompletedTasks();
-        }
-      }, 1000);
-
-      timeout = setTimeout(() => {
-        clearInterval(fetchInterval);
-      }, 2000);
-    };
-
-    startFetching();
-
-    return () => {
-      clearInterval(fetchInterval);
-      clearTimeout(timeout);
-    };
-  }, [activeButton, refetchActiveTasks, refetchCompletedTasks]);
   const navigate = useNavigate();
 
   const handleTasks = () => {
@@ -87,7 +62,6 @@ const DashboardTasks: React.FC = () => {
     try {
       if (taskState === "Active") {
         await activeTask(taskId);
-        refetchActiveTasks();
         refetchCompletedTasks();
         setTaskState("Active");
       }
@@ -101,7 +75,6 @@ const DashboardTasks: React.FC = () => {
       if (taskState === "Active") {
         await completeTask(taskId);
         refetchActiveTasks();
-        refetchCompletedTasks();
         setTaskState("Active");
       }
     } catch (error) {
