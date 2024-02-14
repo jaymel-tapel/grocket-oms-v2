@@ -22,6 +22,7 @@ export type Order = {
   seller: User;
   sellerId: number;
   clientId: number;
+  brandId: number;
   companyId: number;
   createdAt: string;
   updatedAt: string;
@@ -53,12 +54,15 @@ export type OrdersParams = {
   filter?: string;
   page?: number;
   perPage?: number;
+  code?: string;
+  showDeleted?: boolean;
 };
 
 type OrderReportParams = {
   startRange?: string;
   endRange?: string;
   sellerId?: number;
+  code?: string;
 };
 
 type OrderReportResponse = {
@@ -104,7 +108,7 @@ const getAllOrders = async (params?: OrdersParams): Promise<OrdersResponse> => {
 const getDeletedOrders = async (
   params?: OrdersParams
 ): Promise<OrdersResponse> => {
-  const response = await axios.get(ORDERS_URL + "/deleted", {
+  const response = await axios.get(ORDERS_URL, {
     params,
     headers: getHeaders(),
   });
@@ -120,6 +124,7 @@ const getOrder = async (id: number): Promise<Order> => {
 
 export const getAllOrdersOptions = (search?: OrdersParams) => {
   return {
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["orders", search],
     queryFn: () => getAllOrders(search),
   };
@@ -127,7 +132,8 @@ export const getAllOrdersOptions = (search?: OrdersParams) => {
 
 export const getDeletedOrdersOptions = (search?: OrdersParams) => {
   return {
-    queryKey: ["deleted-orders", search],
+    enabled: search?.code !== undefined ? true : false,
+    queryKey: ["orders", search],
     queryFn: () => getDeletedOrders(search),
   };
 };
@@ -154,6 +160,7 @@ export const useGetDeletedOrders = (search?: OrdersParams) => {
 
 export const useGetOrderReport = (search?: OrderReportParams) => {
   return useQuery({
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["order-stats", search],
     queryFn: async (): Promise<OrderReportResponse> => {
       const response = await axios.get(ORDERS_URL + "/report", {
@@ -167,6 +174,7 @@ export const useGetOrderReport = (search?: OrderReportParams) => {
 
 export const useGetOrderGraph = (search?: OrderReportParams) => {
   return useQuery({
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["order-graph", search],
     queryFn: async (): Promise<OrderGraphResponse> => {
       const response = await axios.get(ORDERS_URL + "/graph", {
