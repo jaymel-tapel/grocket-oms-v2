@@ -13,6 +13,8 @@ import TablePagination, {
 } from "../../tools/table/TablePagination";
 import { Order } from "../../../services/queries/orderQueries";
 import dayjs from "dayjs";
+import Pill from "../../tools/pill/Pill";
+import { getPaymentStatus } from "../../../utils/utils";
 
 const COLUMNS = [
   "DATE",
@@ -92,23 +94,27 @@ const DeletedOrdersTable: React.FC<TableProps> = ({ orders, pagination }) => {
               </TableBodyCell>
             </TableRow>
           )}
-          {orders.map((order, i) => (
-            <TableRow key={i}>
-              <TableBodyCell>
-                {dayjs(order.createdAt).format("MM-DD-YYYY")}
-              </TableBodyCell>
-              <TableBodyCell>{order.id}</TableBodyCell>
-              <TableBodyCell>{order.client.name}</TableBodyCell>
-              <TableBodyCell>{order.total_price}</TableBodyCell>
-              <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
-              <TableBodyCell>
-                <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                  {order.payment_status}
-                </span>
-              </TableBodyCell>
-              <TableBodyCell>{order.remarks}</TableBodyCell>
-            </TableRow>
-          ))}
+          {orders.map((order, i) => {
+            const paymentStatus = getPaymentStatus(order.payment_status);
+
+            return (
+              <TableRow key={i}>
+                <TableBodyCell>
+                  {dayjs(order.createdAt).format("MM-DD-YYYY")}
+                </TableBodyCell>
+                <TableBodyCell>{order.id}</TableBodyCell>
+                <TableBodyCell>{order.client.name}</TableBodyCell>
+                <TableBodyCell>{order.total_price}</TableBodyCell>
+                <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
+                <TableBodyCell>
+                  <Pill bgColor={paymentStatus.color}>
+                    {paymentStatus.label}
+                  </Pill>
+                </TableBodyCell>
+                <TableBodyCell>{order.remarks}</TableBodyCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
       <TablePagination
