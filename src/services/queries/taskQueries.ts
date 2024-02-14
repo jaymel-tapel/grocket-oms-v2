@@ -167,15 +167,19 @@ export const useCompleteTasks = () => {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      return await axios.patch(
+      const response = await axios.patch(
         TASKS_URL + `/complete/${id}`,
         {},
         { headers: getHeaders() }
       );
+
+      return response.data;
     },
     onSuccess: () => {
       toast.success("Task updated");
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onSettled: () => {
+      return queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 };
@@ -187,15 +191,19 @@ export const useActiveTasks = () => {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      return await axios.patch(
+      const response = await axios.patch(
         TASKS_URL + `/active/${id}`,
         {},
         { headers: getHeaders() }
       );
+
+      return response.data;
     },
     onSuccess: () => {
       toast.success("Task updated");
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onSettled: () => {
+      return queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 };

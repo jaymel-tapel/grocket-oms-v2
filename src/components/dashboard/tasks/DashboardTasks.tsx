@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -24,9 +24,7 @@ import dayjs from "dayjs";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
-  const [taskState, setTaskState] = useState<"Active" | "Completed">(
-    "Completed"
-  );
+  const [taskState, setTaskState] = useState<"Active" | "Completed">("Active");
 
   const [hiddenTasks, setHiddenTasks] = useState<number[]>([]);
   const {
@@ -64,7 +62,7 @@ const DashboardTasks: React.FC = () => {
 
       timeout = setTimeout(() => {
         clearInterval(fetchInterval);
-      }, 6000);
+      }, 2000);
     };
 
     startFetching();
@@ -85,14 +83,26 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 
-  const handleTaskToggle = async (taskId: number) => {
+  const handleTaskToActive = async (taskId: number) => {
     try {
-      if (taskState === "Completed") {
+      if (taskState === "Active") {
         await activeTask(taskId);
+        refetchActiveTasks();
+        refetchCompletedTasks();
         setTaskState("Active");
-      } else if (taskState === "Active") {
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const handleTaskToCompleted = async (taskId: number) => {
+    try {
+      if (taskState === "Active") {
         await completeTask(taskId);
-        setTaskState("Completed");
+        refetchActiveTasks();
+        refetchCompletedTasks();
+        setTaskState("Active");
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -179,9 +189,14 @@ const DashboardTasks: React.FC = () => {
                     <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
                       <div className="gap-6 mt-2 flex ">
                         <button
+                          type="button"
                           className="hover:scale-125 transition-transform "
                           onClick={() => {
-                            handleTaskToggle(task.taskId);
+                            if (activeButton === "currentTasks") {
+                              handleTaskToCompleted(task.taskId);
+                            } else if (activeButton === "completedTasks") {
+                              handleTaskToActive(task.taskId);
+                            }
                           }}
                         >
                           {CheckCircle}
@@ -271,7 +286,7 @@ const DashboardTasks: React.FC = () => {
             ))
           ) : (
             <div className="flex items-center justify-center gap-2">
-              <p>No task available.</p>
+              <p>Fetching Tasks.</p>
             </div>
           )}
         </div>
