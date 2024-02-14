@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import StatsCards from "../../components/tools/cards/StatsCards";
 // import DropdownText from "../../components/tools/dropdowntext/DropdownText";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
@@ -9,24 +9,29 @@ import {
   useGetSellerReport,
   useGetSellerStats,
 } from "../../services/queries/accountsQueries";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
-// const filtersList = [
-//   { id: "currentWeek", label: "Current Week" },
-//   { id: "currentMonth", label: "Current Month" },
-//   { id: "last90days", label: "Last 90 days" },
-//   { id: "custom", label: "Custom" },
-// ];
+dayjs.extend(utc);
 
 const SellerReports: React.FC = () => {
-  // const [searchFilter, setSearchFilter] = useState({
-  //   id: "currentWeek",
-  //   label: "Current Week",
-  // });
+  const today = dayjs().format("YYYY-MM-DD");
+  const thirtyDaysAgo = dayjs().subtract(30, "day").format("YYYY-MM-DD");
 
   const [selectedBrand] = useAtom(brandAtom);
-  const { data: statsData } = useGetSellerStats({ code: selectedBrand?.code });
+  const [startRange, setStartRange] = useState(thirtyDaysAgo);
+  const [endRange, setEndRange] = useState(today);
+
+  const { data: statsData } = useGetSellerStats({
+    code: selectedBrand?.code,
+    startRange: dayjs(startRange).format("MM-DD-YYYY"),
+    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+  });
+
   const { data: reportData } = useGetSellerReport({
     code: selectedBrand?.code,
+    startRange: dayjs(startRange).format("MM-DD-YYYY"),
+    endRange: dayjs(endRange).format("MM-DD-YYYY"),
   });
 
   // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
@@ -77,14 +82,29 @@ const SellerReports: React.FC = () => {
 
   return (
     <div>
-      {/* <div className="flex justify-end mb-4">
-        <DropdownText
-          value={searchFilter}
-          onChange={handleChangeFilter}
-          list={filtersList}
-          removeBorders={true}
-        />
-      </div> */}
+      <div className="flex justify-end mb-4">
+        <div className="flex gap-4 items-center">
+          <input
+            type="date"
+            id="startRange"
+            value={startRange}
+            onChange={(e) =>
+              setStartRange(dayjs(e.target.value).format("YYYY-MM-DD"))
+            }
+            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          />
+          <span>-</span>
+          <input
+            type="date"
+            id="endRange"
+            value={endRange}
+            onChange={(e) =>
+              setEndRange(dayjs(e.target.value).format("YYYY-MM-DD"))
+            }
+            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          />
+        </div>
+      </div>
 
       <StatsCards stats={clientStats} />
 
