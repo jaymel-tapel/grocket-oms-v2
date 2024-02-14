@@ -2,9 +2,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import CompanyLinksTable from "../orderInformation/CompanyLinksTable";
 import { Button } from "../../../tools/buttons/Button";
+import {
+  useAddClientCompany,
+  useGetClientBySellers,
+} from "../../../../services/queries/clientsQueries";
+import Spinner from "../../../tools/spinner/Spinner";
 
 const selectCompanySchema = z.object({
   name: z.string(),
@@ -23,8 +28,22 @@ type FormProps = {
 };
 
 const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { client, setStep, company, setCompany, companies, setCompanies } =
-    useOrderForm() as OrderFormContext;
+  const {
+    seller,
+    client,
+    setStep,
+    company,
+    setCompany,
+    companies,
+    setCompanies,
+  } = useOrderForm() as OrderFormContext;
+
+  const { data: clients } = useGetClientBySellers({
+    sellerId: seller.id,
+  });
+
+  const { mutateAsync: addCompany, isPending: isAddingCompany } =
+    useAddClientCompany();
 
   const companyLinks = useMemo(() => {
     if (!client.id && company.name) {
@@ -53,10 +72,6 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
   };
 
   const onSubmit: SubmitHandler<SelectCompanySchema> = () => {
-    // data.name here is returning the ID because of how our select component can only pass primitives
-    // and we need the ID as identifier for our handleSelect function.
-    // We can just try to do the find method
-    // here as well to make it much cleaner
     setStep(4);
   };
 
@@ -93,24 +108,47 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     }));
   };
 
-  const handleAddCompany = () => {
-    if (newCompanyErrors.name.error || newCompanyErrors.url.error) {
-      setShowErrors(true);
+  const validateNewCompany = () => {
+    const hasError = newCompanyErrors.name.error || newCompanyErrors.url.error;
+    setShowErrors(hasError);
+
+    // Invert the error flag to indicate whether data is valid
+    return !hasError;
+  };
+
+  const refreshClientCompanies = () => {
+    const foundClient = clients?.find((_client) => _client.id === client.id);
+    if (!foundClient) return;
+
+    setCompanies(foundClient.companies);
+  };
+
+  // Function to add the company locally when there's no client ID
+  const addCompanyLocally = () => {
+    setCompany(newCompany);
+    setValue("name", newCompany.name);
+    setValue("url", newCompany.url);
+    setNewCompany({ name: "", url: "" });
+  };
+
+  const addCompanyToClient = async () => {
+    await addCompany({
+      clientId: client.id as number,
+      name: newCompany.name,
+      url: newCompany.url,
+    });
+  };
+
+  const handleAddCompany = async () => {
+    if (!validateNewCompany()) {
       return;
     }
 
-    if (showNewCompanyErrors) {
-      setShowErrors(false);
+    if (client.id) {
+      await addCompanyToClient();
+    } else {
+      addCompanyLocally();
     }
-
-    if (!client.id) {
-      setCompany({ name: newCompany.name, url: newCompany.url });
-      setValue("name", newCompany.name);
-      setValue("url", newCompany.url);
-      setNewCompany({ name: "", url: "" });
-    }
-
-    // add new company query here later
   };
 
   const handleDeleteLocal = (index: number) => {
@@ -122,6 +160,13 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     setCompany({ name: "", url: "" });
     setCompanies(filteredCompanies);
   };
+
+  useEffect(() => {
+    if (clients) {
+      refreshClientCompanies();
+    }
+    //eslint-disable-next-line
+  }, [clients]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -244,8 +289,19 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
         <div className="flex justify-end">
-          <Button type="button" onClick={handleAddCompany} variant="black">
-            Add
+          <Button
+            type="button"
+            onClick={handleAddCompany}
+            variant="black"
+            disabled={isAddingCompany}
+          >
+            {isAddingCompany ? (
+              <>
+                <Spinner /> Adding Company...
+              </>
+            ) : (
+              "Add"
+            )}
           </Button>
         </div>
       </div>
