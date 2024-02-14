@@ -24,9 +24,7 @@ import dayjs from "dayjs";
 
 const DashboardTasks: React.FC = () => {
   const [activeButton, setActiveButtton] = useState("currentTasks");
-  const [taskState, setTaskState] = useState<"Active" | "Completed">(
-    "Completed"
-  );
+  const [taskState, setTaskState] = useState<"Active" | "Completed">("Active");
 
   const [hiddenTasks, setHiddenTasks] = useState<number[]>([]);
   const {
@@ -85,27 +83,29 @@ const DashboardTasks: React.FC = () => {
     navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 
-  const handleTaskToggle = async (e: React.MouseEvent, taskId: number) => {
-    e.preventDefault();
-    let error = null;
-    if (taskState === "Completed") {
-      await activeTask(taskId).catch((err) => (error = err));
-      if (!error) {
+  const handleTaskToActive = async (taskId: number) => {
+    try {
+      if (taskState === "Active") {
+        await activeTask(taskId);
         refetchActiveTasks();
         refetchCompletedTasks();
         setTaskState("Active");
-      } else {
-        console.error("Error updating task:", error);
       }
-    } else if (taskState === "Active") {
-      await completeTask(taskId).catch((err) => (error = err));
-      if (!error) {
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const handleTaskToCompleted = async (taskId: number) => {
+    try {
+      if (taskState === "Active") {
+        await completeTask(taskId);
         refetchActiveTasks();
         refetchCompletedTasks();
-        setTaskState("Completed");
-      } else {
-        console.error("Error updating task:", error);
+        setTaskState("Active");
       }
+    } catch (error) {
+      console.error("Error updating task:", error);
     }
   };
 
@@ -189,8 +189,15 @@ const DashboardTasks: React.FC = () => {
                     <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
                       <div className="gap-6 mt-2 flex ">
                         <button
+                          type="button"
                           className="hover:scale-125 transition-transform "
-                          onClick={(e) => handleTaskToggle(e, task.taskId)}
+                          onClick={() => {
+                            if (activeButton === "currentTasks") {
+                              handleTaskToCompleted(task.taskId);
+                            } else if (activeButton === "completedTasks") {
+                              handleTaskToActive(task.taskId);
+                            }
+                          }}
                         >
                           {CheckCircle}
                         </button>
