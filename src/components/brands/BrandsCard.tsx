@@ -23,13 +23,17 @@ const BrandsCard: React.FC<FormProps> = ({ brands }) => {
       {brands.length === 0 && <p className="text-center">No data found</p>}
       {brands.map((data, i) => (
         <div key={i} className="bg-white h-auto ">
-          <div className="flex flex-wrap justify-center">
-            <div className="flex justify-center mt-10 h-16 w-52">
-              <img
-                className="object-contain h-auto w-auto"
-                src={data.logo}
-                alt="Logo"
-              />
+          <div className="flex justify-center">
+            <div className="flex justify-center mt-5 h-28 w-64">
+              {data.logo ? (
+                <img
+                  className="object-contain h-auto w-auto"
+                  src={data.logo}
+                  alt="Logo"
+                />
+              ) : (
+                " "
+              )}
             </div>
           </div>
           <div className=" text-center text-black font-bold text-2xl leading-7">
