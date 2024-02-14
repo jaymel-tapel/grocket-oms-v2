@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
-import { getLocalStorageBrand, isAuth } from "../utils/utils";
+import { isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
 import { getOrderOption } from "../services/queries/orderQueries";
 import { z } from "zod";
@@ -21,8 +21,6 @@ import {
   getClientOption,
 } from "../services/queries/clientsQueries";
 import { getBrandOption } from "../services/queries/brandsQueries";
-
-const selectedBrand = getLocalStorageBrand();
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
   component: Root,
@@ -189,7 +187,7 @@ const ordersManagerRoute = new Route({
       ...search,
       searchOrders: {
         ...search.searchOrders,
-        code: selectedBrand && selectedBrand.code,
+        // code: selectedBrand && selectedBrand.code,
         showDeleted: false,
       },
     }),
@@ -263,7 +261,7 @@ export const deletedOrdersRoute = new Route({
       ...search,
       searchDeletedOrders: {
         ...search.searchDeletedOrders,
-        code: selectedBrand && selectedBrand.code,
+        // code: selectedBrand && selectedBrand.code,
         showDeleted: true,
       },
     }),

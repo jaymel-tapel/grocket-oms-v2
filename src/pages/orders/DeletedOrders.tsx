@@ -1,9 +1,14 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import DeletedOrdersTable from "../../components/orders/deletedOrders/DeletedOrdersTable";
 import { deletedOrdersRoute } from "../routeTree";
 import { useGetDeletedOrders } from "../../services/queries/orderQueries";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../services/queries/brandsQueries";
+import { useNavigate } from "@tanstack/react-router";
 
 const DeletedOrders: React.FC = () => {
+  const navigate = useNavigate();
+  const [selectedBrand] = useAtom(brandAtom);
   const { searchDeletedOrders } = deletedOrdersRoute.useSearch();
   const { data } = useGetDeletedOrders(searchDeletedOrders);
 
@@ -22,6 +27,24 @@ const DeletedOrders: React.FC = () => {
 
     return { data: data.data, pagination: data.meta };
   }, [data]);
+
+  useEffect(() => {
+    if (selectedBrand) {
+      navigate({
+        search: (old) => {
+          return {
+            ...old,
+            searchDeletedOrders: {
+              ...old?.searchDeletedOrders,
+              code: selectedBrand?.code,
+            },
+          };
+        },
+        replace: true,
+      });
+    }
+    //eslint-disable-next-line
+  }, [selectedBrand]);
 
   return (
     <div>
