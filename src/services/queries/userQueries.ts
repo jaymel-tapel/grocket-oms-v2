@@ -138,6 +138,7 @@ export const useGetAdminDashboard = (search?: DashboardParams) => {
     queryFn: async (): Promise<StatsResponse> => {
       const response = await axios.get(DASHBOARD_URL + "/admin", {
         headers: getHeaders(),
+        params: search,
       });
       return response.data;
     },
@@ -149,6 +150,7 @@ export const useGetAdminDashboard = (search?: DashboardParams) => {
     queryFn: async (): Promise<GraphResponse> => {
       const response = await axios.get(DASHBOARD_URL + "/admin/graph", {
         headers: getHeaders(),
+        params: search,
       });
       return response.data;
     },

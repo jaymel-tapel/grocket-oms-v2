@@ -1,16 +1,28 @@
 import LoggedSection from "../../components/sections/LoggedSection";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
 import StatsCards from "../../components/tools/cards/StatsCards";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import DonutChart from "../../components/tools/charts/DonutChart";
 import { useGetAdminDashboard } from "../../services/queries/userQueries";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { sliceDate } from "../../utils/utils";
 import ClientsOverviewTable from "../../components/dashboard/dashboard/ClientsOverviewTable";
 import { Link } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const DashboardAdmin: React.FC = () => {
-  const { statsData, graphData } = useGetAdminDashboard();
+  const today = dayjs().format("YYYY-MM-DD");
+  const thirtyDaysAgo = dayjs().subtract(7, "day").format("YYYY-MM-DD");
+
+  // const [selectedBrand] = useAtom(brandAtom);
+  const [startRange, setStartRange] = useState(thirtyDaysAgo);
+  const [endRange, setEndRange] = useState(today);
+  const { statsData, graphData } = useGetAdminDashboard({
+    startRange: dayjs(startRange).format("MM-DD-YYYY"),
+    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+  });
 
   const dashboardStats = useMemo(() => {
     if (!statsData) return [];
@@ -103,13 +115,28 @@ const DashboardAdmin: React.FC = () => {
 
   return (
     <LoggedSection>
-      <div className="flex justify-between mb-8">
-        <span className="text-2xl text-gray-900 font-bold decoration-black	">
-          This Week's Overview
-        </span>
-        <span className="flex gap-2 text-base font-medium items-end">
-          Current Week <ChevronDownIcon className="w-5 h-5" />
-        </span>
+      <div className="flex justify-end mb-4">
+        <div className="flex gap-4 items-center">
+          <input
+            type="date"
+            id="startRange"
+            value={startRange}
+            onChange={(e) =>
+              setStartRange(dayjs(e.target.value).format("YYYY-MM-DD"))
+            }
+            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          />
+          <span>-</span>
+          <input
+            type="date"
+            id="endRange"
+            value={endRange}
+            onChange={(e) =>
+              setEndRange(dayjs(e.target.value).format("YYYY-MM-DD"))
+            }
+            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          />
+        </div>
       </div>
 
       <div className="pb-8">
