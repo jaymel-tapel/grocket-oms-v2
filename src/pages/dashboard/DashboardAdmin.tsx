@@ -9,6 +9,8 @@ import ClientsOverviewTable from "../../components/dashboard/dashboard/ClientsOv
 import { Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../services/queries/brandsQueries";
 
 dayjs.extend(utc);
 
@@ -16,12 +18,13 @@ const DashboardAdmin: React.FC = () => {
   const today = dayjs().format("YYYY-MM-DD");
   const thirtyDaysAgo = dayjs().subtract(7, "day").format("YYYY-MM-DD");
 
-  // const [selectedBrand] = useAtom(brandAtom);
+  const [selectedBrand] = useAtom(brandAtom);
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
   const [endRange, setEndRange] = useState(today);
   const { statsData, graphData } = useGetAdminDashboard({
     startRange: dayjs(startRange).format("MM-DD-YYYY"),
     endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    code: selectedBrand?.code,
   });
 
   const dashboardStats = useMemo(() => {

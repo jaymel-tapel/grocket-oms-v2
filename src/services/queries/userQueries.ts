@@ -19,6 +19,7 @@ type loginDetails = {
 type DashboardParams = {
   startRange?: string;
   endRange?: string;
+  code?: string;
 };
 
 type StatsResponse = {
@@ -133,7 +134,7 @@ export const useGetUserProfile = () => {
 
 export const useGetAdminDashboard = (search?: DashboardParams) => {
   const statsQuery = useQuery({
-    // enabled: search?.code !== undefined ? true : false,
+    enabled: search?.code !== undefined ? true : false,
     queryKey: ["dashboard-stats", search],
     queryFn: async (): Promise<StatsResponse> => {
       const response = await axios.get(DASHBOARD_URL + "/admin", {
