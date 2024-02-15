@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
-import { isAuth } from "../utils/utils";
+import { UserLocalInfo, getUserInfo, isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
 import { getOrderOption } from "../services/queries/orderQueries";
 import { z } from "zod";
@@ -16,10 +16,7 @@ import {
   getAllUsersOptions,
   getUserOption,
 } from "../services/queries/accountsQueries";
-import {
-  getAllClientsOptions,
-  getClientOption,
-} from "../services/queries/clientsQueries";
+import { getClientOption } from "../services/queries/clientsQueries";
 import { getBrandOption } from "../services/queries/brandsQueries";
 
 const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
@@ -86,7 +83,27 @@ const profileRoute = new Route({
 const dashboardRoute = new Route({
   getParentRoute: () => protectedRoute,
   path: "dashboard",
-  component: lazyRouteComponent(() => import("./dashboard/Dashboard")),
+  beforeLoad: async () => {
+    const user = getUserInfo() as UserLocalInfo;
+    if (user.role === "SELLER") {
+      throw redirect({ to: "/dashboard/seller" });
+    } else {
+      throw redirect({ to: "/dashboard/admin" });
+    }
+  },
+  // component: lazyRouteComponent(() => import("./dashboard/Dashboard")),
+});
+
+const adminDashboardRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  path: "dashboard/admin",
+  component: lazyRouteComponent(() => import("./dashboard/DashboardAdmin")),
+});
+
+const sellerDashboardRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  path: "dashboard/seller",
+  component: lazyRouteComponent(() => import("./dashboard/DashboardSeller")),
 });
 
 const inboxRoute = new Route({
@@ -309,6 +326,7 @@ const clientsManagerRoute = new Route({
         filter: z.enum(["id", "email", "seller"]).optional(),
         page: z.number().optional().catch(1),
         perPage: z.number().optional().catch(10),
+        code: z.string().optional(),
       })
       .optional(),
   }).parse,
@@ -320,12 +338,12 @@ const clientsManagerRoute = new Route({
       },
     }),
   ],
-  loaderDeps: ({ search }) => ({
-    searchClients: search.searchClients,
-  }),
-  loader: async ({ context: { queryClient }, deps }) => {
-    queryClient.ensureQueryData(getAllClientsOptions(deps.searchClients));
-  },
+  // loaderDeps: ({ search }) => ({
+  //   searchClients: search.searchClients,
+  // }),
+  // loader: async ({ context: { queryClient }, deps }) => {
+  //   queryClient.ensureQueryData(getAllClientsOptions(deps.searchClients));
+  // },
   component: lazyRouteComponent(
     () => import("./clients/clientsManager/ClientsManager")
   ),
@@ -508,6 +526,8 @@ const routeTree = rootRoute.addChildren([
   protectedRoute.addChildren([
     profileRoute,
     dashboardRoute,
+    adminDashboardRoute,
+    sellerDashboardRoute,
     inboxRoute,
     tasksRoute.addChildren([tasksIndexRoute, taskRoute, newTaskRoute]),
 

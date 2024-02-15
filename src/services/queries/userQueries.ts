@@ -5,14 +5,60 @@ import toast from "react-hot-toast";
 import { User } from "./accountsQueries";
 import { UserFormSchema } from "../../components/accounts/usersManager/UserForm";
 
+const API_URL = import.meta.env.VITE_API_URL;
+const loginUrl = API_URL + "/auth/login";
+const profileUrl = API_URL + "/profile";
+
+const DASHBOARD_URL = API_URL + "/dashboard";
+
 type loginDetails = {
   username: string;
   password: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
-const loginUrl = API_URL + "/auth/login";
-const profileUrl = API_URL + "/profile";
+type DashboardParams = {
+  startRange?: string;
+  endRange?: string;
+};
+
+type StatsResponse = {
+  ordersOverview: {
+    totalOrderCount: number;
+    newOrdersCount: number;
+    paidOrdersCount: number;
+    invoiceOrdersCount: number;
+    pr1Count: number;
+    pr2Count: number;
+    newOrdersPercent: number;
+    paidOrdersPercent: number;
+    invoiceOrdersPercent: number;
+    pr1Percent: number;
+    pr2Percent: number;
+  };
+  newclientCount: number;
+  revenue: number;
+  clientsOverview: Array<{
+    name: string;
+    email: string;
+    industry: string;
+    order: number;
+    amount: number;
+    date: string; // ISO8601 date format
+  }>;
+};
+
+type GraphResponse = {
+  receivedAmount: number;
+  unpaidAmount: number;
+  paidReviews: Array<{
+    date: string; // ISO8601 date format
+    paidReviewsCount: number;
+  }>;
+  unpaidReviews: Array<{
+    date: string; // ISO8601 date format
+    unpaidReviewsCount: number;
+  }>;
+};
 
 export const useLogin = () => {
   return useMutation({
@@ -63,6 +109,8 @@ export const useResetPassword = () => {
   });
 };
 
+// GET
+
 export const useGetUserProfile = () => {
   return useQuery({
     queryKey: ["profile"],
@@ -83,6 +131,37 @@ export const useGetUserProfile = () => {
   });
 };
 
+export const useGetAdminDashboard = (search?: DashboardParams) => {
+  const statsQuery = useQuery({
+    // enabled: search?.code !== undefined ? true : false,
+    queryKey: ["dashboard-stats", search],
+    queryFn: async (): Promise<StatsResponse> => {
+      const response = await axios.get(DASHBOARD_URL + "/admin", {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+  });
+
+  const graphQuery = useQuery({
+    // enabled: search?.code !== undefined ? true : false,
+    queryKey: ["dashboard-graph", search],
+    queryFn: async (): Promise<GraphResponse> => {
+      const response = await axios.get(DASHBOARD_URL + "/admin/graph", {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+  });
+
+  return {
+    statsData: statsQuery.data,
+    graphData: graphQuery.data,
+  };
+};
+
+// AUTHENTICATED POST
+
 export const useUpdateProfilePhoto = () => {
   const queryClient = useQueryClient();
 
@@ -100,6 +179,8 @@ export const useUpdateProfilePhoto = () => {
     },
   });
 };
+
+// PATCH / PUT
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();

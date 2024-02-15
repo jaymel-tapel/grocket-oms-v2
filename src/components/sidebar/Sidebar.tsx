@@ -144,7 +144,7 @@ export default function SidebarNavigation() {
 
   const activeGroup = useMemo(() => {
     if (
-      location.pathname === "/dashboard" ||
+      location.pathname.includes("/dashboard") ||
       location.pathname === "/inbox" ||
       location.pathname === "/tasks"
     )

@@ -65,6 +65,7 @@ export type ClientsParams = {
   filter?: string;
   page?: number;
   perPage?: number;
+  code?: string;
 };
 
 type ClientReportParams = {
@@ -109,6 +110,7 @@ const getClient = async (id: number): Promise<Client> => {
 
 export const getAllClientsOptions = (search?: ClientsParams) => {
   return {
+    enabled: search?.code ? true : false,
     queryKey: ["clients", search],
     queryFn: () => getAllClients(search),
   };
@@ -175,7 +177,7 @@ export const useGetClientOrigins = () => {
 
 export const useGetClientReport = (search?: ClientReportParams) => {
   return useQuery({
-    enabled: search?.code !== undefined ? true : false,
+    enabled: search?.code ? true : false,
     queryKey: ["client-report", search],
     queryFn: async (): Promise<ClientReportResponse> => {
       const response = await axios.get(CLIENTS_URL + "/report", {
