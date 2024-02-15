@@ -10,6 +10,8 @@ import { useGetAllClients } from "../../../services/queries/clientsQueries";
 import ClientsManagersTable from "../../../components/clients/clientsManager/ClientsManagerTable";
 import { ClientsFiltersType, clientsFilters } from "../../routeFilters";
 import { getActiveFilterLabel } from "../../../utils/utils";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../../services/queries/brandsQueries";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const Index = () => {
   const dateTo = searchClients?.to;
   const filter = searchClients?.filter;
 
+  const [selectedBrand] = useAtom(brandAtom);
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
 
   const clients = useMemo(() => {
@@ -97,6 +100,34 @@ const Index = () => {
     return () => handleKeywordChange.cancel();
     //eslint-disable-next-line
   }, [keywordDraft]);
+
+  useEffect(() => {
+    if (selectedBrand) {
+      navigate({
+        search: (old) => {
+          return {
+            ...old,
+            searchClients: {
+              ...old?.searchClients,
+              code: selectedBrand?.code,
+            },
+          };
+        },
+        replace: true,
+      });
+    }
+    //eslint-disable-next-line
+  }, [selectedBrand]);
+
+  if (!selectedBrand) {
+    return (
+      <div className="h-[75vh] flex items-center justify-center">
+        <span className="text-slate-500">
+          Select a brand before you can start viewing clients.
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div>
