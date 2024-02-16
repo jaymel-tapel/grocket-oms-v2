@@ -1,21 +1,9 @@
 import { Disclosure } from "@headlessui/react";
 import { Fragment, useState, useMemo } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import {
-  Bars3Icon,
-  // BellIcon,
-  GlobeAltIcon,
-  KeyIcon,
-  ClipboardDocumentCheckIcon,
-  XMarkIcon,
-  UserGroupIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   UserLocalInfo,
@@ -29,6 +17,7 @@ import {
 } from "../../services/queries/brandsQueries";
 import DropdownText from "../tools/dropdowntext/DropdownText";
 import { useAtom } from "jotai/react";
+import { accountantSellerNav, adminNav } from "./NavigationData";
 
 const handleLogout = () => {
   cleanAuthorization();
@@ -45,70 +34,6 @@ const userNavigation = [
 function classNames(...classes: (string | null)[]): string {
   return classes.filter(Boolean).join(" ");
 }
-
-const navigation = [
-  {
-    name: "Dashboard",
-    to: "/dashboard",
-    icon: Squares2X2Icon,
-    children: [
-      { name: "My Dashboard", to: "/dashboard" },
-      { name: "My Inbox", to: "/inbox" },
-      { name: "My Tasks", to: "/tasks" },
-    ],
-  },
-  {
-    name: "Orders",
-    to: "/orders",
-    icon: ClipboardDocumentCheckIcon,
-    children: [
-      { name: "Orders Report", to: "/orders/orders_report" },
-      { name: "Orders Manager", to: "/orders/orders_manager" },
-      { name: "Deleted Orders", to: "/orders/deleted" },
-    ],
-  },
-  {
-    name: "Clients",
-    to: "/clients",
-    icon: UserGroupIcon,
-    children: [
-      { name: "Client Report", to: "/clients/clients_report" },
-      {
-        name: "Clients Manager",
-        to: "/clients/clients_manager",
-      },
-    ],
-  },
-  {
-    name: "Prospects",
-    to: "/prospects/",
-    icon: MagnifyingGlassIcon,
-    children: [
-      { name: "Find Prospects", to: "/find-prospects" },
-      { name: "My Prospects", to: "/prospects" },
-      { name: "Email Templates", to: "#" },
-    ],
-  },
-  {
-    name: "Accounts",
-    to: "/accounts",
-    icon: KeyIcon,
-    children: [
-      { name: "Seller Report", to: "/accounts/sellers_report" },
-      { name: "Users Manager", to: "/accounts/users_manager" },
-      {
-        name: "Inactive Users",
-        to: "/accounts/inactive_users",
-      },
-    ],
-  },
-  {
-    name: "Brands",
-    to: "/brands",
-    icon: GlobeAltIcon,
-    children: [{ name: "Brands Manager", to: "/brands/brands_manager" }],
-  },
-] as const;
 
 export default function SidebarNavigation() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -363,6 +288,14 @@ export default function SidebarNavigation() {
 }
 
 function SidebarComponent(props) {
+  const navigation = useMemo(() => {
+    if (props.user.role === "ADMIN") {
+      return adminNav;
+    }
+
+    return accountantSellerNav;
+  }, [props.user]);
+
   return (
     <div className="no-scrollbar flex grow flex-col overflow-y-auto bg-[#1C2434] px-6 pb-4 ring-1 ring-white/10">
       <div className="flex items-center justify-center">

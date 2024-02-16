@@ -74,6 +74,17 @@ const protectedRoute = new Route({
   },
 });
 
+const protectedAdminRoute = new Route({
+  getParentRoute: () => protectedRoute,
+  id: "adminOnly",
+  beforeLoad: async () => {
+    const user = getUserInfo() as UserLocalInfo;
+    if (user.role !== "ADMIN") {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
+});
+
 const profileRoute = new Route({
   getParentRoute: () => protectedRoute,
   path: "profile",
@@ -115,6 +126,12 @@ const inboxRoute = new Route({
 const tasksRoute = new Route({
   getParentRoute: () => protectedRoute,
   path: "tasks",
+  beforeLoad: async () => {
+    const user = getUserInfo() as UserLocalInfo;
+    if (user.role === "ADMIN") {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: lazyRouteComponent(() => import("./dashboard/Tasks")),
 });
 
@@ -377,7 +394,7 @@ const newClientRoute = new Route({
 });
 
 const accountsRoute = new Route({
-  getParentRoute: () => protectedRoute,
+  getParentRoute: () => protectedAdminRoute,
   path: "accounts",
   component: lazyRouteComponent(() => import("./accounts/Accounts")),
 });
@@ -478,7 +495,7 @@ const findProspectsRoute = new Route({
 });
 
 const brandsRoute = new Route({
-  getParentRoute: () => protectedRoute,
+  getParentRoute: () => protectedAdminRoute,
   path: "brands",
   component: lazyRouteComponent(() => import("./brands/Brands")),
 });
@@ -524,6 +541,24 @@ const routeTree = rootRoute.addChildren([
   newPasswordRoute,
 
   protectedRoute.addChildren([
+    protectedAdminRoute.addChildren([
+      accountsRoute.addChildren([
+        accountsIndexRoute,
+        sellersReport,
+        usersManagerRoute,
+        usersManagerIndexRoute,
+        userRoute,
+        newAccountRoute,
+        inactiveUsersRoute,
+      ]),
+      brandsRoute.addChildren([
+        brandsManagerRoute,
+        brandsManagerIndexRoute,
+        newBrandsRoute,
+        brandRoute,
+      ]),
+    ]),
+
     profileRoute,
     dashboardRoute,
     adminDashboardRoute,
@@ -550,25 +585,8 @@ const routeTree = rootRoute.addChildren([
       newClientRoute,
     ]),
 
-    accountsRoute.addChildren([
-      accountsIndexRoute,
-      sellersReport,
-      usersManagerRoute,
-      usersManagerIndexRoute,
-      userRoute,
-      newAccountRoute,
-      inactiveUsersRoute,
-    ]),
-
     prospectsRoute.addChildren([prospectsIndexRoute]),
     findProspectsRoute,
-
-    brandsRoute.addChildren([
-      brandsManagerRoute,
-      brandsManagerIndexRoute,
-      newBrandsRoute,
-      brandRoute,
-    ]),
   ]),
 ]);
 
