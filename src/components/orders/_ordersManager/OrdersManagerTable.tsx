@@ -83,17 +83,14 @@ const OrdersManagerTable: React.FC<TableProps> = ({
 
   useEffect(() => {
     navigate({
-      to: "/orders/orders_manager",
-      /* @ts-expect-error idk why this is giving error all of a sudden */
-      search: ({ searchOrders }) => {
+      search: (search) => {
         return {
-          searchOrders: {
-            ...searchOrders,
-            page: currentPage,
-            perPage: itemsPerPage,
-          },
+          ...search,
+          page: currentPage,
+          perPage: itemsPerPage,
         };
       },
+      params: true,
     });
     //eslint-disable-next-line
   }, [currentPage]);

@@ -62,16 +62,14 @@ const DeletedOrdersTable: React.FC<TableProps> = ({ orders, pagination }) => {
 
   useEffect(() => {
     navigate({
-      to: "/orders/deleted",
-      search: ({ searchDeletedOrders }) => {
+      search: (old) => {
         return {
-          searchDeletedOrders: {
-            ...searchDeletedOrders,
-            page: currentPage,
-            perPage: itemsPerPage,
-          },
+          ...old,
+          page: currentPage,
+          perPage: itemsPerPage,
         };
       },
+      params: true,
     });
     //eslint-disable-next-line
   }, [currentPage]);

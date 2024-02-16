@@ -13,7 +13,7 @@ import { getActiveFilterLabel } from "../../../utils/utils";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { searchUsers } = usersManagerIndexRoute.useSearch();
+  const searchUsers = usersManagerIndexRoute.useSearch();
   const { data } = useGetAllUsers(searchUsers);
 
   const keyword = searchUsers?.keyword;
@@ -52,12 +52,10 @@ const Index = () => {
       search: (old) => {
         return {
           ...old,
-          searchUsers: {
-            ...old?.searchUsers,
-            [field]: value,
-          },
+          [field]: value,
         };
       },
+      params: true,
       replace: true,
     });
   };
@@ -67,12 +65,10 @@ const Index = () => {
       search: (old) => {
         return {
           ...old,
-          searchUsers: {
-            ...old?.searchUsers,
-            filter: filter,
-          },
+          filter: filter,
         };
       },
+      params: true,
       replace: true,
     });
   };
@@ -83,12 +79,10 @@ const Index = () => {
         search: (old) => {
           return {
             ...old,
-            searchUsers: {
-              ...old?.searchUsers,
-              keyword: keywordDraft || undefined,
-            },
+            keyword: keywordDraft || undefined,
           };
         },
+        params: true,
         replace: true,
       });
     }, 500);

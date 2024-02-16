@@ -1,29 +1,36 @@
 import {
-  Route,
-  Router,
   redirect,
   lazyRouteComponent,
-  rootRouteWithContext,
   NotFoundRoute,
+  createRootRouteWithContext,
+  createRouter,
+  createRoute,
 } from "@tanstack/react-router";
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { UserLocalInfo, getUserInfo, isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
 import { getOrderOption } from "../services/queries/orderQueries";
-import { z } from "zod";
 import {
   getAllUsersOptions,
   getUserOption,
 } from "../services/queries/accountsQueries";
 import { getClientOption } from "../services/queries/clientsQueries";
 import { getBrandOption } from "../services/queries/brandsQueries";
+import {
+  clientsSearchSchema,
+  ordersSearchSchema,
+  taskSearchParams,
+  usersSearchSchema,
+} from "./routeSearchSchemas";
 
-const rootRoute = rootRouteWithContext<{ queryClient: typeof queryClient }>()({
+const rootRoute = createRootRouteWithContext<{
+  queryClient: typeof queryClient;
+}>()({
   component: Root,
 });
 
-const indexRoute = new Route({
+const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   beforeLoad: async ({ context: { queryClient } }) => {
@@ -36,7 +43,7 @@ const indexRoute = new Route({
   component: lazyRouteComponent(() => import("./login/Login")),
 });
 
-const forgotPasswordRoute = new Route({
+const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "forgot_password/reset",
   beforeLoad: async ({ context: { queryClient } }) => {
@@ -51,7 +58,7 @@ const forgotPasswordRoute = new Route({
   ),
 });
 
-const newPasswordRoute = new Route({
+const newPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "forgot_password/$code",
   beforeLoad: async ({ context: { queryClient } }) => {
@@ -64,7 +71,7 @@ const newPasswordRoute = new Route({
   component: lazyRouteComponent(() => import("./forgotPassword/ResetPassword")),
 });
 
-const protectedRoute = new Route({
+const protectedRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "logged",
   beforeLoad: async () => {
@@ -74,7 +81,7 @@ const protectedRoute = new Route({
   },
 });
 
-const protectedAdminRoute = new Route({
+const protectedAdminRoute = createRoute({
   getParentRoute: () => protectedRoute,
   id: "adminOnly",
   beforeLoad: async () => {
@@ -85,13 +92,13 @@ const protectedAdminRoute = new Route({
   },
 });
 
-const profileRoute = new Route({
+const profileRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "profile",
   component: lazyRouteComponent(() => import("./user/Profile")),
 });
 
-const dashboardRoute = new Route({
+const dashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "dashboard",
   beforeLoad: async () => {
@@ -105,25 +112,25 @@ const dashboardRoute = new Route({
   // component: lazyRouteComponent(() => import("./dashboard/Dashboard")),
 });
 
-const adminDashboardRoute = new Route({
+const adminDashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "dashboard/admin",
   component: lazyRouteComponent(() => import("./dashboard/DashboardAdmin")),
 });
 
-const sellerDashboardRoute = new Route({
+const sellerDashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "dashboard/seller",
   component: lazyRouteComponent(() => import("./dashboard/DashboardSeller")),
 });
 
-const inboxRoute = new Route({
+const inboxRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "inbox",
   component: lazyRouteComponent(() => import("./dashboard/Inbox")),
 });
 
-const tasksRoute = new Route({
+const tasksRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "tasks",
   beforeLoad: async () => {
@@ -135,7 +142,7 @@ const tasksRoute = new Route({
   component: lazyRouteComponent(() => import("./dashboard/Tasks")),
 });
 
-export const tasksIndexRoute = new Route({
+export const tasksIndexRoute = createRoute({
   getParentRoute: () => tasksRoute,
   path: "/",
   component: lazyRouteComponent(
@@ -143,7 +150,7 @@ export const tasksIndexRoute = new Route({
   ),
 });
 
-export const taskRoute = new Route({
+export const taskRoute = createRoute({
   getParentRoute: () => tasksRoute,
   path: "$taskId",
   parseParams: ({ taskId }) => ({ taskId: Number(taskId) }),
@@ -154,27 +161,20 @@ export const taskRoute = new Route({
   component: lazyRouteComponent(() => import("./dashboard/Task")),
 });
 
-export const newTaskRoute = new Route({
+export const newTaskRoute = createRoute({
   getParentRoute: () => tasksRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./dashboard/NewTask")),
-  validateSearch: z.object({
-    orderParams: z
-      .object({
-        orderId: z.coerce.number().optional(),
-        clientEmail: z.string().optional(),
-      })
-      .optional(),
-  }).parse,
+  validateSearch: taskSearchParams,
 });
 
-const ordersRoute = new Route({
+const ordersRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "orders",
   component: lazyRouteComponent(() => import("./orders/Orders")),
 });
 
-const ordersIndexRoute = new Route({
+const ordersIndexRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "/",
   beforeLoad: async () => {
@@ -182,68 +182,34 @@ const ordersIndexRoute = new Route({
   },
 });
 
-const ordersReportRoute = new Route({
+const ordersReportRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "orders_report",
   component: lazyRouteComponent(() => import("./orders/OrdersReports")),
 });
 
-const ordersManagerRoute = new Route({
+export const ordersManagerRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "orders_manager",
-  validateSearch: z.object({
-    searchOrders: z
-      .object({
-        keyword: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        filter: z
-          .enum([
-            "order_id",
-            "company",
-            "payment_status",
-            "review_status",
-            "reviewer_name",
-            "client",
-            "seller",
-            "remarks",
-          ])
-          .optional(),
-        page: z.number().optional().catch(1),
-        perPage: z.number().optional().catch(10),
-        code: z.string().optional(),
-        showDeleted: z.boolean().optional(),
-      })
-      .optional(),
-  }).parse,
+  validateSearch: ordersSearchSchema,
   preSearchFilters: [
     (search) => ({
       ...search,
-      searchOrders: {
-        ...search.searchOrders,
-        // code: selectedBrand && selectedBrand.code,
-        showDeleted: false,
-      },
+      showDeleted: false,
     }),
   ],
-  // loaderDeps: ({ search }) => ({
-  //   searchOrders: search.searchOrders,
-  // }),
-  // loader: async ({ context: { queryClient }, deps }) => {
-  //   queryClient.ensureQueryData(getAllOrdersOptions(deps.searchOrders));
-  // },
   component: lazyRouteComponent(
     () => import("./orders/ordersManager/OrdersManager")
   ),
 });
 
-export const ordersManagerIndexRoute = new Route({
+export const ordersManagerIndexRoute = createRoute({
   getParentRoute: () => ordersManagerRoute,
   path: "/",
   component: lazyRouteComponent(() => import("./orders/ordersManager/Index")),
 });
 
-const newOrderRoute = new Route({
+const newOrderRoute = createRoute({
   getParentRoute: () => ordersManagerRoute,
   path: "new",
   component: lazyRouteComponent(
@@ -251,7 +217,7 @@ const newOrderRoute = new Route({
   ),
 });
 
-export const orderRoute = new Route({
+export const orderRoute = createRoute({
   getParentRoute: () => ordersManagerRoute,
   path: "$orderId",
   parseParams: ({ orderId }) => ({ orderId: Number(orderId) }),
@@ -262,62 +228,26 @@ export const orderRoute = new Route({
   component: lazyRouteComponent(() => import("./orders/ordersManager/Order")),
 });
 
-export const deletedOrdersRoute = new Route({
+export const deletedOrdersRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "deleted",
-  validateSearch: z.object({
-    searchDeletedOrders: z
-      .object({
-        keyword: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        filter: z
-          .enum([
-            "order_id",
-            "company",
-            "payment_status",
-            "review_status",
-            "reviewer_name",
-            "client",
-            "seller",
-            "remarks",
-          ])
-          .optional(),
-        page: z.number().optional().catch(1),
-        perPage: z.number().optional().catch(10),
-        code: z.string().optional(),
-        showDeleted: z.boolean().optional(),
-      })
-      .optional(),
-  }).parse,
+  validateSearch: ordersSearchSchema,
   preSearchFilters: [
     (search) => ({
       ...search,
-      searchDeletedOrders: {
-        ...search.searchDeletedOrders,
-        // code: selectedBrand && selectedBrand.code,
-        showDeleted: true,
-      },
+      showDeleted: true,
     }),
   ],
-  // loaderDeps: ({ search }) => ({
-  //   searchDeletedOrders: search.searchDeletedOrders,
-  // }),
-  // loader: async ({ context: { queryClient }, deps }) => {
-  //   queryClient.ensureQueryData(
-  //     getDeletedOrdersOptions(deps.searchDeletedOrders)
-  //   );
-  // },
   component: lazyRouteComponent(() => import("./orders/DeletedOrders")),
 });
 
-const clientsRoute = new Route({
+const clientsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "clients",
   component: lazyRouteComponent(() => import("./clients/Clients")),
 });
 
-const clientsIndexRoute = new Route({
+const clientsIndexRoute = createRoute({
   getParentRoute: () => clientsRoute,
   path: "/",
   beforeLoad: async () => {
@@ -325,36 +255,16 @@ const clientsIndexRoute = new Route({
   },
 });
 
-const clientsReportRoute = new Route({
+const clientsReportRoute = createRoute({
   getParentRoute: () => clientsRoute,
   path: "clients_report",
   component: lazyRouteComponent(() => import("./clients/ClientReports")),
 });
 
-const clientsManagerRoute = new Route({
+const clientsManagerRoute = createRoute({
   getParentRoute: () => clientsRoute,
   path: "clients_manager",
-  validateSearch: z.object({
-    searchClients: z
-      .object({
-        keyword: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        filter: z.enum(["id", "email", "seller"]).optional(),
-        page: z.number().optional().catch(1),
-        perPage: z.number().optional().catch(10),
-        code: z.string().optional(),
-      })
-      .optional(),
-  }).parse,
-  preSearchFilters: [
-    (search) => ({
-      ...search,
-      searchClients: {
-        ...search.searchClients,
-      },
-    }),
-  ],
+  validateSearch: clientsSearchSchema,
   // loaderDeps: ({ search }) => ({
   //   searchClients: search.searchClients,
   // }),
@@ -366,13 +276,13 @@ const clientsManagerRoute = new Route({
   ),
 });
 
-export const clientsManagerIndexRoute = new Route({
+export const clientsManagerIndexRoute = createRoute({
   getParentRoute: () => clientsManagerRoute,
   path: "/",
   component: lazyRouteComponent(() => import("./clients/clientsManager/Index")),
 });
 
-export const clientRoute = new Route({
+export const clientRoute = createRoute({
   getParentRoute: () => clientsManagerRoute,
   path: "$clientId",
   parseParams: ({ clientId }) => ({ clientId: Number(clientId) }),
@@ -385,7 +295,7 @@ export const clientRoute = new Route({
   ),
 });
 
-const newClientRoute = new Route({
+const newClientRoute = createRoute({
   getParentRoute: () => clientsManagerRoute,
   path: "new",
   component: lazyRouteComponent(
@@ -393,13 +303,13 @@ const newClientRoute = new Route({
   ),
 });
 
-const accountsRoute = new Route({
+const accountsRoute = createRoute({
   getParentRoute: () => protectedAdminRoute,
   path: "accounts",
   component: lazyRouteComponent(() => import("./accounts/Accounts")),
 });
 
-const accountsIndexRoute = new Route({
+const accountsIndexRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "/",
   beforeLoad: async () => {
@@ -407,53 +317,32 @@ const accountsIndexRoute = new Route({
   },
 });
 
-const sellersReport = new Route({
+const sellersReport = createRoute({
   getParentRoute: () => accountsRoute,
   path: "sellers_report",
   component: lazyRouteComponent(() => import("./accounts/SellerReports")),
 });
 
-export const usersManagerRoute = new Route({
+export const usersManagerRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "users_manager",
-  validateSearch: z.object({
-    searchUsers: z
-      .object({
-        keyword: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        filter: z.enum(["id", "email"]).optional(),
-        page: z.number().optional().catch(1),
-        perPage: z.number().optional().catch(10),
-      })
-      .optional(),
-  }).parse,
-  preSearchFilters: [
-    (search) => ({
-      ...search,
-      searchUsers: {
-        ...search.searchUsers,
-      },
-    }),
-  ],
-  loaderDeps: ({ search }) => ({
-    searchUsers: search.searchUsers,
-  }),
+  validateSearch: usersSearchSchema,
+  loaderDeps: (search) => search,
   loader: async ({ context: { queryClient }, deps }) => {
-    queryClient.ensureQueryData(getAllUsersOptions(deps.searchUsers));
+    queryClient.ensureQueryData(getAllUsersOptions(deps.search));
   },
   component: lazyRouteComponent(
     () => import("./accounts/usersManager/UsersManager")
   ),
 });
 
-export const usersManagerIndexRoute = new Route({
+export const usersManagerIndexRoute = createRoute({
   getParentRoute: () => usersManagerRoute,
   path: "/",
   component: lazyRouteComponent(() => import("./accounts/usersManager/Index")),
 });
 
-export const userRoute = new Route({
+export const userRoute = createRoute({
   getParentRoute: () => usersManagerRoute,
   path: "$userId",
   parseParams: ({ userId }) => ({ userId: Number(userId) }),
@@ -464,43 +353,43 @@ export const userRoute = new Route({
   component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
-const newAccountRoute = new Route({
+const newAccountRoute = createRoute({
   getParentRoute: () => usersManagerRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
-const inactiveUsersRoute = new Route({
+const inactiveUsersRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "inactive_users",
   component: lazyRouteComponent(() => import("./accounts/InactiveUsers")),
 });
 
-const prospectsRoute = new Route({
+const prospectsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "prospects",
   component: lazyRouteComponent(() => import("./prospects/Prospects")),
 });
 
-const prospectsIndexRoute = new Route({
+const prospectsIndexRoute = createRoute({
   getParentRoute: () => prospectsRoute,
   path: "/",
   component: lazyRouteComponent(() => import("./prospects/Index")),
 });
 
-const findProspectsRoute = new Route({
+const findProspectsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "find-prospects",
   component: lazyRouteComponent(() => import("./prospects/FindProspects")),
 });
 
-const brandsRoute = new Route({
+const brandsRoute = createRoute({
   getParentRoute: () => protectedAdminRoute,
   path: "brands",
   component: lazyRouteComponent(() => import("./brands/Brands")),
 });
 
-const brandsManagerRoute = new Route({
+const brandsManagerRoute = createRoute({
   getParentRoute: () => brandsRoute,
   path: "brands_manager",
   component: lazyRouteComponent(
@@ -508,13 +397,13 @@ const brandsManagerRoute = new Route({
   ),
 });
 
-export const brandsManagerIndexRoute = new Route({
+export const brandsManagerIndexRoute = createRoute({
   getParentRoute: () => brandsManagerRoute,
   path: "/",
   component: lazyRouteComponent(() => import("./brands/brandsManager/Index")),
 });
 
-export const brandRoute = new Route({
+export const brandRoute = createRoute({
   getParentRoute: () => brandsManagerRoute,
   path: "$brandId",
   parseParams: ({ brandId }) => ({ brandId: Number(brandId) }),
@@ -527,7 +416,7 @@ export const brandRoute = new Route({
   ),
 });
 
-const newBrandsRoute = new Route({
+const newBrandsRoute = createRoute({
   getParentRoute: () => brandsManagerRoute,
   path: "new",
   component: lazyRouteComponent(
@@ -601,7 +490,7 @@ const notFoundRoute = new NotFoundRoute({
   },
 });
 
-export const router = new Router({
+export const router = createRouter({
   routeTree,
   notFoundRoute,
   defaultPreload: "intent",

@@ -49,16 +49,14 @@ const UsersManagerTable: React.FC<TableProps> = ({ users, pagination }) => {
 
   useEffect(() => {
     navigate({
-      to: "/accounts/users_manager",
-      search: ({ searchUsers }) => {
+      search: (search) => {
         return {
-          searchUsers: {
-            ...searchUsers,
-            page: currentPage,
-            perPage: itemsPerPage,
-          },
+          ...search,
+          page: currentPage,
+          perPage: itemsPerPage,
         };
       },
+      params: true,
     });
     //eslint-disable-next-line
   }, [currentPage]);

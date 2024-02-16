@@ -9,7 +9,7 @@ import { useNavigate } from "@tanstack/react-router";
 const DeletedOrders: React.FC = () => {
   const navigate = useNavigate();
   const [selectedBrand] = useAtom(brandAtom);
-  const { searchDeletedOrders } = deletedOrdersRoute.useSearch();
+  const searchDeletedOrders = deletedOrdersRoute.useSearch();
   const { data } = useGetDeletedOrders(searchDeletedOrders);
 
   const deletedOrders = useMemo(() => {
@@ -34,12 +34,10 @@ const DeletedOrders: React.FC = () => {
         search: (old) => {
           return {
             ...old,
-            searchDeletedOrders: {
-              ...old?.searchDeletedOrders,
-              code: selectedBrand?.code,
-            },
+            code: selectedBrand?.code,
           };
         },
+        params: true,
         replace: true,
       });
     }
