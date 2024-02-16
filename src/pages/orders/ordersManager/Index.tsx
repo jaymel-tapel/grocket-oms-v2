@@ -58,7 +58,7 @@ const Index = () => {
           [field]: value,
         };
       },
-      params: (params) => params,
+      params: true,
       replace: true,
     });
   };
@@ -71,7 +71,7 @@ const Index = () => {
           filter: filter,
         };
       },
-      params: (params) => params,
+      params: true,
       replace: true,
     });
   };
@@ -85,7 +85,7 @@ const Index = () => {
             keyword: keywordDraft || undefined,
           };
         },
-        params: (params) => params,
+        params: true,
         replace: true,
       });
     }, 500);
@@ -104,7 +104,7 @@ const Index = () => {
             code: selectedBrand?.code,
           };
         },
-        params: (params) => params,
+        params: true,
         replace: true,
       });
     }

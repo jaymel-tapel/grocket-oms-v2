@@ -66,16 +66,14 @@ const ClientsManagersTable: React.FC<TableProps> = ({
 
   useEffect(() => {
     navigate({
-      to: "/clients/clients_manager",
-      search: ({ searchClients }) => {
+      search: (search) => {
         return {
-          searchClients: {
-            ...searchClients,
-            page: currentPage,
-            perPage: itemsPerPage,
-          },
+          ...search,
+          page: currentPage,
+          perPage: itemsPerPage,
         };
       },
+      params: true,
     });
     //eslint-disable-next-line
   }, [currentPage]);

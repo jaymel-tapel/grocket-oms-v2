@@ -62,7 +62,6 @@ const DeletedOrdersTable: React.FC<TableProps> = ({ orders, pagination }) => {
 
   useEffect(() => {
     navigate({
-      to: "/orders/deleted",
       search: (old) => {
         return {
           ...old,
@@ -70,6 +69,7 @@ const DeletedOrdersTable: React.FC<TableProps> = ({ orders, pagination }) => {
           perPage: itemsPerPage,
         };
       },
+      params: true,
     });
     //eslint-disable-next-line
   }, [currentPage]);

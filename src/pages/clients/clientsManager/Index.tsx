@@ -15,7 +15,7 @@ import { brandAtom } from "../../../services/queries/brandsQueries";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { searchClients } = clientsManagerIndexRoute.useSearch();
+  const searchClients = clientsManagerIndexRoute.useSearch();
   const { data } = useGetAllClients(searchClients);
 
   const keyword = searchClients?.keyword;
@@ -55,12 +55,10 @@ const Index = () => {
       search: (old) => {
         return {
           ...old,
-          searchClients: {
-            ...old?.searchClients,
-            [field]: value,
-          },
+          [field]: value,
         };
       },
+      params: true,
       replace: true,
     });
   };
@@ -70,12 +68,10 @@ const Index = () => {
       search: (old) => {
         return {
           ...old,
-          searchClients: {
-            ...old?.searchClients,
-            filter: filter,
-          },
+          filter: filter,
         };
       },
+      params: true,
       replace: true,
     });
   };
@@ -86,12 +82,10 @@ const Index = () => {
         search: (old) => {
           return {
             ...old,
-            searchClients: {
-              ...old?.searchClients,
-              keyword: keywordDraft || undefined,
-            },
+            keyword: keywordDraft || undefined,
           };
         },
+        params: true,
         replace: true,
       });
     }, 500);
@@ -107,12 +101,10 @@ const Index = () => {
         search: (old) => {
           return {
             ...old,
-            searchClients: {
-              ...old?.searchClients,
-              code: selectedBrand?.code,
-            },
+            code: selectedBrand?.code,
           };
         },
+        params: true,
         replace: true,
       });
     }

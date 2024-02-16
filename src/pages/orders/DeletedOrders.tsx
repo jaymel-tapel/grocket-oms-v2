@@ -37,7 +37,7 @@ const DeletedOrders: React.FC = () => {
             code: selectedBrand?.code,
           };
         },
-        params: (params) => params,
+        params: true,
         replace: true,
       });
     }

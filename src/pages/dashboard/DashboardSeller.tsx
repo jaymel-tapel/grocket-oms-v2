@@ -133,7 +133,7 @@ const DashboardSeller: React.FC = () => {
           <span className="text-lg font-bold">Last 5 Orders</span>
           <Link
             to={"/orders/orders_manager"}
-            search={{ searchOrders: { code: undefined } }}
+            search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >
             View All Orders
@@ -147,7 +147,7 @@ const DashboardSeller: React.FC = () => {
           <span className="text-lg font-bold">Clients Overview</span>
           <Link
             to={"/clients/clients_manager"}
-            search={{ searchClients: { code: undefined } }}
+            search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >
             View All Clients

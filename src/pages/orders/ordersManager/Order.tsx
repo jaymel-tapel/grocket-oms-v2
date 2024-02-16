@@ -96,13 +96,9 @@ const Order: React.FC = () => {
   const handleCreateTask = () => {
     navigate({
       to: "/tasks/new",
-      search: () => {
-        return {
-          orderParams: {
-            orderId: order?.id,
-            clientEmail: order?.client?.email,
-          },
-        };
+      search: {
+        orderId: order?.id,
+        clientEmail: order?.client?.email,
       },
     });
   };

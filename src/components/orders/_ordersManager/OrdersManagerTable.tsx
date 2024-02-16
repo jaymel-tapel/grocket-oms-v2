@@ -83,7 +83,6 @@ const OrdersManagerTable: React.FC<TableProps> = ({
 
   useEffect(() => {
     navigate({
-      to: "/orders/orders_manager/",
       search: (search) => {
         return {
           ...search,
@@ -91,6 +90,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
           perPage: itemsPerPage,
         };
       },
+      params: true,
     });
     //eslint-disable-next-line
   }, [currentPage]);

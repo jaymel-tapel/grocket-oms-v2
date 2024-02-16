@@ -11,13 +11,18 @@ import { queryClient } from "../services/queries";
 import { UserLocalInfo, getUserInfo, isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
 import { getOrderOption } from "../services/queries/orderQueries";
-import { z } from "zod";
 import {
   getAllUsersOptions,
   getUserOption,
 } from "../services/queries/accountsQueries";
 import { getClientOption } from "../services/queries/clientsQueries";
 import { getBrandOption } from "../services/queries/brandsQueries";
+import {
+  clientsSearchSchema,
+  ordersSearchSchema,
+  taskSearchParams,
+  usersSearchSchema,
+} from "./routeSearchSchemas";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
@@ -160,14 +165,7 @@ export const newTaskRoute = createRoute({
   getParentRoute: () => tasksRoute,
   path: "new",
   component: lazyRouteComponent(() => import("./dashboard/NewTask")),
-  validateSearch: z.object({
-    orderParams: z
-      .object({
-        orderId: z.coerce.number().optional(),
-        clientEmail: z.string().optional(),
-      })
-      .optional(),
-  }).parse,
+  validateSearch: taskSearchParams,
 });
 
 const ordersRoute = createRoute({
@@ -190,32 +188,10 @@ const ordersReportRoute = createRoute({
   component: lazyRouteComponent(() => import("./orders/OrdersReports")),
 });
 
-const ordersSearchSchema = z.object({
-  keyword: z.string().optional(),
-  from: z.string().optional(),
-  to: z.string().optional(),
-  filter: z
-    .enum([
-      "order_id",
-      "company",
-      "payment_status",
-      "review_status",
-      "reviewer_name",
-      "client",
-      "seller",
-      "remarks",
-    ])
-    .optional(),
-  page: z.number().optional().catch(1),
-  perPage: z.number().optional().catch(10),
-  code: z.string().optional(),
-  showDeleted: z.boolean().optional(),
-});
-
 export const ordersManagerRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "orders_manager",
-  validateSearch: (search) => ordersSearchSchema.parse(search),
+  validateSearch: ordersSearchSchema,
   preSearchFilters: [
     (search) => ({
       ...search,
@@ -255,7 +231,7 @@ export const orderRoute = createRoute({
 export const deletedOrdersRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "deleted",
-  validateSearch: (search) => ordersSearchSchema.parse(search),
+  validateSearch: ordersSearchSchema,
   preSearchFilters: [
     (search) => ({
       ...search,
@@ -288,27 +264,7 @@ const clientsReportRoute = createRoute({
 const clientsManagerRoute = createRoute({
   getParentRoute: () => clientsRoute,
   path: "clients_manager",
-  validateSearch: z.object({
-    searchClients: z
-      .object({
-        keyword: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        filter: z.enum(["id", "email", "seller"]).optional(),
-        page: z.number().optional().catch(1),
-        perPage: z.number().optional().catch(10),
-        code: z.string().optional(),
-      })
-      .optional(),
-  }).parse,
-  preSearchFilters: [
-    (search) => ({
-      ...search,
-      searchClients: {
-        ...search.searchClients,
-      },
-    }),
-  ],
+  validateSearch: clientsSearchSchema,
   // loaderDeps: ({ search }) => ({
   //   searchClients: search.searchClients,
   // }),
@@ -370,31 +326,10 @@ const sellersReport = createRoute({
 export const usersManagerRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "users_manager",
-  validateSearch: z.object({
-    searchUsers: z
-      .object({
-        keyword: z.string().optional(),
-        from: z.string().optional(),
-        to: z.string().optional(),
-        filter: z.enum(["id", "email"]).optional(),
-        page: z.number().optional().catch(1),
-        perPage: z.number().optional().catch(10),
-      })
-      .optional(),
-  }).parse,
-  preSearchFilters: [
-    (search) => ({
-      ...search,
-      searchUsers: {
-        ...search.searchUsers,
-      },
-    }),
-  ],
-  loaderDeps: ({ search }) => ({
-    searchUsers: search.searchUsers,
-  }),
+  validateSearch: usersSearchSchema,
+  loaderDeps: (search) => search,
   loader: async ({ context: { queryClient }, deps }) => {
-    queryClient.ensureQueryData(getAllUsersOptions(deps.searchUsers));
+    queryClient.ensureQueryData(getAllUsersOptions(deps.search));
   },
   component: lazyRouteComponent(
     () => import("./accounts/usersManager/UsersManager")

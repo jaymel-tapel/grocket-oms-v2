@@ -54,7 +54,6 @@ const DashboardTasks: React.FC = () => {
   };
 
   const handleClick = (taskId: number) => {
-    /* @ts-expect-error idk why this is giving error all of a sudden */
     navigate({ to: "/tasks/$taskId", params: { taskId } });
   };
 

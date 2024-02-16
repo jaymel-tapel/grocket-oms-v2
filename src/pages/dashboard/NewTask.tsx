@@ -2,7 +2,7 @@ import TaskForm from "../../components/dashboard/tasks/TaskForm";
 import { newTaskRoute } from "../routeTree";
 
 const NewTask = () => {
-  const { orderParams } = newTaskRoute.useSearch();
+  const orderParams = newTaskRoute.useSearch();
 
   return (
     <div>
