@@ -53,6 +53,11 @@ export type Origin = {
   name: string;
 };
 
+type CreateClientPayload = ClientFormSchema & {
+  brandId: number;
+  sellerId: number;
+};
+
 type ClientsResponse = {
   data: Client[];
   meta: Pagination;
@@ -195,7 +200,7 @@ export const useCreateClient = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: ClientFormSchema) => {
+    mutationFn: async (payload: CreateClientPayload) => {
       return await axios.post(CLIENTS_URL, payload, { headers: getHeaders() });
     },
     onSettled: () => {
@@ -233,7 +238,7 @@ export const useUpdateClient = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (arg: { id: number; payload: ClientFormSchema }) => {
+    mutationFn: async (arg: { id: number; payload: CreateClientPayload }) => {
       return await axios.patch(CLIENTS_URL + `/${arg.id}`, arg.payload, {
         headers: getHeaders(),
       });

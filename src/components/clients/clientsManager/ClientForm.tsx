@@ -11,6 +11,15 @@ import {
   useUpdateClient,
 } from "../../../services/queries/clientsQueries";
 import { useNavigate } from "@tanstack/react-router";
+import { useAtom } from "jotai/react";
+import { brandAtom } from "../../../services/queries/brandsQueries";
+import { UserLocalInfo, getUserInfo } from "../../../utils/utils";
+import {
+  Seller,
+  useGetAllSellers,
+} from "../../../services/queries/sellerQueries";
+import toast from "react-hot-toast";
+import AutoComplete from "../../tools/autoComplete/AutoComplete";
 
 const VIEWS = ["Client Information", "Companies"] as const;
 type View = (typeof VIEWS)[number];
@@ -40,6 +49,12 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<View>("Client Information");
 
+  const user = getUserInfo() as UserLocalInfo;
+  const [selectedBrand] = useAtom(brandAtom);
+  const [seller, setSeller] = useState<Seller | undefined>(undefined);
+  const [emailDraft, setEmailDraft] = useState("");
+
+  const { data: sellers } = useGetAllSellers();
   const { mutateAsync: createClient } = useCreateClient();
   const { mutateAsync: updateClient } = useUpdateClient();
 
@@ -66,10 +81,41 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     setActiveTab(view);
   };
 
+  const handleEmailSelect = (email: string) => {
+    const foundSeller = sellers?.data.find((seller) => seller.email === email);
+    if (!foundSeller) return;
+    setEmailDraft(email);
+    setSeller(foundSeller);
+  };
+
+  const handleChange = (email: string) => {
+    setEmailDraft(email);
+    const foundSeller = sellers?.data.find((seller) => seller.email === email);
+    if (!foundSeller) return;
+    setSeller(foundSeller);
+  };
+
   const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
+    if (!selectedBrand) return;
+
+    let sellerId: number;
+
+    if (user.role === "SELLER") {
+      sellerId = user.id;
+    } else {
+      if (!seller) {
+        toast.error("Please select a seller");
+        return;
+      }
+      sellerId = seller.id;
+    }
+
     const response = client?.id
-      ? await updateClient({ id: client.id, payload: data })
-      : await createClient(data);
+      ? await updateClient({
+          id: client.id,
+          payload: { ...data, brandId: selectedBrand.id, sellerId },
+        })
+      : await createClient({ ...data, brandId: selectedBrand.id, sellerId });
 
     if (response.status === 200 || response.status === 201) {
       navigate({ to: "/clients/clients_manager" });
@@ -95,6 +141,25 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         })}
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+        {activeTab === "Client Information" && user.role !== "SELLER" && (
+          <div className="mb-8 grid grid-cols-2 gap-12">
+            <div>
+              <label
+                htmlFor="sellerEmail"
+                className="mb-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Seller Email
+              </label>
+              <AutoComplete
+                suggestions={sellers?.data.map((seller) => seller.email) ?? []}
+                type="email"
+                value={emailDraft}
+                handleChange={(value) => handleChange(value)}
+                handleSelect={(value) => handleEmailSelect(value)}
+              />
+            </div>
+          </div>
+        )}
         {activeTab === "Client Information" && (
           <ClientFormInformation register={register} errors={errors} />
         )}
