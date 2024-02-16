@@ -156,6 +156,7 @@ const DashboardAdmin: React.FC = () => {
             label="Revenue Overview"
             chartType="area"
             height={420}
+            tickAmount={barChart.data[0]?.data?.length > 15 ? 10 : undefined}
           />
         </div>
         <div className="w-6/12 max-sm:w-full ">

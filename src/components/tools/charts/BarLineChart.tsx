@@ -23,6 +23,7 @@ type BarLineChartProps = {
   chartColors: string[];
   chartType: "area" | "bar";
   decimalPlaces?: number;
+  tickAmount?: number;
 };
 
 const BarLineChart: React.FC<BarLineChartProps> = ({
@@ -34,6 +35,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
   height = 350,
   chartType = "area",
   decimalPlaces = 0,
+  tickAmount,
 }) => {
   const optimalColumnWidthPercent = useMemo(
     () => 20 + 60 / (1 + 30 * Math.exp(-chartData.length / 3)),
@@ -141,6 +143,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
           // trim: true,
           style: { fontSize: chartType === "bar" ? "0.5rem" : undefined },
         },
+        tickAmount,
       },
       yaxis: {
         labels: {
@@ -162,6 +165,7 @@ const BarLineChart: React.FC<BarLineChartProps> = ({
     chartType,
     optimalColumnWidthPercent,
     decimalPlaces,
+    tickAmount,
   ]);
 
   return (
