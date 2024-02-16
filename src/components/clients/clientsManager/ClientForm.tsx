@@ -71,7 +71,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           industryId: client.clientInfo.industryId,
           sourceId: client.clientInfo.sourceId,
           default_unit_cost: client.clientInfo.default_unit_cost,
-          phone: client.phone,
+          phone: client.clientInfo.phone,
           thirdPartyId: client.clientInfo.thirdPartyId,
         }
       : undefined,

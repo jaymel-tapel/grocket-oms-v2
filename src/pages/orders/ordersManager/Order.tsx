@@ -65,7 +65,7 @@ const Order: React.FC = () => {
       seller_email: order.seller.email,
       sourceId: order.client.clientInfo.sourceId,
       unit_cost: order.unit_cost,
-      phone: order.client.phone,
+      phone: order.client.clientInfo.phone ?? "",
       thirdPartyId: order.client.clientInfo.thirdPartyId,
     },
   });

@@ -68,7 +68,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
       email: client.email,
       industry: client.clientInfo.industryId ?? 41,
       origin: client.clientInfo.sourceId ?? 1,
-      phone: client.phone ?? "",
+      phone: client.clientInfo.phone ?? "",
       unit_cost: client.clientInfo.default_unit_cost ?? 10,
       third_party_id: client.clientInfo.thirdPartyId ?? "",
     });
@@ -79,7 +79,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     setValue("email", client.email);
     setValue("industry", client.clientInfo.industryId ?? 41);
     setValue("origin", client.clientInfo.sourceId ?? 1);
-    setValue("phone", client.phone ?? "");
+    setValue("phone", client.clientInfo.phone ?? "");
     setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
     setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
   };
@@ -94,7 +94,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
         email: client.email,
         industry: client.clientInfo.industryId ?? 41,
         origin: client.clientInfo.sourceId ?? 1,
-        phone: client.phone ?? "",
+        phone: client.clientInfo.phone ?? "",
         unit_cost: client.clientInfo.default_unit_cost ?? 10,
         third_party_id: client.clientInfo.thirdPartyId ?? "",
       });
