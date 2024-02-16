@@ -16,6 +16,7 @@ import {
 import { orderRoute } from "../../routeTree";
 import Spinner from "../../../components/tools/spinner/Spinner";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { UserLocalInfo, getUserInfo } from "../../../utils/utils";
 
 const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
 type View = (typeof VIEWS)[number];
@@ -41,7 +42,7 @@ const Order: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<View>("Order Information");
   const { orderId } = orderRoute.useParams();
-
+  const user = getUserInfo() as UserLocalInfo;
   const { data: order } = useGetOrder(orderId);
   const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
   const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder();
@@ -185,9 +186,15 @@ const Order: React.FC = () => {
               )}
             </Button>
             <div className="flex flex-col md:flex-row gap-4">
-              <Button type="button" variant="green" onClick={handleCreateTask}>
-                <PlusIcon className="w-3 h-3 mr-1" /> Create Task
-              </Button>
+              {user.role !== "ADMIN" && (
+                <Button
+                  type="button"
+                  variant="green"
+                  onClick={handleCreateTask}
+                >
+                  <PlusIcon className="w-3 h-3 mr-1" /> Create Task
+                </Button>
+              )}
               <Button type="submit" disabled={isUpdating}>
                 {isUpdating ? (
                   <>
