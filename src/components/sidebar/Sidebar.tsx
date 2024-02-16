@@ -323,6 +323,9 @@ function SidebarComponent(props) {
                           isActiveGroup ? "bg-GrBlue-base" : "",
                           "group hover:bg-gray-50 flex gap-x-3 rounded-md p-2 text-sm leading-6 text-gray-700"
                         )}
+                        params={(params) => {
+                          params;
+                        }}
                       >
                         {/* <item.icon
                  className="h-6 w-6  shrink-0 text-gray-400"
@@ -367,6 +370,9 @@ function SidebarComponent(props) {
                                       "block py-2 pr-2 text-sm leading-6 text-[#8A99AF]"
                                     }
                                     activeProps={{ className: `text-white` }}
+                                    params={(params) => {
+                                      params;
+                                    }}
                                   >
                                     {subItem.name}
                                   </Link>
