@@ -86,7 +86,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
     }
 
     if (client.phone) {
-      formData.append("thirdPartyId", client.phone);
+      formData.append("phone", client.phone);
     }
 
     if (remarks) {
