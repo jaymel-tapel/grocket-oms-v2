@@ -1,43 +1,152 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useGetAllUsers } from "../../services/queries/accountsQueries";
+import { inactiveUsersRoute } from "../routeTree";
+import { useNavigate } from "@tanstack/react-router";
+import InactiveUsersTable from "../../components/accounts/inactiveUsers/InactiveUsersTable";
 import SearchInput from "../../components/tools/searchInput/SearchInput";
-import { FilterLogo } from "../../components/tools/svg/FilterLogo";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import InactiveUsersCard from "../../components/accounts/inactiveUsers/InactiveUsersCard";
+import FiltersButton from "../../components/tools/buttons/FiltersButton";
+import dayjs from "dayjs";
+import { getActiveFilterLabel } from "../../utils/utils";
+import { UsersFiltersType, usersFilters } from "../routeFilters";
+import { debounce } from "lodash";
 
 const InactiveUsers: React.FC = () => {
-  const [search, setSearch] = useState("");
-  return (
-    <>
-      <div className="flex mt-4 mb-6">
-        <div>
-          <span className="flex gap-2">
-            <p>Accounts</p> / <p className="text-[#41B2E9]">Inactive User</p>
-          </span>
-        </div>
-      </div>
-      <div className="flex justify-between">
-        <div className="flex gap-2">
-          <SearchInput
-            className={"w-46 bg-gray-200"}
-            type="text"
-            id="Client Name"
-            placeholder=" Search here..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+  const navigate = useNavigate();
+  const searchUsers = inactiveUsersRoute.useSearch();
+  const { data } = useGetAllUsers(searchUsers);
 
-          <button className="flex border bg-white py-2 px-4 rounded-md">
-            <span className="mt-1 mr-2">{FilterLogo}</span> Filters
-          </button>
-        </div>
-        <div className="flex">
-          <p className=" flex text-sm mb-1 ">
-            Current Week <ChevronDownIcon className="w-6 h-6" />
-          </p>
-        </div>
+  const keyword = searchUsers?.keyword;
+  const dateFrom = searchUsers?.from;
+  const dateTo = searchUsers?.to;
+  const filter = searchUsers?.filter;
+
+  const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
+
+  const users = useMemo(() => {
+    if (!data)
+      return {
+        data: [],
+        pagination: {
+          total: 0,
+          currentPage: 1,
+          lastPage: 1,
+          next: null,
+          prev: null,
+        },
+      };
+
+    return { data: data.data, pagination: data.meta };
+  }, [data]);
+
+  const activeFilterLabel = useMemo(() => {
+    return getActiveFilterLabel(filter);
+  }, [filter]);
+
+  const handleDateChange = (field: "from" | "to", value: string) => {
+    navigate({
+      search: (old) => {
+        return {
+          ...old,
+          [field]: value,
+        };
+      },
+      params: true,
+      replace: true,
+    });
+  };
+
+  const handleFilterChange = (filter: UsersFiltersType) => {
+    navigate({
+      search: (old) => {
+        return {
+          ...old,
+          filter: filter,
+        };
+      },
+      params: true,
+      replace: true,
+    });
+  };
+
+  useEffect(() => {
+    const handleKeywordChange = debounce(() => {
+      navigate({
+        search: (old) => {
+          return {
+            ...old,
+            keyword: keywordDraft || undefined,
+          };
+        },
+        params: true,
+        replace: true,
+      });
+    }, 500);
+
+    handleKeywordChange();
+    return () => handleKeywordChange.cancel();
+    //eslint-disable-next-line
+  }, [keywordDraft]);
+
+  return (
+    <div>
+      <div>
+        <span className="mt-4 mb-6 flex gap-2">
+          <p>Accounts</p> / <p className="text-[#41B2E9]">Inactive Users</p>
+        </span>
       </div>
-      <InactiveUsersCard />
-    </>
+      <div className="bg-white">
+        <div className="p-8 gap-y-4 flex justify-between max-md:flex-col">
+          <div className="flex gap-4 items-center">
+            <SearchInput
+              placeholder="Search here..."
+              className="w-full min-md:max-w-[20rem]"
+              grayBg={true}
+              value={keywordDraft}
+              onChange={(e) => setKeywordDraft(e.target.value)}
+            />
+            <FiltersButton
+              activeFilter={filter}
+              label={activeFilterLabel}
+              filterOptions={usersFilters}
+              handleChange={handleFilterChange}
+            />
+          </div>
+          <div className="flex gap-4">
+            <input
+              type="text"
+              id="dateFrom"
+              placeholder="Start Date"
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => (e.target.type = "text")}
+              defaultValue={dateFrom}
+              onChange={(e) =>
+                handleDateChange(
+                  "from",
+                  dayjs(e.target.value).format("MM-DD-YYYY")
+                )
+              }
+              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            />
+            <input
+              type="text"
+              id="dateTo"
+              placeholder="End Date"
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => (e.target.type = "text")}
+              defaultValue={dateTo}
+              onChange={(e) =>
+                handleDateChange(
+                  "to",
+                  dayjs(e.target.value).format("MM-DD-YYYY")
+                )
+              }
+              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+        <InactiveUsersTable users={users.data} pagination={users.pagination} />
+      </div>
+    </div>
   );
 };
 

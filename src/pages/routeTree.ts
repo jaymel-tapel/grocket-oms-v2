@@ -359,9 +359,16 @@ const newAccountRoute = createRoute({
   component: lazyRouteComponent(() => import("./accounts/usersManager/User")),
 });
 
-const inactiveUsersRoute = createRoute({
+export const inactiveUsersRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "inactive_users",
+  validateSearch: usersSearchSchema,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+      showInactive: true,
+    }),
+  ],
   component: lazyRouteComponent(() => import("./accounts/InactiveUsers")),
 });
 
