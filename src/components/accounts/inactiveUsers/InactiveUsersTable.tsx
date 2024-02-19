@@ -5,7 +5,11 @@ import TableContainer from "../../tools/table/TableContainer";
 import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
-import { Pagination, User } from "../../../services/queries/accountsQueries";
+import {
+  Pagination,
+  User,
+  useRestoreUser,
+} from "../../../services/queries/accountsQueries";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import TablePagination, {
@@ -23,6 +27,12 @@ type TableProps = {
 const InactiveUsersTable: React.FC<TableProps> = ({ users, pagination }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const { mutateAsync: restoreUser, isPending } = useRestoreUser();
+
+  const handleRestoreUser = async (userId: number) => {
+    if (!window.confirm("Restore this user?")) return;
+    await restoreUser(userId);
+  };
 
   const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
@@ -91,15 +101,15 @@ const InactiveUsersTable: React.FC<TableProps> = ({ users, pagination }) => {
               <TableBodyCell className="text-center capitalize">
                 {user.role.toLocaleLowerCase()}
               </TableBodyCell>
-              {/* <TableBodyCell className="text-center">
-                <Link
-                  to="/accounts/users_manager/$userId"
-                  params={{ userId: user.id }}
-                  className="text-blue-500"
-                >
-                  View
-                </Link>
-              </TableBodyCell> */}
+              <TableBodyCell
+                className="text-center cursor-pointer text-grBlue-dark"
+                onClick={() => {
+                  if (isPending) return;
+                  handleRestoreUser(user.id);
+                }}
+              >
+                Restore
+              </TableBodyCell>
             </TableRow>
           ))}
         </TableBody>

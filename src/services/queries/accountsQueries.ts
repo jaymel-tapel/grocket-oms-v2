@@ -200,3 +200,21 @@ export const useUpdateAccount = () => {
     },
   });
 };
+
+export const useRestoreUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: number) => {
+      return await axios.patch(USERS_URL + `/restore/${userId}`, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("User restored!");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+};
