@@ -297,3 +297,30 @@ export const useDeleteOrderReview = () => {
     },
   });
 };
+
+export const useGenerateInvoicePDF = (orderId?: number) => {
+  return useQuery({
+    enabled: false,
+    queryKey: ["invoicePDF"],
+    queryFn: async () => {
+      if (!orderId) return true;
+
+      const response = await axios.get(
+        ORDERS_URL + `/generate-pdf/${orderId}`,
+        {
+          responseType: "blob",
+          headers: getHeaders(),
+        }
+      );
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const downloadLink = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = downloadLink;
+      a.download = `order#_${orderId}_invoice.pdf`; // Set the desired file name
+      document.body.appendChild(a);
+      a.click();
+
+      return true;
+    },
+  });
+};
