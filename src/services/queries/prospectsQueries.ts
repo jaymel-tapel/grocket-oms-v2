@@ -156,17 +156,26 @@ export const useScrapeProspectEmails = () => {
     },
     onMutate: (arg) => {
       const newEmails = [...prospectsEmails];
-      newEmails[arg.index] = { emails: [], status: "pending" };
+      newEmails[arg.index] = {
+        ...newEmails[arg.index],
+        emails: [],
+        status: "pending",
+      };
       setProspectsEmail(newEmails);
     },
     onError: (_, arg) => {
       const newEmails = [...prospectsEmails];
-      newEmails[arg.index] = { emails: [], status: "error" };
+      newEmails[arg.index] = {
+        ...newEmails[arg.index],
+        emails: [],
+        status: "error",
+      };
       setProspectsEmail(newEmails);
     },
     onSuccess: (data, arg) => {
       const newEmails = [...prospectsEmails];
       newEmails[arg.index] = {
+        ...newEmails[arg.index],
         emails: data.emails,
         status: "success",
       };

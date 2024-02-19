@@ -26,7 +26,11 @@ const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
   useEffect(() => {
     const initialProspectEmails: ProspectsEmails[] = selectedProspects.map(
       (prospect) => {
-        return { status: prospect?.website ? "queued" : "success", emails: [] };
+        return {
+          id: prospect?.id,
+          status: prospect?.website ? "queued" : "success",
+          emails: [],
+        };
       }
     );
 

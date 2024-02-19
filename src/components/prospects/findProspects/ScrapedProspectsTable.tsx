@@ -102,7 +102,10 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
   }, [isMutating]);
 
   useEffect(() => {
-    if (!hasWebsites) {
+    if (
+      !hasWebsites &&
+      prospects.some((prospect) => prospect.status === "queued")
+    ) {
       if (
         paginatedProspects.every(
           (prospect) =>
