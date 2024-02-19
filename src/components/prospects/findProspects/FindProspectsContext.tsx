@@ -8,6 +8,7 @@ type ProspectFinder = {
 };
 
 export type ProspectsEmails = {
+  id: number;
   emails: string[];
   status: "pending" | "queued" | "error" | "success";
 };

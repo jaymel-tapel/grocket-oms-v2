@@ -27,6 +27,13 @@ const SelectedProspectsTable = () => {
     return selectedProspects.slice(firstProspectIndex, lastProspectIndex);
   }, [selectedProspects, currentPage]);
 
+  const paginatedEmails = useMemo(() => {
+    const lastProspectIndex = currentPage * itemsPerPage;
+    const firstProspectIndex = lastProspectIndex - itemsPerPage;
+
+    return prospectsEmails.slice(firstProspectIndex, lastProspectIndex);
+  }, [prospectsEmails, currentPage]);
+
   const handlePageChange = useCallback(
     (value: number | PaginationNavs) => {
       if (typeof value === "number") {
@@ -52,18 +59,21 @@ const SelectedProspectsTable = () => {
     },
     [currentPage, selectedProspects]
   );
-  console.log(selectedProspects);
-  console.log(prospectsEmails);
+
   const showEmails = useCallback(
-    (index: number) => {
-      const status = prospectsEmails[index]?.status;
+    (prospectId: number) => {
+      const email = prospectsEmails.find((email) => email.id === prospectId);
+      if (!email) return "";
+
+      const status = email.status;
+
       if (status === "queued" && step === 3) {
         return "Queued";
       } else if (status === "pending") {
         return "In Progress";
       } else if (status === "success") {
-        if (prospectsEmails[index].emails.length === 0) return "None";
-        return prospectsEmails[index].emails.join(", ");
+        if (email.emails.length === 0) return "None";
+        return email.emails.join(", ");
       } else if (status === "error") {
         return "Error";
       } else {
@@ -74,15 +84,17 @@ const SelectedProspectsTable = () => {
   );
 
   useEffect(() => {
-    if (
-      prospectsEmails.every(
-        (email) => email.status === "success" || email.status === "error"
-      )
-    ) {
-      handlePageChange("next");
+    if (prospectsEmails.some((email) => email.status === "queued")) {
+      if (
+        paginatedEmails.every(
+          (email) => email.status === "success" || email.status === "error"
+        )
+      ) {
+        handlePageChange("next");
+      }
     }
     //eslint-disable-next-line
-  }, [prospectsEmails, handlePageChange]);
+  }, [prospectsEmails, paginatedEmails, handlePageChange]);
 
   return (
     <TableContainer shadowOff={true}>
@@ -96,6 +108,9 @@ const SelectedProspectsTable = () => {
         </TableHead>
         <TableBody>
           {paginatedProspects.map((prospect, index) => {
+            const email = prospectsEmails.find(
+              (email) => email.id === prospect.id
+            );
             return (
               <TableRow key={index}>
                 <TableBodyCell>{prospect.businessName}</TableBodyCell>
@@ -108,15 +123,12 @@ const SelectedProspectsTable = () => {
                 </TableBodyCell>
                 <TableBodyCell
                   className={`${
-                    prospectsEmails[index]?.emails?.length > 0 &&
-                    "text-grBlue-dark"
+                    email && email?.emails?.length > 0 && "text-grBlue-dark"
                   }`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospectsEmails[index]?.status === "pending" && (
-                      <Spinner />
-                    )}
-                    {showEmails(index)}
+                    {email && email.status === "pending" && <Spinner />}
+                    {showEmails(prospect.id)}
                   </div>
                 </TableBodyCell>
               </TableRow>
