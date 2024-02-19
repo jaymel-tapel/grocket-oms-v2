@@ -38,9 +38,7 @@ const FindProspectsStepper = () => {
 
     if (step === 1 || step === 3) {
       stopScrapeWebsite();
-    }
-
-    if (step === 4) {
+    } else if (step === 2 || step === 4) {
       stopScrapeEmails();
     }
   };

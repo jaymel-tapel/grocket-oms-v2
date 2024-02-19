@@ -75,15 +75,14 @@ const SelectedProspectsTable = () => {
 
   useEffect(() => {
     if (
-      paginatedProspects.every(
-        (prospect) =>
-          prospect.status === "success" || prospect.status === "error"
+      prospectsEmails.every(
+        (email) => email.status === "success" || email.status === "error"
       )
     ) {
       handlePageChange("next");
     }
     //eslint-disable-next-line
-  }, [paginatedProspects, handlePageChange]);
+  }, [prospectsEmails, handlePageChange]);
 
   return (
     <TableContainer shadowOff={true}>

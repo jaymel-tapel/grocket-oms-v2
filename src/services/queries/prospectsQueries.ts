@@ -188,10 +188,17 @@ export const useScrapeProspectEmails = () => {
       if (stopScrapingRef.current) {
         break;
       } else {
-        await scrapeEmailsQuery.mutateAsync({
-          payload: { url: prospect.website },
-          index,
-        });
+        try {
+          await scrapeEmailsQuery.mutateAsync({
+            payload: { url: prospect.website },
+            index,
+          });
+        } catch (error) {
+          console.error(
+            `Error scraping emails for ${prospect.website}:`,
+            error
+          );
+        }
       }
     }
 
