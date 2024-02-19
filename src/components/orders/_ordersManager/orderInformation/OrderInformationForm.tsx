@@ -5,6 +5,7 @@ import { Control, Controller, FieldErrors } from "react-hook-form";
 import { OrderInformationSchema } from "../../../../pages/orders/ordersManager/Order";
 import {
   Order,
+  useGenerateInvoicePDF,
   useUploadOrderInvoice,
 } from "../../../../services/queries/orderQueries";
 import dayjs from "dayjs";
@@ -15,6 +16,7 @@ import {
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
+import Spinner from "../../../tools/spinner/Spinner";
 
 dayjs.extend(utc);
 
@@ -37,6 +39,9 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
+  const { refetch: downloadInvoicePDF, isFetching } = useGenerateInvoicePDF(
+    order?.id
+  );
 
   const { data: clients } = useGetClientBySellers({
     sellerId,
@@ -54,6 +59,10 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
       formData.append("image", file);
       await uploadInvoice({ orderId: order.id, payload: formData });
     }
+  };
+
+  const handleGenerateInvoice = async () => {
+    await downloadInvoicePDF();
   };
 
   return (
@@ -113,10 +122,24 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 />
               </div>
             )}
-            <div className="cursor-pointer flex gap-2 items-center text-xs text-green-500">
-              <DocumentIcon className="h-4 w-4" />
-              <span className="font-medium">Generate Invoice PDF</span>
-            </div>
+            <button
+              type="button"
+              className="cursor-pointer flex gap-2 items-center text-xs text-green-500"
+              disabled={isFetching}
+              onClick={handleGenerateInvoice}
+            >
+              {isFetching ? (
+                <>
+                  <Spinner />
+                  Generating Invoice...
+                </>
+              ) : (
+                <>
+                  <DocumentIcon className="h-4 w-4" />
+                  <span className="font-medium">Generate Invoice PDF</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
