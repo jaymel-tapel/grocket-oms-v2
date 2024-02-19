@@ -44,4 +44,5 @@ export const usersSearchSchema = z.object({
   filter: z.enum(["id", "email"]).optional(),
   page: z.number().optional().catch(1),
   perPage: z.number().optional().catch(10),
+  showInactive: z.boolean().optional().catch(false),
 }).parse;

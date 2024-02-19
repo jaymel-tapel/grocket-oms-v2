@@ -70,7 +70,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
         setCurrentPage(value);
         return;
       }
-
+      console.log(value);
       const lastPage = Math.ceil(prospects.length / itemsPerPage);
 
       if (value === "first") {
