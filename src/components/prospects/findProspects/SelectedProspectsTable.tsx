@@ -52,11 +52,11 @@ const SelectedProspectsTable = () => {
     },
     [currentPage, selectedProspects]
   );
-
+  console.log(selectedProspects);
+  console.log(prospectsEmails);
   const showEmails = useCallback(
     (index: number) => {
       const status = prospectsEmails[index]?.status;
-
       if (status === "queued" && step === 3) {
         return "Queued";
       } else if (status === "pending") {
@@ -108,15 +108,15 @@ const SelectedProspectsTable = () => {
                 </TableBodyCell>
                 <TableBodyCell
                   className={`${
-                    prospectsEmails[prospect.id - 1]?.emails?.length > 0 &&
+                    prospectsEmails[index]?.emails?.length > 0 &&
                     "text-grBlue-dark"
                   }`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospectsEmails[prospect.id - 1]?.status === "pending" && (
+                    {prospectsEmails[index]?.status === "pending" && (
                       <Spinner />
                     )}
-                    {showEmails(prospect.id - 1)}
+                    {showEmails(index)}
                   </div>
                 </TableBodyCell>
               </TableRow>
