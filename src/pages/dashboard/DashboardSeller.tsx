@@ -1,6 +1,6 @@
 import LoggedSection from "../../components/sections/LoggedSection";
 import StatsCards from "../../components/tools/cards/StatsCards";
-import { useGetAdminDashboard } from "../../services/queries/userQueries";
+import { useGetSellerDashboard } from "../../services/queries/userQueries";
 import { useMemo, useState } from "react";
 import ClientsOverviewTable from "../../components/dashboard/dashboard/ClientsOverviewTable";
 import { Link } from "@tanstack/react-router";
@@ -9,6 +9,8 @@ import utc from "dayjs/plugin/utc";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../services/queries/brandsQueries";
 import LastFiveOrdersTable from "../../components/dashboard/dashboard/LastFiveOrdersTable";
+import { sliceDate } from "../../utils/utils";
+import BarLineChart from "../../components/tools/charts/BarLineChart";
 
 dayjs.extend(utc);
 
@@ -19,7 +21,7 @@ const DashboardSeller: React.FC = () => {
   const [selectedBrand] = useAtom(brandAtom);
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
   const [endRange, setEndRange] = useState(today);
-  const { statsData } = useGetAdminDashboard({
+  const { statsData, graphData } = useGetSellerDashboard({
     startRange: dayjs(startRange).format("MM-DD-YYYY"),
     endRange: dayjs(endRange).format("MM-DD-YYYY"),
     code: selectedBrand?.code,
@@ -31,72 +33,55 @@ const DashboardSeller: React.FC = () => {
     return [
       {
         label: "New Orders",
-        value: statsData.ordersOverview.newOrdersCount,
+        value: statsData.newOrdersCount,
       },
       {
         label: "New Clients",
-        value: statsData.newclientCount,
+        value: statsData.newClientsCount,
       },
       {
         label: "Unpaid Commissions",
-        value: statsData.revenue.toFixed(2),
+        value: statsData.unpaidCommission.toFixed(2),
       },
       {
         label: "Current Commissions",
-        value: statsData.revenue.toFixed(2),
+        value: statsData.currentCommission.toFixed(2),
       },
     ];
   }, [statsData]);
 
-  const lastFiveOrderData = useMemo(() => {
-    return [
+  const barChart = useMemo(() => {
+    if (!graphData) return { data: [], colors: ["#3C50E0"] };
+
+    const paidReviews = graphData?.newOrdersStat.map((item) => {
+      return { x: sliceDate(item.date), y: item.paidReviewsCount };
+    });
+
+    const data = [
       {
-        orderId: 1,
-        name: "Client 1",
-        date: "2-16-2024",
-        total: 100,
-        reviews: 5,
-        payment_status: "NEW",
-        remarks: "Test",
-      },
-      {
-        orderId: 2,
-        name: "Client 2",
-        date: "2-16-2024",
-        total: 100,
-        reviews: 5,
-        payment_status: "NEW",
-        remarks: "Test",
-      },
-      {
-        orderId: 3,
-        name: "Client 3",
-        date: "2-16-2024",
-        total: 100,
-        reviews: 5,
-        payment_status: "NEW",
-        remarks: "Test",
-      },
-      {
-        orderId: 4,
-        name: "Client 4",
-        date: "2-16-2024",
-        total: 100,
-        reviews: 5,
-        payment_status: "NEW",
-        remarks: "Test",
-      },
-      {
-        orderId: 5,
-        name: "Client 5",
-        date: "2-16-2024",
-        total: 100,
-        reviews: 5,
-        payment_status: "NEW",
-        remarks: "Test",
+        name: "Paid Reviews",
+        data: paidReviews ?? [],
       },
     ];
-  }, []);
+
+    const colors = ["#3C50E0"];
+
+    return { data, colors };
+  }, [graphData]);
+
+  const lastFiveOrderData = useMemo(() => {
+    return statsData?.ordersOverview.map((data) => {
+      return {
+        orderId: data.id,
+        name: data.client,
+        date: data.date,
+        total: data.total,
+        reviews: data.reviews,
+        payment_status: data.payment_status,
+        remarks: data.remarks,
+      };
+    });
+  }, [statsData]);
 
   return (
     <LoggedSection>
@@ -128,7 +113,19 @@ const DashboardSeller: React.FC = () => {
         <StatsCards stats={dashboardStats} />
       </div>
 
-      <div className="mt-16 bg-white">
+      <div>
+        <BarLineChart
+          chartColors={barChart.colors}
+          chartData={barChart.data}
+          disableLegends={true}
+          label="Paid Reviews"
+          chartType="area"
+          height={350}
+          tickAmount={barChart.data[0]?.data?.length > 15 ? 10 : undefined}
+        />
+      </div>
+
+      <div className="mt-8 bg-white">
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Last 5 Orders</span>
           <Link
@@ -139,10 +136,10 @@ const DashboardSeller: React.FC = () => {
             View All Orders
           </Link>
         </div>
-        <LastFiveOrdersTable orders={lastFiveOrderData} />
+        <LastFiveOrdersTable orders={lastFiveOrderData ?? []} />
       </div>
 
-      <div className="mt-16 bg-white">
+      <div className="mt-8 bg-white">
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Clients Overview</span>
           <Link

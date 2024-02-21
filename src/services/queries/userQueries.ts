@@ -22,7 +22,7 @@ type DashboardParams = {
   code?: string;
 };
 
-type StatsResponse = {
+type AdminStatsResponse = {
   ordersOverview: {
     totalOrderCount: number;
     newOrdersCount: number;
@@ -48,7 +48,7 @@ type StatsResponse = {
   }>;
 };
 
-type GraphResponse = {
+type AdminGraphResponse = {
   receivedAmount: number;
   unpaidAmount: number;
   paidReviews: Array<{
@@ -59,6 +59,37 @@ type GraphResponse = {
     date: string; // ISO8601 date format
     unpaidReviewsCount: number;
   }>;
+};
+
+type SellerStatsResponse = {
+  clientsOverview: Array<{
+    name: string;
+    email: string;
+    industry: string;
+    order: number;
+    amount: number;
+    date: string; // ISO8601 date format
+  }>;
+  unpaidCommission: number;
+  currentCommission: number;
+  newClientsCount: number;
+  newOrdersCount: number;
+  ordersOverview: {
+    client: string;
+    date: string;
+    id: number;
+    payment_status: string;
+    remarks: string;
+    reviews: number;
+    total: number;
+  }[];
+};
+
+type SellerGraphResponse = {
+  newOrdersStat: {
+    date: string;
+    paidReviewsCount: number;
+  }[];
 };
 
 export const useLogin = () => {
@@ -136,7 +167,7 @@ export const useGetAdminDashboard = (search?: DashboardParams) => {
   const statsQuery = useQuery({
     enabled: search?.code !== undefined ? true : false,
     queryKey: ["dashboard-stats", search],
-    queryFn: async (): Promise<StatsResponse> => {
+    queryFn: async (): Promise<AdminStatsResponse> => {
       const response = await axios.get(DASHBOARD_URL + "/admin", {
         headers: getHeaders(),
         params: search,
@@ -148,8 +179,39 @@ export const useGetAdminDashboard = (search?: DashboardParams) => {
   const graphQuery = useQuery({
     // enabled: search?.code !== undefined ? true : false,
     queryKey: ["dashboard-graph", search],
-    queryFn: async (): Promise<GraphResponse> => {
+    queryFn: async (): Promise<AdminGraphResponse> => {
       const response = await axios.get(DASHBOARD_URL + "/admin/graph", {
+        headers: getHeaders(),
+        params: search,
+      });
+      return response.data;
+    },
+  });
+
+  return {
+    statsData: statsQuery.data,
+    graphData: graphQuery.data,
+  };
+};
+
+export const useGetSellerDashboard = (search?: DashboardParams) => {
+  const statsQuery = useQuery({
+    enabled: search?.code !== undefined ? true : false,
+    queryKey: ["dashboard-stats", search],
+    queryFn: async (): Promise<SellerStatsResponse> => {
+      const response = await axios.get(DASHBOARD_URL + "/seller", {
+        headers: getHeaders(),
+        params: search,
+      });
+      return response.data;
+    },
+  });
+
+  const graphQuery = useQuery({
+    // enabled: search?.code !== undefined ? true : false,
+    queryKey: ["dashboard-graph", search],
+    queryFn: async (): Promise<SellerGraphResponse> => {
+      const response = await axios.get(DASHBOARD_URL + "/seller/graph", {
         headers: getHeaders(),
         params: search,
       });
