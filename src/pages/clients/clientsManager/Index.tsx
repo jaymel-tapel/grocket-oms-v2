@@ -6,17 +6,27 @@ import { clientsManagerIndexRoute } from "../../routeTree";
 import dayjs from "dayjs";
 import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import { debounce } from "lodash";
-import { useGetAllClients } from "../../../services/queries/clientsQueries";
+import {
+  Client,
+  useGetAllClients,
+} from "../../../services/queries/clientsQueries";
 import ClientsManagersTable from "../../../components/clients/clientsManager/ClientsManagerTable";
 import { ClientsFiltersType, clientsFilters } from "../../routeFilters";
-import { getActiveFilterLabel } from "../../../utils/utils";
+import {
+  UserLocalInfo,
+  getActiveFilterLabel,
+  getUserInfo,
+} from "../../../utils/utils";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
+import { Dialog, DialogTrigger } from "../../../components/tools/dialog/Dialog";
+import TransferClientsForm from "../../../components/clients/clientsManager/TransferClientsForm";
 
 const Index = () => {
   const navigate = useNavigate();
   const searchClients = clientsManagerIndexRoute.useSearch();
   const { data } = useGetAllClients(searchClients);
+  const user = getUserInfo() as UserLocalInfo;
 
   const keyword = searchClients?.keyword;
   const dateFrom = searchClients?.from;
@@ -25,6 +35,7 @@ const Index = () => {
 
   const [selectedBrand] = useAtom(brandAtom);
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
+  const [selectedClients, setSelectedClients] = useState<Client[]>([]);
 
   const clients = useMemo(() => {
     if (!data)
@@ -130,9 +141,29 @@ const Index = () => {
           </span>
         </div>
 
-        <Button type="button" variant="lightBlue" onClick={handleCreateAccount}>
-          New Client
-        </Button>
+        <div className="flex gap-4">
+          {user?.role === "ADMIN" && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="default"
+                  disabled={selectedClients.length === 0}
+                >
+                  Transfer Clients
+                </Button>
+              </DialogTrigger>
+              <TransferClientsForm clients={selectedClients} />
+            </Dialog>
+          )}
+          <Button
+            type="button"
+            variant="lightBlue"
+            onClick={handleCreateAccount}
+          >
+            New Client
+          </Button>
+        </div>
       </div>
       <div className="bg-white">
         <div className="p-8 gap-y-4 flex justify-between max-md:flex-col">
@@ -185,8 +216,11 @@ const Index = () => {
           </div>
         </div>
         <ClientsManagersTable
+          isAdmin={user?.role === "ADMIN" ?? false}
           clients={clients.data}
           pagination={clients.pagination}
+          selectedClients={selectedClients}
+          setSelectedClients={setSelectedClients}
         />
       </div>
     </div>

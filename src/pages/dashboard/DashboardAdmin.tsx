@@ -164,7 +164,7 @@ const DashboardAdmin: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-16 bg-white">
+      <div className="mt-8 bg-white">
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Clients Overview</span>
           <Link

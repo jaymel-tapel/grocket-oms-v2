@@ -10,6 +10,8 @@ import { UsersFiltersType, usersFilters } from "../../routeFilters";
 import { debounce } from "lodash";
 import UsersManagerTable from "../../../components/accounts/usersManager/UsersManagerTable";
 import { getActiveFilterLabel } from "../../../utils/utils";
+import { Dialog, DialogTrigger } from "../../../components/tools/dialog/Dialog";
+import TransferOrderForm from "../../../components/accounts/usersManager/TransferOrderForm";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -94,16 +96,31 @@ const Index = () => {
 
   return (
     <div>
-      <div className="flex mt-4 justify-between mb-6">
+      <div className="flex max-sm:flex-col gap-4 mt-4 justify-between mb-6">
         <div>
           <span className="flex gap-2">
             <p>Accounts</p> / <p className="text-[#41B2E9]">Users Manager</p>
           </span>
         </div>
 
-        <Button type="button" variant="lightBlue" onClick={handleCreateAccount}>
-          Create Account
-        </Button>
+        <div className="flex gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button type="button" variant="default">
+                Transfer Orders
+              </Button>
+            </DialogTrigger>
+            <TransferOrderForm />
+          </Dialog>
+
+          <Button
+            type="button"
+            variant="lightBlue"
+            onClick={handleCreateAccount}
+          >
+            Create Account
+          </Button>
+        </div>
       </div>
       <div className="bg-white">
         <div className="p-8 gap-y-4 flex justify-between max-md:flex-col">

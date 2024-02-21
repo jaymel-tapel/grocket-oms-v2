@@ -16,6 +16,8 @@ const buttonVariants = cva(
         inactive: "text-grText-dark bg-grGray-base border border-grGray-dark",
         black: "text-white bg-black",
         noBorder: "text-black border-0",
+        outline:
+          "border bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         default: "h-10 ",
