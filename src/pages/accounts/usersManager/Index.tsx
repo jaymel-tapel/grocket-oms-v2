@@ -9,7 +9,11 @@ import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import { UsersFiltersType, usersFilters } from "../../routeFilters";
 import { debounce } from "lodash";
 import UsersManagerTable from "../../../components/accounts/usersManager/UsersManagerTable";
-import { getActiveFilterLabel } from "../../../utils/utils";
+import {
+  UserLocalInfo,
+  getActiveFilterLabel,
+  getUserInfo,
+} from "../../../utils/utils";
 import { Dialog, DialogTrigger } from "../../../components/tools/dialog/Dialog";
 import TransferOrderForm from "../../../components/accounts/usersManager/TransferOrderForm";
 
@@ -17,6 +21,7 @@ const Index = () => {
   const navigate = useNavigate();
   const searchUsers = usersManagerIndexRoute.useSearch();
   const { data } = useGetAllUsers(searchUsers);
+  const user = getUserInfo() as UserLocalInfo;
 
   const keyword = searchUsers?.keyword;
   const dateFrom = searchUsers?.from;
@@ -104,14 +109,16 @@ const Index = () => {
         </div>
 
         <div className="flex gap-4">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button type="button" variant="default">
-                Transfer Orders
-              </Button>
-            </DialogTrigger>
-            <TransferOrderForm />
-          </Dialog>
+          {user?.role === "ADMIN" && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button type="button" variant="default">
+                  Transfer Orders
+                </Button>
+              </DialogTrigger>
+              <TransferOrderForm />
+            </Dialog>
+          )}
 
           <Button
             type="button"

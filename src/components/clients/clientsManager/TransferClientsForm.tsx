@@ -18,7 +18,7 @@ type Props = {
   clients: Client[];
 };
 
-const TransferClientsForm: React.FC<Props> = ({ clients }) => {
+const TransferClientsForm: React.FC<Props> = ({ clients = [] }) => {
   const [receiverSeller, setReceiverSeller] = React.useState<Seller[]>([]);
   const { data: sellers } = useGetAllSellers();
 
