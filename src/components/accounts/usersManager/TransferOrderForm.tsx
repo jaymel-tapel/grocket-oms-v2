@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../tools/dialog/Dialog";
-import TransferOrderSellersSelector from "./TransferOrderSellersSelector";
+import TransferSellersSelector from "./TransferSellersSelector";
 import {
   Seller,
   useGetAllSellers,
@@ -66,7 +66,7 @@ const TransferOrderForm = () => {
       {step === 1 && (
         <>
           <div>
-            <TransferOrderSellersSelector
+            <TransferSellersSelector
               sellers={filteredSellers ?? []}
               setSelectedSellers={setSelectedSellers}
             />
@@ -90,7 +90,7 @@ const TransferOrderForm = () => {
 
       {step === 2 && (
         <div>
-          <TransferOrderSellersSelector
+          <TransferSellersSelector
             buttonLabel={
               receiverSeller[0]?.email ?? "Select seller to receive orders"
             }

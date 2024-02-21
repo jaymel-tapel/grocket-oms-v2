@@ -21,7 +21,7 @@ type Props = {
   setSelectedSellers: React.Dispatch<React.SetStateAction<Seller[]>>;
 };
 
-const TransferOrderSellersSelector: React.FC<Props> = ({
+const TransferSellersSelector: React.FC<Props> = ({
   sellers,
   setSelectedSellers,
   buttonLabel,
@@ -75,4 +75,4 @@ const TransferOrderSellersSelector: React.FC<Props> = ({
   );
 };
 
-export default TransferOrderSellersSelector;
+export default TransferSellersSelector;
