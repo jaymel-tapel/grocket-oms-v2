@@ -117,21 +117,6 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <div>
-        <input
-          type="text"
-          id="dateTo"
-          placeholder={dayjs().format("MM-DD-YYYY")}
-          onFocus={(e) => (e.target.type = "date")}
-          onBlur={(e) => (e.target.type = "text")}
-          defaultValue={orderDate}
-          onChange={(e) =>
-            setOrderDate(dayjs(e.target.value).format("MM-DD-YYYY"))
-          }
-          className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-        />
-      </div>
-
       <div className="grid grid-cols-3">
         <div className="flex flex-col gap-2">
           <span className="font-bold">Seller</span>
@@ -194,20 +179,25 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         </div>
       </div>
 
-      <div className="my-8 grid grid-cols-6">
-        <div className="col-span-4">
+      <div className="my-8 grid grid-cols-6 gap-4">
+        <div className="col-span-2">
           <label
-            htmlFor="remarks"
+            htmlFor="orderDate"
             className="block text-sm font-medium leading-6 text-gray-900"
           >
-            Remarks
+            Order Date
           </label>
-          <div className="w-full max-w-[30rem] mt-2">
+          <div className="mt-2">
             <input
               type="text"
-              id="remarks"
-              defaultValue={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
+              id="orderDate"
+              placeholder={dayjs().format("MM-DD-YYYY")}
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => (e.target.type = "text")}
+              defaultValue={orderDate}
+              onChange={(e) =>
+                setOrderDate(dayjs(e.target.value).format("MM-DD-YYYY"))
+              }
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
             />
           </div>
@@ -223,6 +213,24 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
             <label className="text-black text-sm">
               Send Order Confirmation Detail
             </label>
+          </div>
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="remarks"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Remarks
+          </label>
+          <div className="w-full max-w-[30rem] mt-2">
+            <input
+              type="text"
+              id="remarks"
+              defaultValue={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            />
           </div>
         </div>
 

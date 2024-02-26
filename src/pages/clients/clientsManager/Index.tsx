@@ -36,6 +36,7 @@ const Index = () => {
   const [selectedBrand] = useAtom(brandAtom);
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
   const [selectedClients, setSelectedClients] = useState<Client[]>([]);
+  const [open, setOpen] = useState(false);
 
   const clients = useMemo(() => {
     if (!data)
@@ -143,7 +144,7 @@ const Index = () => {
 
         <div className="flex gap-4">
           {user?.role === "ADMIN" && (
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button
                   type="button"
@@ -153,7 +154,13 @@ const Index = () => {
                   Transfer Clients
                 </Button>
               </DialogTrigger>
-              <TransferClientsForm clients={selectedClients} />
+              <TransferClientsForm
+                clients={selectedClients}
+                onSuccessHandler={() => {
+                  setOpen(false);
+                  setSelectedClients([]);
+                }}
+              />
             </Dialog>
           )}
           <Button
