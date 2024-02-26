@@ -156,7 +156,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
                   className="cursor-pointer"
                   onClick={() => handleRowClick(order.id)}
                 >
-                  <TableBodyCell>
+                  <TableBodyCell className="whitespace-nowrap">
                     {dayjs(order.createdAt).format("MM-DD-YYYY")}
                   </TableBodyCell>
                   <TableBodyCell>{order.id}</TableBodyCell>

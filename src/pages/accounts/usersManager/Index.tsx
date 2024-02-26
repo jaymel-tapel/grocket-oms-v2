@@ -29,6 +29,7 @@ const Index = () => {
   const filter = searchUsers?.filter;
 
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
+  const [open, setOpen] = useState(false);
 
   const users = useMemo(() => {
     if (!data)
@@ -110,13 +111,13 @@ const Index = () => {
 
         <div className="flex gap-4">
           {user?.role === "ADMIN" && (
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button type="button" variant="default">
                   Transfer Orders
                 </Button>
               </DialogTrigger>
-              <TransferOrderForm />
+              <TransferOrderForm onSuccessHandler={() => setOpen(false)} />
             </Dialog>
           )}
 

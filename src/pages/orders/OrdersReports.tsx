@@ -64,12 +64,12 @@ const OrdersReports = () => {
         // percentage: { label: "Since last week", value: -1.5 },
       },
       {
-        value: reportData?.avg_amount_of_reviews ?? 0,
+        value: reportData?.avg_amount_of_reviews?.toFixed(2) ?? 0,
         label: "Average Amount of Reviews",
         // percentage: { label: "Since last week", value: 0.5 },
       },
       {
-        value: reportData?.avg_unit_cost ?? 0,
+        value: reportData?.avg_unit_cost?.toFixed(2) ?? 0,
         label: "Average Unit Cost",
         // percentage: { label: "Since last week", value: 1.5 },
       },

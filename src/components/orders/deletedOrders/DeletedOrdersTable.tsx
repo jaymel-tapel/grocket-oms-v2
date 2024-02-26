@@ -97,7 +97,7 @@ const DeletedOrdersTable: React.FC<TableProps> = ({ orders, pagination }) => {
 
             return (
               <TableRow key={i}>
-                <TableBodyCell>
+                <TableBodyCell className="whitespace-nowrap">
                   {dayjs(order.createdAt).format("MM-DD-YYYY")}
                 </TableBodyCell>
                 <TableBodyCell>{order.id}</TableBodyCell>
