@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "./accountsQueries";
 import { getHeaders } from "../../utils/utils";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const SELLERS_URL = API_URL + "/sellers";
@@ -55,4 +56,25 @@ export const getAllSellersOptions = (search?: SellersParams) => {
 
 export const useGetAllSellers = (search?: SellersParams) => {
   return useQuery(getAllSellersOptions(search));
+};
+
+// POST
+
+export const useTransferOrders = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: {
+      to_seller_email: string;
+      emails: string[];
+    }) => {
+      return axios.post(SELLERS_URL + `/transfer`, payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: (_, { to_seller_email }) => {
+      toast.success(`Orders transferred to ${to_seller_email}!`);
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
 };
