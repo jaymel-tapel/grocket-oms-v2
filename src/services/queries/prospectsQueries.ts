@@ -33,6 +33,24 @@ type ScrapeEmailsResponse = {
   emails: string[];
 };
 
+export type SavedProspect = {
+  id: number;
+  businessName: string;
+  rating: string;
+  reviews: string;
+  phone: string;
+  mapsUrl: string;
+  website: string;
+  // status: "new" | "sent_cold_email" | "follow_up_1" | "follow_up_2";
+  notes: string;
+};
+
+export type ProspectColumn = {
+  id: number;
+  name: string;
+  items: SavedProspect[];
+};
+
 export const useScrapeProspects = () => {
   const { setProspects, setIsScraping, setHasWebsites } =
     useFindProspectsContext();
