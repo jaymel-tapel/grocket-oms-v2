@@ -20,6 +20,7 @@ import { getBrandOption } from "../services/queries/brandsQueries";
 import {
   clientsSearchSchema,
   ordersSearchSchema,
+  taskDashboardSchema,
   taskSearchParams,
   usersSearchSchema,
 } from "./routeSearchSchemas";
@@ -139,15 +140,14 @@ const tasksRoute = createRoute({
       throw redirect({ to: "/dashboard" });
     }
   },
+  validateSearch: taskDashboardSchema,
   component: lazyRouteComponent(() => import("./dashboard/Tasks")),
 });
 
 export const tasksIndexRoute = createRoute({
   getParentRoute: () => tasksRoute,
   path: "/",
-  component: lazyRouteComponent(
-    () => import("../components/dashboard/tasks/DashboardTasks")
-  ),
+  component: lazyRouteComponent(() => import("./dashboard/Index")),
 });
 
 export const taskRoute = createRoute({

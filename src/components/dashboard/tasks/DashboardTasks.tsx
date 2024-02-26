@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BuildingIcon,
   CalendarIcon,
@@ -21,25 +21,38 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
 import dayjs from "dayjs";
+import { Pagination } from "../../../services/queries/accountsQueries";
+import TablePagination, {
+  PaginationNavs,
+} from "../../tools/table/TablePagination";
+import { tasksIndexRoute } from "../../../pages/routeTree";
 
-const DashboardTasks: React.FC = () => {
+type tasksProps = {
+  pagination: Pagination;
+  completed: Pagination;
+};
+
+const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
+  const tasksSearch = tasksIndexRoute.useSearch();
   const [activeButton, setActiveButtton] = useState("currentTasks");
   const [taskState, setTaskState] = useState<"Active" | "Completed">("Active");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageCompleted, setCurrentPageCompleted] = useState(1);
 
   const [hiddenTasks, setHiddenTasks] = useState<number[]>([]);
   const {
-    data: { nodes: tasksActive = [] } = {},
+    data: { data: tasksActive = [] } = {},
     isLoading: activeLoading,
     isError: activeError,
     refetch: refetchActiveTasks,
-  } = useGetAllTasksActive();
+  } = useGetAllTasksActive(tasksSearch);
 
   const {
-    data: { nodes: tasksCompleted = [] } = {},
+    data: { data: tasksCompleted = [] } = {},
     isLoading: completedLoading,
     isError: completedError,
     refetch: refetchCompletedTasks,
-  } = useGetAllTasksCompleted();
+  } = useGetAllTasksCompleted(tasksSearch);
   const { mutateAsync: completeTask } = useCompleteTasks();
   const { mutateAsync: activeTask } = useActiveTasks();
   const { mutate: deleteTask } = useDeleteTask();
@@ -92,11 +105,87 @@ const DashboardTasks: React.FC = () => {
     }
   };
 
+  const itemsPerPage = 10;
+
+  const handlePageChange = (value: number | PaginationNavs) => {
+    if (typeof value === "number") {
+      setCurrentPage(value);
+      return;
+    }
+
+    const lastPage = pagination.lastPage;
+
+    if (value === "first") {
+      setCurrentPage(1);
+    } else if (value === "prev") {
+      if (currentPage !== 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else if (value === "next") {
+      if (currentPage !== lastPage) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else if (value === "last") {
+      setCurrentPage(lastPage);
+    }
+  };
+
+  const itemsPerPageCompleted = 10;
+
+  const handlePageChangeCompleted = (value: number | PaginationNavs) => {
+    if (typeof value === "number") {
+      setCurrentPage(value);
+      return;
+    }
+
+    const lastPage = completed.lastPage;
+
+    if (value === "first") {
+      setCurrentPageCompleted(1);
+    } else if (value === "prev") {
+      if (currentPageCompleted !== 1) {
+        setCurrentPageCompleted(currentPageCompleted - 1);
+      }
+    } else if (value === "next") {
+      if (currentPageCompleted !== lastPage) {
+        setCurrentPageCompleted(currentPageCompleted + 1);
+      }
+    } else if (value === "last") {
+      setCurrentPageCompleted(lastPage);
+    }
+  };
+
+  useEffect(() => {
+    navigate({
+      search: (tasksSearch) => {
+        return {
+          ...tasksSearch,
+          page: currentPageCompleted,
+          perPage: itemsPerPageCompleted,
+        };
+      },
+      params: true,
+    });
+  }, [currentPageCompleted]);
+
+  useEffect(() => {
+    navigate({
+      search: (tasksSearch) => {
+        return {
+          ...tasksSearch,
+          page: currentPage,
+          perPage: itemsPerPage,
+        };
+      },
+      params: true,
+    });
+  }, [currentPage]);
+
   if (activeLoading || completedLoading) {
     return (
-      <p className="text-center">
-        Loading task. <Spinner />
-      </p>
+      <div className="flex justify-center text-center">
+        <Spinner />
+      </div>
     );
   }
 
@@ -263,6 +352,23 @@ const DashboardTasks: React.FC = () => {
           )}
         </div>
       </div>
+      {activeButton === "currentTasks" ? (
+        <TablePagination
+          itemsPerPage={10}
+          currentPage={currentPage}
+          lastPage={pagination.lastPage}
+          handlePageChange={handlePageChange}
+          totalItems={pagination.total}
+        />
+      ) : (
+        <TablePagination
+          itemsPerPage={10}
+          currentPage={currentPageCompleted}
+          lastPage={completed.lastPage}
+          handlePageChange={handlePageChangeCompleted}
+          totalItems={completed.total}
+        />
+      )}
     </>
   );
 };
