@@ -106,7 +106,9 @@ const SellerReports: React.FC = () => {
         </div>
       </div>
 
-      <StatsCards stats={clientStats} />
+      <div className="max-sm:py-4">
+        <StatsCards stats={clientStats} />
+      </div>
 
       <div className="mt-6">
         <BarLineChart

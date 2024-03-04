@@ -15,9 +15,29 @@ import {
 const FindProspectsForm = () => {
   const { step } = useFindProspectsContext();
 
+  const stepLabel = useMemo(() => {
+    switch (step) {
+      case 1:
+        return "Enter Keywords";
+      case 2:
+        return "Select Prospects";
+      case 3:
+        return "Scrape Website Emails";
+      case 4:
+        return "Save Prospects";
+      default:
+        return "";
+    }
+  }, [step]);
+
   return (
     <div className="bg-white p-12">
-      <FindProspectsStepper />
+      <div className="md:hidden text-grBlue-base">
+        Step {step}: {stepLabel}
+      </div>
+      <div className="hidden md:block">
+        <FindProspectsStepper />
+      </div>
       <div className="mt-12 mb-8 border-t border-t-gray-300" />
       <div>
         {step === 1 && (
