@@ -52,7 +52,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
+      <div className="mb-8 grid sm:grid-cols-2 gap-x-12 gap-y-4">
         <div>
           <label
             htmlFor="prospectKeyword"

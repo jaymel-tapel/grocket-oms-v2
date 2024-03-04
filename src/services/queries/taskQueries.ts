@@ -8,6 +8,7 @@ import axios from "axios";
 import { getHeaders } from "../../utils/utils";
 import { taskSchema } from "../../components/dashboard/tasks/TaskForm";
 import toast from "react-hot-toast";
+import { Pagination } from "./accountsQueries";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const TASKS_URL = API_URL + "/tasks";
@@ -49,15 +50,14 @@ export type Tasks = {
 };
 
 type TaskResponse = {
-  nodes: Tasks[];
+  data: Tasks[];
+  meta: Pagination;
 };
 
 export type TasksParams = {
-  first?: number;
-  last?: number;
-  after?: number;
-  before?: number;
   completed?: boolean;
+  page?: number;
+  perPage?: number;
 };
 
 // -- Get Tasks
@@ -92,19 +92,17 @@ const getTasks = async (id: number): Promise<Tasks> => {
   return response.data;
 };
 
-export const getAllTaskOptionActive = (taskId?: number) => {
+export const getAllTaskOptionActive = (search?: TasksParams) => {
   return {
-    queryKey: ["tasksActive", taskId],
-    queryFn: () => getAllTasksActive(),
-    initialData: { nodes: [] },
+    queryKey: ["tasksActive", search],
+    queryFn: () => getAllTasksActive(search),
   };
 };
 
-export const getAllTaskOptionCompleted = (taskId?: number) => {
+export const getAllTaskOptionCompleted = (search?: TasksParams) => {
   return {
-    queryKey: ["tasksCompleted", taskId],
-    queryFn: () => getAllTasksCompleted(),
-    initialData: { nodes: [] },
+    queryKey: ["tasksCompleted", search],
+    queryFn: () => getAllTasksCompleted(search),
   };
 };
 
@@ -116,12 +114,12 @@ export const getTaskOption = (id: number) => {
   });
 };
 
-export const useGetAllTasksActive = (taskId?: number) => {
-  return useQuery(getAllTaskOptionActive(taskId));
+export const useGetAllTasksActive = (search?: TasksParams) => {
+  return useQuery(getAllTaskOptionActive(search));
 };
 
-export const useGetAllTasksCompleted = (taskId?: number) => {
-  return useQuery(getAllTaskOptionCompleted(taskId));
+export const useGetAllTasksCompleted = (search?: TasksParams) => {
+  return useQuery(getAllTaskOptionCompleted(search));
 };
 
 export const useGetTask = (id: number) => {

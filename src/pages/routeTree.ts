@@ -1,7 +1,7 @@
 import {
   redirect,
   lazyRouteComponent,
-  NotFoundRoute,
+  // NotFoundRoute,
   createRootRouteWithContext,
   createRouter,
   createRoute,
@@ -20,6 +20,7 @@ import { getBrandOption } from "../services/queries/brandsQueries";
 import {
   clientsSearchSchema,
   ordersSearchSchema,
+  taskDashboardSchema,
   taskSearchParams,
   usersSearchSchema,
 } from "./routeSearchSchemas";
@@ -41,6 +42,9 @@ const indexRoute = createRoute({
     }
   },
   component: lazyRouteComponent(() => import("./login/Login")),
+  notFoundComponent: () => {
+    return;
+  },
 });
 
 const forgotPasswordRoute = createRoute({
@@ -139,15 +143,14 @@ const tasksRoute = createRoute({
       throw redirect({ to: "/dashboard" });
     }
   },
+  validateSearch: taskDashboardSchema,
   component: lazyRouteComponent(() => import("./dashboard/Tasks")),
 });
 
 export const tasksIndexRoute = createRoute({
   getParentRoute: () => tasksRoute,
   path: "/",
-  component: lazyRouteComponent(
-    () => import("../components/dashboard/tasks/DashboardTasks")
-  ),
+  component: lazyRouteComponent(() => import("./dashboard/Index")),
 });
 
 export const taskRoute = createRoute({
@@ -486,20 +489,19 @@ const routeTree = rootRoute.addChildren([
   ]),
 ]);
 
-const notFoundRoute = new NotFoundRoute({
-  getParentRoute: () => rootRoute,
-  beforeLoad: async () => {
-    if (isAuth()) {
-      throw redirect({ to: "/dashboard" });
-    } else {
-      throw redirect({ to: "/" });
-    }
-  },
-});
+// const notFoundRoute = new NotFoundRoute({
+//   getParentRoute: () => rootRoute,
+//   beforeLoad: async () => {
+//     if (isAuth()) {
+//       throw redirect({ to: "/dashboard" });
+//     } else {
+//       throw redirect({ to: "/" });
+//     }
+//   },
+// });
 
 export const router = createRouter({
   routeTree,
-  notFoundRoute,
   defaultPreload: "intent",
   context: { queryClient },
 });

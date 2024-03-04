@@ -232,6 +232,22 @@ export const useAddClientCompany = () => {
   });
 };
 
+export const useTransferClients = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: { to_seller_email: string; ids: number[] }) => {
+      return axios.post(CLIENTS_URL + `/transfer`, payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: (_, { to_seller_email }) => {
+      toast.success(`Clients transferred to ${to_seller_email}!`);
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+  });
+};
+
 // -- PATCH / PUT requests
 
 export const useUpdateClient = () => {

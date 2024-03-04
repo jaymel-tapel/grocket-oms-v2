@@ -14,7 +14,7 @@ const TableHeadCell: React.FC<IsProps> = ({
   return (
     <th
       scope={`col ${scope}`}
-      className={`p-4 text-left text-sm font-medium text-[#64748B] ${className}`}
+      className={`p-4 text-left text-sm font-medium text-[#64748B] whitespace-nowrap ${className}`}
     >
       {children}
     </th>

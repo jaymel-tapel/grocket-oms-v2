@@ -38,7 +38,11 @@ const Pill = forwardRef<HTMLDivElement, PillProps>(
     return (
       <div
         ref={ref}
-        className={cn(pillVariants({ bgColor, variant }), className)}
+        className={cn(
+          pillVariants({ bgColor, variant }),
+          "whitespace-nowrap",
+          className
+        )}
         {...props}
       />
     );

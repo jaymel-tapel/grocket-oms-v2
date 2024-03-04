@@ -45,7 +45,7 @@ const TablePagination: React.FC<PaginationProps> = ({
   }, [currentPage, totalItems, itemsPerPage]);
 
   return (
-    <div className="p-4 sm:p-6 xl:p-7.5 flex justify-between">
+    <div className="p-4 sm:p-6 xl:p-7.5 flex gap-4 flex-wrap justify-between">
       <div>
         Showing {itemIndexes.firstIndex} - {itemIndexes.lastIndex} of{" "}
         {totalItems}

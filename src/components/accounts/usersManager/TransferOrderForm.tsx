@@ -11,16 +11,22 @@ import TransferSellersSelector from "./TransferSellersSelector";
 import {
   Seller,
   useGetAllSellers,
+  useTransferOrders,
 } from "../../../services/queries/sellerQueries";
 import Pill from "../../tools/pill/Pill";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
-const TransferOrderForm = () => {
+type Props = {
+  onSuccessHandler: () => void;
+};
+
+const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
   const [step, setStep] = useState(1);
   const [selectedSellers, setSelectedSellers] = useState<Seller[]>([]);
   const [receiverSeller, setReceiverSeller] = useState<Seller[]>([]);
 
   const { data: sellers } = useGetAllSellers();
+  const { mutateAsync: transferOrders } = useTransferOrders();
 
   const isDisabled = useMemo(() => {
     if (step === 1) {
@@ -43,10 +49,21 @@ const TransferOrderForm = () => {
     );
   }, [sellers, selectedSellers]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (step === 1) {
       setStep(2);
       return;
+    }
+
+    const response = await transferOrders({
+      to_seller_email: receiverSeller[0].email,
+      emails: selectedSellers.map((seller) => seller.email),
+    });
+
+    if (response.status === 201) {
+      onSuccessHandler();
+      setSelectedSellers([]);
+      setReceiverSeller([]);
     }
   };
 

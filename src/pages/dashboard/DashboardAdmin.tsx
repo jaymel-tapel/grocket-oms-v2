@@ -33,11 +33,11 @@ const DashboardAdmin: React.FC = () => {
     return [
       {
         label: "New Orders",
-        value: statsData.ordersOverview.newOrdersCount,
+        value: statsData.ordersOverview.newOrdersCount ?? 0,
       },
       {
         label: "New Clients",
-        value: statsData.newclientCount,
+        value: statsData.newclientCount ?? 0,
       },
       {
         label: "Paid Invoice",
@@ -142,7 +142,7 @@ const DashboardAdmin: React.FC = () => {
         </div>
       </div>
 
-      <div className="pb-8">
+      <div className="max-md:pt-4 pb-8">
         <StatsCards stats={dashboardStats} />
       </div>
 

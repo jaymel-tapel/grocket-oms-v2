@@ -117,22 +117,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <div>
-        <input
-          type="text"
-          id="dateTo"
-          placeholder={dayjs().format("MM-DD-YYYY")}
-          onFocus={(e) => (e.target.type = "date")}
-          onBlur={(e) => (e.target.type = "text")}
-          defaultValue={orderDate}
-          onChange={(e) =>
-            setOrderDate(dayjs(e.target.value).format("MM-DD-YYYY"))
-          }
-          className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-        />
-      </div>
-
-      <div className="grid grid-cols-3">
+      <div className="grid max-sm:gap-8 sm:grid-cols-3">
         <div className="flex flex-col gap-2">
           <span className="font-bold">Seller</span>
           <span className="font-medium text-[1.375rem]">{seller.name}</span>
@@ -167,8 +152,8 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         </div>
       </div>
 
-      <div className="mt-12 p-4 grid grid-cols-6 border border-gray-300">
-        <div className="col-span-4 flex flex-col gap-4">
+      <div className="mt-12 p-4 grid sm:grid-cols-6 max-sm:gap-4 border border-gray-300">
+        <div className="sm:col-span-4 flex flex-col gap-4">
           <div className="flex gap-1.5">
             <span className="font-medium">Client Origin:</span>
             <span className="">{labels.origin}</span>
@@ -183,31 +168,36 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 text-right">
+        <div className="flex sm:flex-col gap-4 sm:text-right">
           <span className="font-medium">Selected Reviews</span>
           <span>{reviewsAmount.selected}</span>
         </div>
 
-        <div className="flex flex-col gap-4 text-right">
+        <div className="flex sm:flex-col gap-4 sm:text-right">
           <span className="font-medium">Manual Reviews</span>
           <span>{reviewsAmount.manual}</span>
         </div>
       </div>
 
-      <div className="my-8 grid grid-cols-6">
-        <div className="col-span-4">
+      <div className="my-8 grid grid-cols-2 sm:grid-cols-6 gap-4">
+        <div className="col-span-2">
           <label
-            htmlFor="remarks"
+            htmlFor="orderDate"
             className="block text-sm font-medium leading-6 text-gray-900"
           >
-            Remarks
+            Order Date
           </label>
-          <div className="w-full max-w-[30rem] mt-2">
+          <div className="mt-2">
             <input
               type="text"
-              id="remarks"
-              defaultValue={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
+              id="orderDate"
+              placeholder={dayjs().format("MM-DD-YYYY")}
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => (e.target.type = "text")}
+              defaultValue={orderDate}
+              onChange={(e) =>
+                setOrderDate(dayjs(e.target.value).format("MM-DD-YYYY"))
+              }
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
             />
           </div>
@@ -226,11 +216,29 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="text-right">
+        <div className="max-sm:order-first col-span-2">
+          <label
+            htmlFor="remarks"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Remarks
+          </label>
+          <div className="w-full max-w-[30rem] mt-2">
+            <input
+              type="text"
+              id="remarks"
+              defaultValue={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+
+        <div className="max-sm:mt-4 sm:text-right">
           <span className="font-bold">Total</span>
         </div>
 
-        <div className="text-right pr-4">
+        <div className="max-sm:mt-4 text-right pr-4">
           <span>{reviews.length}</span>
         </div>
       </div>

@@ -7,7 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../tools/dialog/Dialog";
-import { Client } from "../../../services/queries/clientsQueries";
+import {
+  Client,
+  useTransferClients,
+} from "../../../services/queries/clientsQueries";
 import TransferSellersSelector from "../../accounts/usersManager/TransferSellersSelector";
 import {
   Seller,
@@ -16,14 +19,27 @@ import {
 
 type Props = {
   clients: Client[];
+  onSuccessHandler: () => void;
 };
 
-const TransferClientsForm: React.FC<Props> = ({ clients = [] }) => {
+const TransferClientsForm: React.FC<Props> = ({
+  clients = [],
+  onSuccessHandler,
+}) => {
   const [receiverSeller, setReceiverSeller] = React.useState<Seller[]>([]);
   const { data: sellers } = useGetAllSellers();
 
-  const handleSubmit = () => {
-    console.log(receiverSeller[0]);
+  const { mutateAsync: transferClients } = useTransferClients();
+
+  const handleSubmit = async () => {
+    const response = await transferClients({
+      to_seller_email: receiverSeller[0].email,
+      ids: clients.map((client) => client.id),
+    });
+
+    if (response.status === 201) {
+      onSuccessHandler();
+    }
   };
 
   return (

@@ -16,9 +16,31 @@ import { isEmpty } from "../../../../utils/utils";
 const NewOrderForm = () => {
   const { step } = useOrderForm();
 
+  const stepLabel = useMemo(() => {
+    switch (step) {
+      case 1:
+        return "Select Seller";
+      case 2:
+        return "Select Client";
+      case 3:
+        return "Select Company";
+      case 4:
+        return "Add Reviews";
+      case 5:
+        return "Summary";
+      default:
+        return "";
+    }
+  }, [step]);
+
   return (
-    <div className="bg-white p-12">
-      <OrderFormSteppers />
+    <div className="bg-white p-8 sm:p-12">
+      <div className="md:hidden text-grBlue-base">
+        Step {step}: {stepLabel}
+      </div>
+      <div className="hidden md:block">
+        <OrderFormSteppers />
+      </div>
       <div className="mt-12 mb-8 border-t border-t-gray-300" />
       <div>
         {step === 1 && (
@@ -88,11 +110,11 @@ const FormNavigation = () => {
   }, [seller, client, company, reviews, step]);
 
   return (
-    <div className="pt-8 border-t border-t-gray-300 flex justify-between">
+    <div className="pt-8 border-t border-t-gray-300 flex gap-4 max-sm:flex-col justify-between">
       <Button type="button" variant="delete" onClick={handleCancel}>
         Cancel
       </Button>
-      <div className="flex gap-4">
+      <div className="flex gap-4 max-sm:flex-col">
         {step > 1 && (
           <Button type="button" variant="green" onClick={handlePrevious}>
             Previous

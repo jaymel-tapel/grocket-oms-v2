@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const taskDashboardSchema = z.object({
+  completed: z.boolean().optional(),
+  page: z.number().optional().catch(1),
+  perPage: z.number().optional().catch(10),
+}).parse;
+
 export const taskSearchParams = z.object({
   orderId: z.coerce.number().optional(),
   clientEmail: z.string().optional(),
