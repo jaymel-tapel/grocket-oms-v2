@@ -1,7 +1,7 @@
 import {
   redirect,
   lazyRouteComponent,
-  NotFoundRoute,
+  // NotFoundRoute,
   createRootRouteWithContext,
   createRouter,
   createRoute,
@@ -41,6 +41,9 @@ const indexRoute = createRoute({
     }
   },
   component: lazyRouteComponent(() => import("./login/Login")),
+  notFoundComponent: () => {
+    return;
+  },
 });
 
 const forgotPasswordRoute = createRoute({
@@ -486,20 +489,19 @@ const routeTree = rootRoute.addChildren([
   ]),
 ]);
 
-const notFoundRoute = new NotFoundRoute({
-  getParentRoute: () => rootRoute,
-  beforeLoad: async () => {
-    if (isAuth()) {
-      throw redirect({ to: "/dashboard" });
-    } else {
-      throw redirect({ to: "/" });
-    }
-  },
-});
+// const notFoundRoute = new NotFoundRoute({
+//   getParentRoute: () => rootRoute,
+//   beforeLoad: async () => {
+//     if (isAuth()) {
+//       throw redirect({ to: "/dashboard" });
+//     } else {
+//       throw redirect({ to: "/" });
+//     }
+//   },
+// });
 
 export const router = createRouter({
   routeTree,
-  notFoundRoute,
   defaultPreload: "intent",
   context: { queryClient },
 });

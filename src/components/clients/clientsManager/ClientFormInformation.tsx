@@ -17,7 +17,7 @@ function ClientFormInformation(props) {
           </span>
         </div>
 
-        <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
+        <div className="mb-8 grid sm:grid-cols-2 gap-x-12 gap-y-4">
           <div>
             <label
               htmlFor="clientName"
@@ -101,7 +101,7 @@ function ClientFormInformation(props) {
           </span>
         </div>
 
-        <div className="mt-8 mb-4 grid grid-cols-2 gap-x-12 gap-y-4">
+        <div className="mt-8 mb-4 grid sm:grid-cols-2 gap-x-12 gap-y-4">
           <div>
             <label
               htmlFor="thirdPartyId"

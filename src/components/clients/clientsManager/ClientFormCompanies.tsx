@@ -84,7 +84,7 @@ const ClientFormCompanies: React.FC<FormProps> = ({ companies, clientId }) => {
     <div className="border-b border-grGray-dark">
       <div>
         <span className="font-bold text-sm">Add Company</span>
-        <div className="my-8 grid grid-cols-2 gap-x-12 gap-y-4">
+        <div className="my-8 grid sm:grid-cols-2 gap-x-12 gap-y-4">
           <div>
             <label
               htmlFor="new_company_name"
