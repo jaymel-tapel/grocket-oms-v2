@@ -335,7 +335,9 @@ const OrdersReports = () => {
         </div>
       </div>
 
-      <StatsCards stats={orderStats} />
+      <div className="max-md:py-4">
+        <StatsCards stats={orderStats} />
+      </div>
 
       <div className="mt-6">
         <BarLineChart

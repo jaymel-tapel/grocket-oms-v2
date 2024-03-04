@@ -15,7 +15,7 @@ const TableBodyCell: React.FC<IsProps> = ({
 }) => {
   return (
     <td
-      className={`p-4 text-sm text-[#333A48] ${className}`}
+      className={`p-4 text-sm text-[#333A48] whitespace-nowrap ${className}`}
       onClick={() => (onClick ? onClick() : "")}
       colSpan={colSpan}
     >

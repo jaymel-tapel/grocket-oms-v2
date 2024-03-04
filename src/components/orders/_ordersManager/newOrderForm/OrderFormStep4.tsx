@@ -145,7 +145,7 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
                 Get Reviews
               </Button>
             </div>
-            <div className="mt-4">
+            <div className="mt-8">
               <span className="text-sm font-bold">Results</span>
               <ReviewsFromGoogleTable
                 reviews={filteredCompanyReviews}

@@ -117,7 +117,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="grid grid-cols-3">
+      <div className="grid max-sm:gap-8 sm:grid-cols-3">
         <div className="flex flex-col gap-2">
           <span className="font-bold">Seller</span>
           <span className="font-medium text-[1.375rem]">{seller.name}</span>
@@ -152,8 +152,8 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
         </div>
       </div>
 
-      <div className="mt-12 p-4 grid grid-cols-6 border border-gray-300">
-        <div className="col-span-4 flex flex-col gap-4">
+      <div className="mt-12 p-4 grid sm:grid-cols-6 max-sm:gap-4 border border-gray-300">
+        <div className="sm:col-span-4 flex flex-col gap-4">
           <div className="flex gap-1.5">
             <span className="font-medium">Client Origin:</span>
             <span className="">{labels.origin}</span>
@@ -168,18 +168,18 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 text-right">
+        <div className="flex sm:flex-col gap-4 sm:text-right">
           <span className="font-medium">Selected Reviews</span>
           <span>{reviewsAmount.selected}</span>
         </div>
 
-        <div className="flex flex-col gap-4 text-right">
+        <div className="flex sm:flex-col gap-4 sm:text-right">
           <span className="font-medium">Manual Reviews</span>
           <span>{reviewsAmount.manual}</span>
         </div>
       </div>
 
-      <div className="my-8 grid grid-cols-6 gap-4">
+      <div className="my-8 grid grid-cols-2 sm:grid-cols-6 gap-4">
         <div className="col-span-2">
           <label
             htmlFor="orderDate"
@@ -216,7 +216,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="col-span-2">
+        <div className="max-sm:order-first col-span-2">
           <label
             htmlFor="remarks"
             className="block text-sm font-medium leading-6 text-gray-900"
@@ -234,11 +234,11 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="text-right">
+        <div className="max-sm:mt-4 sm:text-right">
           <span className="font-bold">Total</span>
         </div>
 
-        <div className="text-right pr-4">
+        <div className="max-sm:mt-4 text-right pr-4">
           <span>{reviews.length}</span>
         </div>
       </div>
