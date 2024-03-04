@@ -1,11 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "../../components/tools/buttons/Button";
 import { ProspectColumn } from "../../services/queries/prospectsQueries";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   UniqueIdentifier,
@@ -15,10 +17,11 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import ProspectCardsContainer from "../../components/prospects/ProspectCardsContainer";
+import ProspectCard from "../../components/prospects/ProspectCard";
 
 const PROSPECTS: ProspectColumn[] = [
   {
-    id: 1,
+    id: "A",
     name: "New",
     items: [
       {
@@ -30,6 +33,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
+        email: "test@gmail.com",
       },
       {
         id: 2,
@@ -40,6 +44,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
+        email: "test@gmail.com",
       },
       {
         id: 3,
@@ -50,11 +55,12 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
+        email: "test@gmail.com",
       },
     ],
   },
   {
-    id: 2,
+    id: "B",
     name: "Sent Cold Email",
     items: [
       {
@@ -66,25 +72,40 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "This is a note",
+        email: "test@gmail.com",
       },
     ],
   },
   {
-    id: 3,
+    id: "C",
     name: "Sent Follow Up 1",
     items: [],
   },
   {
-    id: 4,
+    id: "D",
     name: "Sent Follow Up 2",
     items: [],
   },
-];
+] as const;
 
 const Index = () => {
   const navigate = useNavigate();
+  const [activeItemId, setActiveItemId] = useState<null | number>(null);
   const [mockProspects, setMockProspects] =
     useState<ProspectColumn[]>(PROSPECTS);
+
+  const activeProspect = useMemo(() => {
+    if (!activeItemId) return undefined;
+
+    for (const column of mockProspects) {
+      for (const item of column.items) {
+        if (item.id === activeItemId) {
+          return item;
+        }
+      }
+    }
+    return undefined;
+  }, [activeItemId, mockProspects]);
 
   const findColumn = (id: UniqueIdentifier | undefined) => {
     if (!id) {
@@ -139,13 +160,20 @@ const Index = () => {
     });
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveItemId(active.id as number);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const activeId = active.id;
     const overId = over ? over.id : undefined;
     const activeColumn = findColumn(activeId);
     const overColumn = findColumn(overId);
+
     if (!activeColumn || !overColumn || activeColumn !== overColumn) {
+      setActiveItemId(null);
       return null;
     }
 
@@ -164,6 +192,8 @@ const Index = () => {
         });
       });
     }
+
+    setActiveItemId(null);
   };
 
   const sensors = useSensors(
@@ -186,16 +216,20 @@ const Index = () => {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
-        // onDragStart={handleDragStart}
+        onDragStart={handleDragStart}
         // onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
       >
-        <div className="flex gap-8">
+        <div className="mt-6 flex gap-8">
           {mockProspects.map((column) => {
             return <ProspectCardsContainer key={column.id} column={column} />;
           })}
         </div>
+
+        <DragOverlay>
+          {activeProspect && <ProspectCard prospect={activeProspect} />}
+        </DragOverlay>
       </DndContext>
     </div>
   );

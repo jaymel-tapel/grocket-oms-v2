@@ -43,10 +43,11 @@ export type SavedProspect = {
   website: string;
   // status: "new" | "sent_cold_email" | "follow_up_1" | "follow_up_2";
   notes: string;
+  email: string;
 };
 
 export type ProspectColumn = {
-  id: number;
+  id: string;
   name: string;
   items: SavedProspect[];
 };

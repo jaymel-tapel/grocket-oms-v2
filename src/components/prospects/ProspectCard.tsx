@@ -2,6 +2,12 @@ import React from "react";
 import { SavedProspect } from "../../services/queries/prospectsQueries";
 import { useSortable } from "@dnd-kit/sortable";
 import { cn } from "../../utils/utils";
+import {
+  EnvelopeIcon,
+  GlobeAltIcon,
+  PhoneIcon,
+  StarIcon,
+} from "@heroicons/react/24/solid";
 
 type Props = {
   prospect: SavedProspect;
@@ -29,14 +35,36 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
           : undefined,
       }}
       className={cn(
-        "p-4 bg-white flex flex-col gap-4",
+        "bg-white flex flex-col shadow-md",
         isDragging && "opacity-50"
       )}
     >
-      <span>{prospect.businessName}</span>
-      <span>{prospect.rating}</span>
-      <span>{prospect.phone}</span>
-      <span>{prospect.website}</span>
+      <span className="px-6 pt-6 font-bold">{prospect.businessName}</span>
+      <div className="px-6 pb-6 pt-4 flex flex-col gap-2">
+        <div className="flex gap-4 items-center">
+          <StarIcon className="text-[#8A99AF] h-4 w-4" />
+          <span className="text-[#8A99AF]">{prospect.rating}</span>
+        </div>
+        <div className="flex gap-4 items-center">
+          <PhoneIcon className="text-[#8A99AF] h-4 w-4" />
+          <span className="text-[#8A99AF]">{prospect.phone}</span>
+        </div>
+        <div className="flex gap-4 items-center">
+          <GlobeAltIcon className="text-[#8A99AF] h-4 w-4" />
+          <span className="text-[#8A99AF]">{prospect.mapsUrl}</span>
+        </div>
+        <div className="flex gap-4 items-center">
+          <EnvelopeIcon className="text-[#8A99AF] h-4 w-4" />
+          <span className="text-[#8A99AF]">{prospect.email}</span>
+        </div>
+      </div>
+      {prospect.notes && (
+        <div className="px-6 py-4 bg-[#AAAAAA] text-sm flex flex-col">
+          <span className="text-white">Note:</span>
+
+          <span className="text-white">{prospect.notes}</span>
+        </div>
+      )}
     </div>
   );
 };

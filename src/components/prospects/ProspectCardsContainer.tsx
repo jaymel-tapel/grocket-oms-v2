@@ -25,7 +25,7 @@ const ProspectCardsContainer: React.FC<Props> = ({ column }) => {
         className="w-full max-w-[300px]"
       >
         <h2 className="text-lg font-bold">{column.name}</h2>
-        <div className="flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4">
           {column.items.map((prospect) => (
             <ProspectCard key={prospect.id} prospect={prospect} />
           ))}
