@@ -71,7 +71,7 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
   };
 
   return (
-    <div className="bg-white self-start">
+    <div className="bg-white self-start max-sm:w-full">
       <div className="px-8 py-4 border-b border-b-gray-300">
         Your Brand Logo
       </div>

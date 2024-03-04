@@ -33,11 +33,11 @@ const DashboardSeller: React.FC = () => {
     return [
       {
         label: "New Orders",
-        value: statsData.newOrdersCount,
+        value: statsData.newOrdersCount ?? 0,
       },
       {
         label: "New Clients",
-        value: statsData.newClientsCount,
+        value: statsData.newClientsCount ?? 0,
       },
       {
         label: "Unpaid Commissions",
@@ -109,7 +109,7 @@ const DashboardSeller: React.FC = () => {
         </div>
       </div>
 
-      <div className="pb-8">
+      <div className="max-md:pt-4 pb-8">
         <StatsCards stats={dashboardStats} />
       </div>
 

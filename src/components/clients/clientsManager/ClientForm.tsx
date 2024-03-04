@@ -142,7 +142,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
         {activeTab === "Client Information" && user.role !== "SELLER" && (
-          <div className="mb-8 grid grid-cols-2 gap-12">
+          <div className="mb-8 grid sm:grid-cols-2 gap-12">
             <div>
               <label
                 htmlFor="sellerEmail"
