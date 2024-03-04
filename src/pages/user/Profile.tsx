@@ -15,7 +15,7 @@ const Profile = () => {
         </span>
       </div>
 
-      <div className="mt-8 flex gap-x-12">
+      <div className="mt-8 flex flex-col sm:flex-row gap-y-8 gap-x-12">
         <UserForm userId={user?.id} user={user} />
         {user && <UserPhotoForm user={user} />}
       </div>

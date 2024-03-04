@@ -18,7 +18,7 @@ const CreateBrands: React.FC = () => {
           </span>
         </div>
       </div>
-      <div className="mt-8 flex gap-x-12">
+      <div className="mt-8 flex flex-col sm:flex-row gap-y-8 gap-x-12">
         <BrandsForm brands={brand} brandId={brandId} />
         <BrandsPhotoForm brands={brand} />
       </div>
