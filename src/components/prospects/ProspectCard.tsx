@@ -43,19 +43,19 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
       <div className="px-6 pb-6 pt-4 flex flex-col gap-2">
         <div className="flex gap-4 items-center">
           <StarIcon className="text-[#8A99AF] h-4 w-4" />
-          <span className="text-[#8A99AF]">{prospect.rating}</span>
+          <span className="text-[#8A99AF] text-sm">{prospect.rating}</span>
         </div>
         <div className="flex gap-4 items-center">
           <PhoneIcon className="text-[#8A99AF] h-4 w-4" />
-          <span className="text-[#8A99AF]">{prospect.phone}</span>
+          <span className="text-[#8A99AF] text-sm">{prospect.phone}</span>
         </div>
         <div className="flex gap-4 items-center">
           <GlobeAltIcon className="text-[#8A99AF] h-4 w-4" />
-          <span className="text-[#8A99AF]">{prospect.mapsUrl}</span>
+          <span className="text-[#8A99AF] text-sm">{prospect.mapsUrl}</span>
         </div>
         <div className="flex gap-4 items-center">
           <EnvelopeIcon className="text-[#8A99AF] h-4 w-4" />
-          <span className="text-[#8A99AF]">{prospect.email}</span>
+          <span className="text-[#8A99AF] text-sm">{prospect.email}</span>
         </div>
       </div>
       {prospect.notes && (

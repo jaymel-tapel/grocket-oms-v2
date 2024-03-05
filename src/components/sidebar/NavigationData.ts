@@ -46,7 +46,7 @@ export const adminNav = [
     children: [
       { name: "Find Prospects", to: "/find-prospects" },
       { name: "My Prospects", to: "/prospects" },
-      // { name: "Email Templates", to: "#" },
+      { name: "Email Templates", to: "/prospect-email-templates" },
     ],
   },
   {
@@ -110,7 +110,7 @@ export const accountantSellerNav = [
     children: [
       { name: "Find Prospects", to: "/find-prospects" },
       { name: "My Prospects", to: "/prospects" },
-      // { name: "Email Templates", to: "#" },
+      { name: "Email Templates", to: "/prospect-email-templates" },
     ],
   },
 ] as const;

@@ -393,6 +393,12 @@ const findProspectsRoute = createRoute({
   component: lazyRouteComponent(() => import("./prospects/FindProspects")),
 });
 
+const prospectEmailTemplateRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "prospect-email-templates",
+  component: lazyRouteComponent(() => import("./prospects/EmailTemplates")),
+});
+
 const brandsRoute = createRoute({
   getParentRoute: () => protectedAdminRoute,
   path: "brands",
@@ -486,6 +492,7 @@ const routeTree = rootRoute.addChildren([
 
     prospectsRoute.addChildren([prospectsIndexRoute]),
     findProspectsRoute,
+    prospectEmailTemplateRoute,
   ]),
 ]);
 
