@@ -86,7 +86,7 @@ const PROSPECTS: ProspectColumn[] = [
     name: "Sent Follow Up 2",
     items: [],
   },
-] as const;
+];
 
 const Index = () => {
   const navigate = useNavigate();
