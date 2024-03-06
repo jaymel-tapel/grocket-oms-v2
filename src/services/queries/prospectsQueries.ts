@@ -1,11 +1,14 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Step1Schema } from "../../components/prospects/findProspects/FindProspectsFormStep1";
 import { useFindProspectsContext } from "../../components/prospects/findProspects/FindProspectsContext";
 import { useRef } from "react";
+import { getHeaders } from "../../utils/utils";
+import toast from "react-hot-toast";
 
-// const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = import.meta.env.VITE_SCRAPER_API_URL + "/api";
+const EMAIL_TEMPLATES_URL = API_URL + "/templates";
 
 export type Prospect = {
   id: number;
@@ -31,6 +34,35 @@ type ScrapeWebsiteResponse = {
 
 type ScrapeEmailsResponse = {
   emails: string[];
+};
+
+export type SavedProspect = {
+  id: number;
+  businessName: string;
+  rating: string;
+  reviews: string;
+  phone: string;
+  mapsUrl: string;
+  website: string;
+  // status: "new" | "sent_cold_email" | "follow_up_1" | "follow_up_2";
+  notes: string;
+  email: string;
+};
+
+export type ProspectColumn = {
+  id: string;
+  name: string;
+  items: SavedProspect[];
+};
+
+export type NewEmailTemplate = {
+  name: string;
+  subject: string;
+  content: string;
+};
+
+export type EmailTemplate = NewEmailTemplate & {
+  id: number;
 };
 
 export const useScrapeProspects = () => {
@@ -222,4 +254,64 @@ export const useScrapeProspectEmails = () => {
     scrapeEmails,
     stopScrapeEmails,
   };
+};
+
+export const useGetEmailTemplates = () => {
+  return useQuery({
+    queryKey: ["email_templates"],
+    queryFn: async (): Promise<EmailTemplate[]> => {
+      const response = await axios.get(EMAIL_TEMPLATES_URL, {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useCreateEmailTemplate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: NewEmailTemplate) => {
+      return await axios.post(EMAIL_TEMPLATES_URL, payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Email template created!");
+      queryClient.invalidateQueries({ queryKey: ["email_templates"] });
+    },
+  });
+};
+
+export const useUpdateEmailTemplate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: { id: number; payload: NewEmailTemplate }) => {
+      return await axios.put(EMAIL_TEMPLATES_URL + `/${arg.id}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Email template updated!");
+      queryClient.invalidateQueries({ queryKey: ["email_templates"] });
+    },
+  });
+};
+
+export const useDeleteEmailTemplate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (templateId: number) => {
+      return await axios.delete(EMAIL_TEMPLATES_URL + `/${templateId}`, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Email template deleted!");
+      queryClient.invalidateQueries({ queryKey: ["email_templates"] });
+    },
+  });
 };
