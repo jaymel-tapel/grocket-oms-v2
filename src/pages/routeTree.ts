@@ -396,7 +396,38 @@ const findProspectsRoute = createRoute({
 const prospectEmailTemplateRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "prospect-email-templates",
-  component: lazyRouteComponent(() => import("./prospects/EmailTemplates")),
+  component: lazyRouteComponent(
+    () => import("./prospects/emailTemplates/EmailTemplates")
+  ),
+});
+
+const prospectEmailTemplateIndexRoute = createRoute({
+  getParentRoute: () => prospectEmailTemplateRoute,
+  path: "/",
+  component: lazyRouteComponent(
+    () => import("./prospects/emailTemplates/Index")
+  ),
+});
+
+const newProspectEmailTemplateRoute = createRoute({
+  getParentRoute: () => prospectEmailTemplateRoute,
+  path: "new",
+  component: lazyRouteComponent(
+    () => import("./prospects/emailTemplates/EmailTemplate")
+  ),
+});
+
+export const editProspectEmailTemplateRoute = createRoute({
+  getParentRoute: () => prospectEmailTemplateRoute,
+  path: "$templateId",
+  parseParams: ({ templateId }) => ({ templateId: Number(templateId) }),
+  stringifyParams: ({ templateId }) => ({ templateId: `${templateId}` }),
+  loader: async ({ context: { queryClient }, params: { templateId } }) => {
+    queryClient.ensureQueryData(getBrandOption(templateId));
+  },
+  component: lazyRouteComponent(
+    () => import("./prospects/emailTemplates/EmailTemplate")
+  ),
 });
 
 const brandsRoute = createRoute({
@@ -492,7 +523,11 @@ const routeTree = rootRoute.addChildren([
 
     prospectsRoute.addChildren([prospectsIndexRoute]),
     findProspectsRoute,
-    prospectEmailTemplateRoute,
+    prospectEmailTemplateRoute.addChildren([
+      prospectEmailTemplateIndexRoute,
+      newProspectEmailTemplateRoute,
+      editProspectEmailTemplateRoute,
+    ]),
   ]),
 ]);
 
