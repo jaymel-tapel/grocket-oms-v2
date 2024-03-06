@@ -1,4 +1,3 @@
-import React from "react";
 import { editProspectEmailTemplateRoute } from "../../routeTree";
 import EmailTemplateForm from "../../../components/prospects/EmailTemplateForm";
 
