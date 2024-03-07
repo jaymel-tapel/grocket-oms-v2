@@ -72,7 +72,7 @@ export const useScrapeProspects = () => {
   return useMutation({
     mutationKey: ["scrape-prospects"],
     mutationFn: async (
-      payload: Step1Schema
+      payload: Step1Schema & { userId: number }
     ): Promise<ScrapeProspectsResponse> => {
       const response = await axios.post(SCRAPER_URL + "/search", payload);
       return response.data;

@@ -7,6 +7,7 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrapeProspects } from "../../../services/queries/prospectsQueries";
+import { UserLocalInfo, getUserInfo } from "../../../utils/utils";
 
 const step1Schema = z.object({
   location: z.string(),
@@ -23,6 +24,8 @@ type FormProps = {
 const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
   const { setStep, prospectFinder, setProspectFinder } =
     useFindProspectsContext() as FindProspectsContext;
+
+  const user = getUserInfo() as UserLocalInfo;
 
   const { mutateAsync: scapeProspects } = useScrapeProspects();
 
@@ -46,7 +49,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
 
   const onSubmit: SubmitHandler<Step1Schema> = (data) => {
     setProspectFinder(data);
-    scapeProspects(data);
+    scapeProspects({ ...data, userId: user.id });
     setStep(2);
   };
 
