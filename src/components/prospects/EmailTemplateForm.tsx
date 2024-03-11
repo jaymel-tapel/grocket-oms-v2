@@ -6,15 +6,18 @@ import {
   useUpdateEmailTemplate,
 } from "../../services/queries/prospectsQueries";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo } from "react";
+import { useState } from "react";
 import { Button } from "../tools/buttons/Button";
 import Spinner from "../tools/spinner/Spinner";
 import { useNavigate } from "@tanstack/react-router";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "./EmailTemplateform.scss";
 
 const emailTemplateSchema = z.object({
   name: z.string().min(1, { message: "Template name is required" }),
   subject: z.string().min(1, { message: "Email subject is required" }),
-  content: z.string().min(1, { message: "Email content is required" }),
+  // content: z.string().min(1, { message: "Email content is required" }),
 });
 
 type EmailTemplateSchema = z.infer<typeof emailTemplateSchema>;
@@ -25,14 +28,16 @@ type Props = {
 
 const EmailTemplateForm: React.FC<Props> = ({ template }) => {
   const navigate = useNavigate();
-  const readableContent = useMemo(() => {
-    if (!template) return "";
+  const [content, setContent] = useState(template?.content ?? "");
 
-    let content = template.content.replace(/<\/?p>/g, "");
-    content = content.replace(/<br\/>/g, "\n");
+  // const readableContent = useMemo(() => {
+  //   if (!template) return "";
 
-    return content;
-  }, [template]);
+  //   let content = template.content.replace(/<\/?p>/g, "");
+  //   content = content.replace(/<br\/>/g, "\n");
+
+  //   return content;
+  // }, [template]);
 
   const {
     register,
@@ -40,7 +45,7 @@ const EmailTemplateForm: React.FC<Props> = ({ template }) => {
     formState: { errors },
   } = useForm<EmailTemplateSchema>({
     resolver: zodResolver(emailTemplateSchema),
-    values: template ? { ...template, content: readableContent } : undefined,
+    values: template ? template : undefined,
   });
 
   const { mutateAsync: createEmailTemplate, isPending: isCreating } =
@@ -49,15 +54,15 @@ const EmailTemplateForm: React.FC<Props> = ({ template }) => {
     useUpdateEmailTemplate();
 
   const onSubmit: SubmitHandler<EmailTemplateSchema> = async (data) => {
-    const formattedContent = data.content.replace(/\n/g, "<br/>");
-    const finalContent = `<p>${formattedContent}</p>`;
+    // const formattedContent = data.content.replace(/\n/g, "<br/>");
+    // const finalContent = `<p>${formattedContent}</p>`;
 
     const response = template?.id
       ? await updateEmailTemplate({
           id: template.id,
-          payload: { ...data, content: finalContent },
+          payload: { ...data, content },
         })
-      : await createEmailTemplate({ ...data, content: finalContent });
+      : await createEmailTemplate({ ...data, content });
 
     if (response.status === 200 || response.status === 201) {
       navigate({ to: "/prospect-email-templates/" });
@@ -129,17 +134,12 @@ const EmailTemplateForm: React.FC<Props> = ({ template }) => {
               Email Content
             </label>
             <div className="w-full mt-2">
-              <textarea
-                id="content"
-                rows={5}
-                {...register("content")}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+              <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={setContent}
+                className="rounded-md ring-1 ring-inset ring-gray-300"
               />
-              {errors.subject && (
-                <p className="text-xs italic text-red-500 mt-2">
-                  {errors.subject?.message}
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -149,7 +149,10 @@ const EmailTemplateForm: React.FC<Props> = ({ template }) => {
         <Button type="button" variant="noBorder">
           Cancel
         </Button>
-        <Button type="submit" disabled={isCreating || isUpdating}>
+        <Button
+          type="submit"
+          disabled={isCreating || isUpdating || content.length === 0}
+        >
           {isCreating || isUpdating ? (
             <>
               <Spinner /> Submitting...

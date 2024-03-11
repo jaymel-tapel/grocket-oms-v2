@@ -1,0 +1,12 @@
+.quill {
+  .ql-toolbar.ql-snow {
+    border: none;
+  }
+
+  .ql-container.ql-snow {
+    border: none;
+  }
+  .ql-toolbar.ql-snow + .ql-container.ql-snow {
+    border-top: 1px solid #d1d5db;
+  }
+}
