@@ -206,11 +206,17 @@ export const useScrapeProspectEmails = () => {
     },
     onSuccess: (data, arg) => {
       const newEmails = [...prospectsEmails];
+      const excludedDomains = ["wixpress.com"];
+      const filteredEmails = data.emails.filter((email) => {
+        return !excludedDomains.some((domain) => email.includes(domain));
+      });
+
       newEmails[arg.index] = {
         ...newEmails[arg.index],
-        emails: data.emails,
+        emails: filteredEmails,
         status: "success",
       };
+
       setProspectsEmail(newEmails);
     },
   });

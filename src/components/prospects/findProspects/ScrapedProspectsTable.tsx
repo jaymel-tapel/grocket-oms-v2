@@ -13,6 +13,7 @@ import Spinner from "../../tools/spinner/Spinner";
 import TablePagination, {
   PaginationNavs,
 } from "../../tools/table/TablePagination";
+import TotalResultsLabel from "./TotalResultsLabel";
 
 const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE"];
 const itemsPerPage = 10;
@@ -221,6 +222,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
         totalItems={prospects.length}
         itemsPerPage={itemsPerPage}
         isFrontEndPagination={true}
+        customTotalLabel={<TotalResultsLabel />}
       />
     </TableContainer>
   );
