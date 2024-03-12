@@ -11,6 +11,7 @@ import Spinner from "../../tools/spinner/Spinner";
 import TablePagination, {
   PaginationNavs,
 } from "../../tools/table/TablePagination";
+import TotalResultsLabel from "./TotalResultsLabel";
 
 const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE", "EMAIL(S)"];
 const itemsPerPage = 10;
@@ -142,6 +143,7 @@ const SelectedProspectsTable = () => {
         totalItems={selectedProspects.length}
         itemsPerPage={itemsPerPage}
         isFrontEndPagination={true}
+        customTotalLabel={<TotalResultsLabel />}
       />
     </TableContainer>
   );

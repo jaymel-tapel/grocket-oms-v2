@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { ReactNode, useMemo } from "react";
 import { cn, getPaginationRange } from "../../../utils/utils";
 
 export type PaginationNavs = "first" | "last" | "prev" | "next";
@@ -10,6 +10,7 @@ type PaginationProps = {
   itemsPerPage: number;
   isFrontEndPagination?: boolean;
   lastPage?: number;
+  customTotalLabel?: ReactNode;
 };
 
 const TablePagination: React.FC<PaginationProps> = ({
@@ -19,6 +20,7 @@ const TablePagination: React.FC<PaginationProps> = ({
   totalItems,
   itemsPerPage = 10,
   isFrontEndPagination = false,
+  customTotalLabel = undefined,
 }) => {
   const pages = useMemo(() => {
     const totalPage = isFrontEndPagination
@@ -45,12 +47,20 @@ const TablePagination: React.FC<PaginationProps> = ({
   }, [currentPage, totalItems, itemsPerPage]);
 
   return (
-    <div className="p-4 sm:p-6 xl:p-7.5 flex gap-4 flex-wrap justify-between">
-      <div>
-        Showing {itemIndexes.firstIndex} - {itemIndexes.lastIndex} of{" "}
-        {totalItems}
-      </div>
-      <nav>
+    <div
+      className={`p-4 sm:p-6 xl:p-7.5 flex gap-4 flex-wrap justify-between ${
+        customTotalLabel ? "flex-col" : ""
+      }`}
+    >
+      {customTotalLabel ? (
+        customTotalLabel
+      ) : (
+        <div>
+          Showing {itemIndexes.firstIndex} - {itemIndexes.lastIndex} of{" "}
+          {totalItems}
+        </div>
+      )}
+      <nav className={customTotalLabel ? "self-end" : ""}>
         <ul className="flex flex-wrap items-center text-sm text-gray-500">
           <li
             className="flex items-center justify-center cursor-pointer rounded py-1.5 px-3 font-medium hover:bg-grBlue-base hover:text-white"

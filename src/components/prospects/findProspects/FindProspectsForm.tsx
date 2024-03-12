@@ -119,15 +119,13 @@ const ProspectFormNavigation = () => {
   };
 
   return (
-    <div className="pt-8 border-t border-t-gray-300 flex justify-between">
-      <div>
-        {step > 1 && (
-          <Button type="button" variant="delete" onClick={handlePrevious}>
-            Previous
-          </Button>
-        )}
-      </div>
-      <div className="flex gap-4">
+    <div className="pt-8 border-t border-t-gray-300 flex max-sm:flex-col gap-4 justify-between">
+      {step > 1 && (
+        <Button type="button" variant="delete" onClick={handlePrevious}>
+          Previous
+        </Button>
+      )}
+      <div className="flex gap-4 max-sm:flex-col">
         {step === 4 && (
           <Button
             type="button"
