@@ -274,6 +274,25 @@ export const useGetEmailTemplates = () => {
   });
 };
 
+const getEmailTemplate = async (templateId: number): Promise<EmailTemplate> => {
+  const response = await axios.get(EMAIL_TEMPLATES_URL + `/${templateId}`, {
+    headers: getHeaders(),
+  });
+  return response.data;
+};
+
+export const getEmailTemplateOptions = (templateId: number) => {
+  return {
+    enabled: templateId ? true : false,
+    queryKey: ["email_templates", templateId],
+    queryFn: () => getEmailTemplate(templateId),
+  };
+};
+
+export const useGetEmailTemplate = (templateId: number) => {
+  return useQuery(getEmailTemplateOptions(templateId));
+};
+
 export const useCreateEmailTemplate = () => {
   const queryClient = useQueryClient();
 
@@ -295,9 +314,13 @@ export const useUpdateEmailTemplate = () => {
 
   return useMutation({
     mutationFn: async (arg: { id: number; payload: NewEmailTemplate }) => {
-      return await axios.put(EMAIL_TEMPLATES_URL + `/${arg.id}`, arg.payload, {
-        headers: getHeaders(),
-      });
+      return await axios.patch(
+        EMAIL_TEMPLATES_URL + `/${arg.id}`,
+        arg.payload,
+        {
+          headers: getHeaders(),
+        }
+      );
     },
     onSuccess: () => {
       toast.success("Email template updated!");

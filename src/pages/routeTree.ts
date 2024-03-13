@@ -24,6 +24,7 @@ import {
   taskSearchParams,
   usersSearchSchema,
 } from "./routeSearchSchemas";
+import { getEmailTemplateOptions } from "../services/queries/prospectsQueries";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
@@ -423,7 +424,7 @@ export const editProspectEmailTemplateRoute = createRoute({
   parseParams: ({ templateId }) => ({ templateId: Number(templateId) }),
   stringifyParams: ({ templateId }) => ({ templateId: `${templateId}` }),
   loader: async ({ context: { queryClient }, params: { templateId } }) => {
-    queryClient.ensureQueryData(getBrandOption(templateId));
+    queryClient.ensureQueryData(getEmailTemplateOptions(templateId));
   },
   component: lazyRouteComponent(
     () => import("./prospects/emailTemplates/EmailTemplate")

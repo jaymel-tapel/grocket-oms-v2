@@ -1,12 +1,12 @@
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { Button } from "../tools/buttons/Button";
 import {
   EmailTemplate,
-  useDeleteEmailTemplate,
+  // useDeleteEmailTemplate,
 } from "../../services/queries/prospectsQueries";
 import { useNavigate } from "@tanstack/react-router";
-import Spinner from "../tools/spinner/Spinner";
+// import Spinner from "../tools/spinner/Spinner";
 
 type Props = {
   template: EmailTemplate;
@@ -15,12 +15,12 @@ type Props = {
 const EmailTemplateCard: React.FC<Props> = ({ template }) => {
   const navigate = useNavigate();
 
-  const { mutateAsync: deleteTemplate, isPending: isDeleting } =
-    useDeleteEmailTemplate();
+  // const { mutateAsync: deleteTemplate, isPending: isDeleting } =
+  //   useDeleteEmailTemplate();
 
-  const handleDelete = (templateId: number) => {
-    deleteTemplate(templateId);
-  };
+  // const handleDelete = (templateId: number) => {
+  //   deleteTemplate(templateId);
+  // };
 
   const handleEdit = (templateId: number) => {
     navigate({
@@ -42,7 +42,7 @@ const EmailTemplateCard: React.FC<Props> = ({ template }) => {
           >
             <PencilSquareIcon className="h-4 w-4 text-green-700" />
           </Button>
-          <Button
+          {/* <Button
             type="button"
             variant={"noBorder"}
             onClick={() => handleDelete(template.id)}
@@ -54,7 +54,7 @@ const EmailTemplateCard: React.FC<Props> = ({ template }) => {
             ) : (
               <TrashIcon className="h-4 w-4 text-red-700" />
             )}
-          </Button>
+          </Button> */}
         </div>
       </div>
       <div className="px-4 py-2 border-b border-[#bg-slate-300]">
