@@ -206,7 +206,7 @@ export const useScrapeProspectEmails = () => {
     },
     onSuccess: (data, arg) => {
       const newEmails = [...prospectsEmails];
-      const excludedDomains = ["wixpress.com"];
+      const excludedDomains = ["wixpress.com", ".png", ".jpg"];
       const filteredEmails = data.emails.filter((email) => {
         return !excludedDomains.some((domain) => email.includes(domain));
       });
