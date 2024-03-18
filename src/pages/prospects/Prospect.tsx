@@ -25,7 +25,7 @@ const Prospect = () => {
     <>
       <div className="mt-4">
         <span className="flex gap-2">
-          <p>Prospects / </p>
+          <p>Prospects / My Prospects</p>
           <p className="text-[#41B2E9]">{mockProspect.businessName}</p>
         </span>
       </div>

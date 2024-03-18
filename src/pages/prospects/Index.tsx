@@ -198,13 +198,14 @@ const Index = () => {
   };
 
   const sensors = useSensors(
-    useSensor(SmartPointerSensor),
-    useSensor(TouchSensor, {
+    useSensor(SmartPointerSensor, {
       activationConstraint: {
-        delay: 5000,
-        tolerance: 6,
+        // delay: 5000,
+        // tolerance: 6,
+        distance: 0.01,
       },
     }),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
