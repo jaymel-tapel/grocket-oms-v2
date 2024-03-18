@@ -9,7 +9,7 @@ import {
   DragOverlay,
   DragStartEvent,
   KeyboardSensor,
-  PointerSensor,
+  TouchSensor,
   UniqueIdentifier,
   closestCorners,
   useSensor,
@@ -18,6 +18,7 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import ProspectCardsContainer from "../../components/prospects/ProspectCardsContainer";
 import ProspectCard from "../../components/prospects/ProspectCard";
+import { SmartPointerSensor } from "./DndSensor";
 
 const PROSPECTS: ProspectColumn[] = [
   {
@@ -33,7 +34,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
-        emails: ["test@gmail.com"],
+        emails: ["testasdasdasdasdasdasdasdasdasdasdasd@gmail.com"],
       },
       {
         id: 2,
@@ -197,7 +198,13 @@ const Index = () => {
   };
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(SmartPointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 5000,
+        tolerance: 6,
+      },
+    }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
