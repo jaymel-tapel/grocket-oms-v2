@@ -46,7 +46,7 @@ export type SavedProspect = {
   website: string;
   // status: "new" | "sent_cold_email" | "follow_up_1" | "follow_up_2";
   notes: string;
-  email: string;
+  emails: string[];
 };
 
 export type ProspectColumn = {

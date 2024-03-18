@@ -388,6 +388,17 @@ const prospectsIndexRoute = createRoute({
   component: lazyRouteComponent(() => import("./prospects/Index")),
 });
 
+export const prospectRoute = createRoute({
+  getParentRoute: () => prospectsRoute,
+  path: "$prospectId",
+  parseParams: ({ prospectId }) => ({ prospectId: Number(prospectId) }),
+  stringifyParams: ({ prospectId }) => ({ prospectId: `${prospectId}` }),
+  // loader: async ({ context: { queryClient }, params: { prospectId } }) => {
+  //   queryClient.ensureQueryData(getUserOption(prospectId));
+  // },
+  component: lazyRouteComponent(() => import("./prospects/Prospect")),
+});
+
 const findProspectsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "find-prospects",
@@ -522,7 +533,7 @@ const routeTree = rootRoute.addChildren([
       newClientRoute,
     ]),
 
-    prospectsRoute.addChildren([prospectsIndexRoute]),
+    prospectsRoute.addChildren([prospectsIndexRoute, prospectRoute]),
     findProspectsRoute,
     prospectEmailTemplateRoute.addChildren([
       prospectEmailTemplateIndexRoute,

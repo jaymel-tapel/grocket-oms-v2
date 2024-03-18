@@ -55,7 +55,7 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
         </div>
         <div className="flex gap-4 items-center">
           <EnvelopeIcon className="text-[#8A99AF] h-4 w-4" />
-          <span className="text-[#8A99AF] text-sm">{prospect.email}</span>
+          <span className="text-[#8A99AF] text-sm">{prospect.emails}</span>
         </div>
       </div>
       {prospect.notes && (
