@@ -24,6 +24,7 @@ import {
   taskSearchParams,
   usersSearchSchema,
 } from "./routeSearchSchemas";
+import { getEmailTemplateOptions } from "../services/queries/prospectsQueries";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
@@ -387,6 +388,17 @@ const prospectsIndexRoute = createRoute({
   component: lazyRouteComponent(() => import("./prospects/Index")),
 });
 
+export const prospectRoute = createRoute({
+  getParentRoute: () => prospectsRoute,
+  path: "$prospectId",
+  parseParams: ({ prospectId }) => ({ prospectId: Number(prospectId) }),
+  stringifyParams: ({ prospectId }) => ({ prospectId: `${prospectId}` }),
+  // loader: async ({ context: { queryClient }, params: { prospectId } }) => {
+  //   queryClient.ensureQueryData(getUserOption(prospectId));
+  // },
+  component: lazyRouteComponent(() => import("./prospects/Prospect")),
+});
+
 const findProspectsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "find-prospects",
@@ -423,7 +435,7 @@ export const editProspectEmailTemplateRoute = createRoute({
   parseParams: ({ templateId }) => ({ templateId: Number(templateId) }),
   stringifyParams: ({ templateId }) => ({ templateId: `${templateId}` }),
   loader: async ({ context: { queryClient }, params: { templateId } }) => {
-    queryClient.ensureQueryData(getBrandOption(templateId));
+    queryClient.ensureQueryData(getEmailTemplateOptions(templateId));
   },
   component: lazyRouteComponent(
     () => import("./prospects/emailTemplates/EmailTemplate")
@@ -521,7 +533,7 @@ const routeTree = rootRoute.addChildren([
       newClientRoute,
     ]),
 
-    prospectsRoute.addChildren([prospectsIndexRoute]),
+    prospectsRoute.addChildren([prospectsIndexRoute, prospectRoute]),
     findProspectsRoute,
     prospectEmailTemplateRoute.addChildren([
       prospectEmailTemplateIndexRoute,

@@ -9,7 +9,7 @@ import {
   DragOverlay,
   DragStartEvent,
   KeyboardSensor,
-  PointerSensor,
+  TouchSensor,
   UniqueIdentifier,
   closestCorners,
   useSensor,
@@ -18,6 +18,7 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import ProspectCardsContainer from "../../components/prospects/ProspectCardsContainer";
 import ProspectCard from "../../components/prospects/ProspectCard";
+import { SmartPointerSensor } from "./DndSensor";
 
 const PROSPECTS: ProspectColumn[] = [
   {
@@ -33,7 +34,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
-        email: "test@gmail.com",
+        emails: ["testasdasdasdasdasdasdasdasdasdasdasd@gmail.com"],
       },
       {
         id: 2,
@@ -44,7 +45,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
-        email: "test@gmail.com",
+        emails: ["test@gmail.com"],
       },
       {
         id: 3,
@@ -55,7 +56,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "",
-        email: "test@gmail.com",
+        emails: ["test@gmail.com"],
       },
     ],
   },
@@ -72,7 +73,7 @@ const PROSPECTS: ProspectColumn[] = [
         mapsUrl: "https://testbusiness.com",
         website: "john@testbusiness.com",
         notes: "This is a note",
-        email: "test@gmail.com",
+        emails: ["test@gmail.com", "test2@gmail.com", "test3@gmail.com"],
       },
     ],
   },
@@ -197,7 +198,14 @@ const Index = () => {
   };
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(SmartPointerSensor, {
+      activationConstraint: {
+        // delay: 5000,
+        // tolerance: 6,
+        distance: 0.01,
+      },
+    }),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
