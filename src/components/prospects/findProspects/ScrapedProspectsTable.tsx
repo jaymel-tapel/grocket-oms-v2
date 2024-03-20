@@ -7,7 +7,6 @@ import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { useFindProspectsContext } from "./FindProspectsContext";
-import { Prospect } from "../../../services/queries/prospectsQueries";
 import { useIsMutating } from "@tanstack/react-query";
 import Spinner from "../../tools/spinner/Spinner";
 import TablePagination, {
@@ -30,8 +29,8 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     hasWebsites,
     prospects,
     setProspects,
-    selectedProspects,
-    setSelectedProspects,
+    // selectedProspects,
+    // setSelectedProspects,
     setProspectsEmail,
   } = useFindProspectsContext();
 
@@ -96,7 +95,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
   useEffect(() => {
     if (isMutating) {
       setProspects([]);
-      setSelectedProspects([]);
+      // setSelectedProspects([]);
       setProspectsEmail([]);
     }
     //eslint-disable-next-line
@@ -119,43 +118,43 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     // eslint-disable-next-line
   }, [hasWebsites, paginatedProspects, handlePageChange]);
 
-  const isChecked = useCallback(
-    (prospectId: number) => {
-      return selectedProspects.some((prospect) => prospect.id === prospectId);
-    },
-    [selectedProspects]
-  );
+  // const isChecked = useCallback(
+  //   (prospectId: number) => {
+  //     return selectedProspects.some((prospect) => prospect.id === prospectId);
+  //   },
+  //   [selectedProspects]
+  // );
 
-  const handleCheckAll = () => {
-    if (selectedProspects.length === 0) {
-      setSelectedProspects(prospects);
-      return;
-    } else {
-      setSelectedProspects([]);
-    }
-  };
+  // const handleCheckAll = () => {
+  //   if (selectedProspects.length === 0) {
+  //     setSelectedProspects(prospects);
+  //     return;
+  //   } else {
+  //     setSelectedProspects([]);
+  //   }
+  // };
 
-  const handleCheck = (selectedProspect: Prospect) => {
-    const index = selectedProspects.findIndex(
-      (prospect) => prospect.id === selectedProspect.id
-    );
-    const newProspects = [...selectedProspects];
+  // const handleCheck = (selectedProspect: Prospect) => {
+  //   const index = selectedProspects.findIndex(
+  //     (prospect) => prospect.id === selectedProspect.id
+  //   );
+  //   const newProspects = [...selectedProspects];
 
-    if (index !== -1) {
-      newProspects.splice(index, 1);
-    } else {
-      newProspects.push(selectedProspect);
-    }
+  //   if (index !== -1) {
+  //     newProspects.splice(index, 1);
+  //   } else {
+  //     newProspects.push(selectedProspect);
+  //   }
 
-    setSelectedProspects(newProspects);
-  };
+  //   setSelectedProspects(newProspects);
+  // };
 
   return (
     <TableContainer shadowOff={true}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeadCell>
+            {/* <TableHeadCell>
               <input
                 id="checkAll"
                 aria-describedby="checkAll"
@@ -165,7 +164,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                 onChange={handleCheckAll}
                 className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
               />
-            </TableHeadCell>
+            </TableHeadCell> */}
             {COLUMNS.map((col, index) => (
               <TableHeadCell key={index}>{col}</TableHeadCell>
             ))}
@@ -182,7 +181,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
           {paginatedProspects.map((prospect, index) => {
             return (
               <TableRow key={index}>
-                <TableBodyCell>
+                {/* <TableBodyCell>
                   <input
                     id={`prospect-${prospect.id}`}
                     aria-describedby={`prospect-${prospect.id}`}
@@ -192,8 +191,8 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                     onChange={() => handleCheck(prospect)}
                     className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
                   />
-                </TableBodyCell>
-                <TableBodyCell>{prospect.businessName}</TableBodyCell>
+                </TableBodyCell> */}
+                <TableBodyCell>{prospect.name}</TableBodyCell>
                 <TableBodyCell>{prospect.rating}</TableBodyCell>
                 <TableBodyCell className="text-grBlue-dark whitespace-nowrap">
                   {prospect.phone}

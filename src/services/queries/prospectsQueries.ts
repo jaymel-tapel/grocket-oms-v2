@@ -7,12 +7,12 @@ import { getHeaders } from "../../utils/utils";
 import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const SCRAPER_URL = import.meta.env.VITE_SCRAPER_API_URL + "/api";
+const SCRAPER_URL = API_URL + "/scraper";
 const EMAIL_TEMPLATES_URL = API_URL + "/templates";
 
 export type Prospect = {
   id: number;
-  businessName: string;
+  name: string;
   rating: string;
   reviews: string;
   phone: string;
@@ -24,7 +24,7 @@ export type Prospect = {
 type ScrapeProspectsResponse = {
   message: string;
   hasWebSites: boolean;
-  results: Prospect[];
+  prospects: Prospect[];
 };
 
 type ScrapeWebsiteResponse = {
@@ -38,7 +38,7 @@ type ScrapeEmailsResponse = {
 
 export type SavedProspect = {
   id: number;
-  businessName: string;
+  name: string;
   rating: string;
   reviews: string;
   phone: string;
@@ -72,9 +72,11 @@ export const useScrapeProspects = () => {
   return useMutation({
     mutationKey: ["scrape-prospects"],
     mutationFn: async (
-      payload: Step1Schema & { userId: number }
+      payload: Step1Schema
     ): Promise<ScrapeProspectsResponse> => {
-      const response = await axios.post(SCRAPER_URL + "/search", payload);
+      const response = await axios.post(SCRAPER_URL + "/search", payload, {
+        headers: getHeaders(),
+      });
       return response.data;
     },
     onMutate: () => {
@@ -83,7 +85,7 @@ export const useScrapeProspects = () => {
     onSuccess: (data) => {
       const hasWebsite = data.hasWebSites;
 
-      const prospectsWithId: Prospect[] = data.results.map(
+      const prospectsWithId: Prospect[] = data.prospects.map(
         (prospect, index) => {
           return {
             ...prospect,
@@ -103,17 +105,20 @@ export const useScrapeProspects = () => {
 };
 
 export const useScrapeProspectWebsite = () => {
-  const { prospects, setProspects, setHasWebsites } = useFindProspectsContext();
+  const { setStep, prospects, setProspects, setHasWebsites } =
+    useFindProspectsContext();
 
   const scrapeWebsiteQuery = useMutation({
     mutationKey: ["scrape-website"],
     mutationFn: async (arg: {
       payload: { url: string };
       index: number;
+      prospectId: number;
     }): Promise<ScrapeWebsiteResponse> => {
       const response = await axios.post(
-        SCRAPER_URL + "/get-website",
-        arg.payload
+        SCRAPER_URL + `/website/${arg.prospectId}`,
+        arg.payload,
+        { headers: getHeaders() }
       );
       return response.data;
     },
@@ -150,13 +155,19 @@ export const useScrapeProspectWebsite = () => {
       if (stopScrapingRef.current) {
         break;
       } else {
-        await scrapeWebsiteQuery.mutateAsync({
-          payload: { url: prospect.mapsUrl },
-          index,
-        });
+        try {
+          await scrapeWebsiteQuery.mutateAsync({
+            payload: { url: prospect.mapsUrl },
+            index,
+            prospectId: prospect.id,
+          });
+        } catch (error) {
+          console.error(`Error scraping details for ${prospect.name}:`, error);
+        }
       }
     }
 
+    setStep(3);
     setHasWebsites(true);
   };
 
@@ -171,7 +182,7 @@ export const useScrapeProspectWebsite = () => {
 };
 
 export const useScrapeProspectEmails = () => {
-  const { setStep, selectedProspects, prospectsEmails, setProspectsEmail } =
+  const { setStep, prospects, prospectsEmails, setProspectsEmail } =
     useFindProspectsContext();
 
   const scrapeEmailsQuery = useMutation({
@@ -179,10 +190,12 @@ export const useScrapeProspectEmails = () => {
     mutationFn: async (arg: {
       payload: { url: string };
       index: number;
+      prospectId: number;
     }): Promise<ScrapeEmailsResponse> => {
       const response = await axios.post(
-        SCRAPER_URL + "/get-emails",
-        arg.payload
+        SCRAPER_URL + `/email/${arg.prospectId}`,
+        arg.payload,
+        { headers: getHeaders() }
       );
       return response.data;
     },
@@ -226,11 +239,9 @@ export const useScrapeProspectEmails = () => {
   const scrapeEmails = async () => {
     stopScrapingRef.current = false;
 
-    for (const prospect of selectedProspects.filter(
-      (prospect) => prospect.website
-    )) {
+    for (const prospect of prospects.filter((prospect) => prospect.website)) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const index = selectedProspects.indexOf(prospect);
+      const index = prospects.indexOf(prospect);
 
       if (stopScrapingRef.current) {
         break;
@@ -239,10 +250,11 @@ export const useScrapeProspectEmails = () => {
           await scrapeEmailsQuery.mutateAsync({
             payload: { url: prospect.website },
             index,
+            prospectId: prospect.id,
           });
         } catch (error) {
           console.error(
-            `Error scraping emails for ${prospect.website}:`,
+            `Error scraping emails for ${prospect.name}'s website:`,
             error
           );
         }

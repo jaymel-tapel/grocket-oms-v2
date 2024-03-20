@@ -13,17 +13,7 @@ const ProspectCardsContainer: React.FC<Props> = ({ column }) => {
 
   return (
     <SortableContext items={column.items} strategy={rectSortingStrategy}>
-      <div
-        // {...attributes}
-        ref={setNodeRef}
-        // style={{
-        //   transition,
-        //   transform: transform
-        //     ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-        //     : undefined,
-        // }}
-        className="w-full max-w-[300px]"
-      >
+      <div ref={setNodeRef} className="w-full max-w-[300px]">
         <h2 className="text-lg font-bold">{column.name}</h2>
         <div className="mt-4 flex flex-col gap-4">
           {column.items.map((prospect) => (

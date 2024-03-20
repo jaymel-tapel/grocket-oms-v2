@@ -6,7 +6,7 @@ import { prospectRoute } from "../routeTree";
 
 const mockProspect = {
   id: 1,
-  businessName: "Giovanni's Italian Bistro",
+  name: "Giovanni's Italian Bistro",
   rating: "4.5",
   reviews: "135",
   phone: "+1234567890",
@@ -26,7 +26,7 @@ const Prospect = () => {
       <div className="mt-4">
         <span className="flex gap-2">
           <p>Prospects / My Prospects</p>
-          <p className="text-[#41B2E9]">{mockProspect.businessName}</p>
+          <p className="text-[#41B2E9]">{mockProspect.name}</p>
         </span>
       </div>
       <div className="mt-8 flex flex-col sm:flex-row gap-8">

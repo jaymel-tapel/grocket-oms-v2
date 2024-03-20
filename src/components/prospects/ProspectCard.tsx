@@ -64,7 +64,7 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
     >
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="px-6 pt-4 flex justify-between w-full gap-4 items-center">
-          <span className="font-bold truncate">{prospect.businessName}</span>
+          <span className="font-bold truncate">{prospect.name}</span>
           <CollapsibleTrigger asChild>
             <Button
               variant={"noBorder"}

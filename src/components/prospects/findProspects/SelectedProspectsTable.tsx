@@ -18,15 +18,14 @@ const itemsPerPage = 10;
 
 const SelectedProspectsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { step, selectedProspects, prospectsEmails } =
-    useFindProspectsContext();
+  const { step, prospects, prospectsEmails } = useFindProspectsContext();
 
   const paginatedProspects = useMemo(() => {
     const lastProspectIndex = currentPage * itemsPerPage;
     const firstProspectIndex = lastProspectIndex - itemsPerPage;
 
-    return selectedProspects.slice(firstProspectIndex, lastProspectIndex);
-  }, [selectedProspects, currentPage]);
+    return prospects.slice(firstProspectIndex, lastProspectIndex);
+  }, [prospects, currentPage]);
 
   const paginatedEmails = useMemo(() => {
     const lastProspectIndex = currentPage * itemsPerPage;
@@ -42,7 +41,7 @@ const SelectedProspectsTable = () => {
         return;
       }
 
-      const lastPage = Math.ceil(selectedProspects.length / itemsPerPage);
+      const lastPage = Math.ceil(prospects.length / itemsPerPage);
 
       if (value === "first") {
         setCurrentPage(1);
@@ -58,7 +57,7 @@ const SelectedProspectsTable = () => {
         setCurrentPage(lastPage);
       }
     },
-    [currentPage, selectedProspects]
+    [currentPage, prospects]
   );
 
   const showEmails = useCallback(
@@ -114,7 +113,7 @@ const SelectedProspectsTable = () => {
             );
             return (
               <TableRow key={index}>
-                <TableBodyCell>{prospect.businessName}</TableBodyCell>
+                <TableBodyCell>{prospect.name}</TableBodyCell>
                 <TableBodyCell>{prospect.rating}</TableBodyCell>
                 <TableBodyCell className="text-grBlue-dark whitespace-nowrap">
                   {prospect.phone}
@@ -140,7 +139,7 @@ const SelectedProspectsTable = () => {
       <TablePagination
         currentPage={currentPage}
         handlePageChange={handlePageChange}
-        totalItems={selectedProspects.length}
+        totalItems={prospects.length}
         itemsPerPage={itemsPerPage}
         isFrontEndPagination={true}
         customTotalLabel={<TotalResultsLabel />}

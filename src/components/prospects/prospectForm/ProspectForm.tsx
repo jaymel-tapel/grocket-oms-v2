@@ -9,7 +9,7 @@ import Pill from "../../tools/pill/Pill";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
 const prospectFormSchema = z.object({
-  businessName: z.string(),
+  name: z.string(),
   notes: z.string().optional(),
   website: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
@@ -66,15 +66,15 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
               <input
                 type="text"
                 id="userName"
-                {...register("businessName")}
+                {...register("name")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.businessName && "border-red-500"
+                  errors.name && "border-red-500"
                 }`}
               />
             </div>
-            {errors.businessName && (
+            {errors.name && (
               <p className="text-xs italic text-red-500 mt-2">
-                {errors.businessName?.message}
+                {errors.name?.message}
               </p>
             )}
           </div>

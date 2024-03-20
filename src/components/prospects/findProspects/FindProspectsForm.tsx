@@ -86,7 +86,7 @@ const ProspectFormNavigation = () => {
         // Add a row for each email
         emails.forEach((email) => {
           mappedData.push([
-            prospect.businessName,
+            prospect.name,
             prospect.rating,
             prospect.phone,
             prospect.website,
@@ -96,7 +96,7 @@ const ProspectFormNavigation = () => {
       } else {
         // If there are no emails, add a single row
         mappedData.push([
-          prospect.businessName,
+          prospect.name,
           prospect.rating,
           prospect.phone,
           prospect.website,
@@ -137,13 +137,11 @@ const ProspectFormNavigation = () => {
             </CSVLink>
           </Button>
         )}
-        <Button type="submit">
-          {step === 4
-            ? "Save Prospects"
-            : step === 3
-            ? "Skip email scraping?"
-            : "Next"}
-        </Button>
+        {step !== 4 && (
+          <Button type="submit">
+            {step === 3 ? "Skip email scraping?" : "Next"}
+          </Button>
+        )}
       </div>
     </div>
   );

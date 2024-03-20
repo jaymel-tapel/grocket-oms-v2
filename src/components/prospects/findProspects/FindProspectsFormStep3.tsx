@@ -12,7 +12,7 @@ type FormProps = {
 };
 
 const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { setStep, selectedProspects, setProspectsEmail } =
+  const { setStep, prospects, setProspectsEmail } =
     useFindProspectsContext() as FindProspectsContext;
 
   const { scrapeEmails, stopScrapeEmails } = useScrapeProspectEmails();
@@ -24,7 +24,7 @@ const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const initialProspectEmails: ProspectsEmails[] = selectedProspects.map(
+    const initialProspectEmails: ProspectsEmails[] = prospects.map(
       (prospect) => {
         return {
           id: prospect?.id,

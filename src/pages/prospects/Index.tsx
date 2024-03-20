@@ -27,7 +27,7 @@ const PROSPECTS: ProspectColumn[] = [
     items: [
       {
         id: 1,
-        businessName: "Test Prospect",
+        name: "Test Prospect",
         rating: "3.5",
         reviews: "50",
         phone: "+123456789",
@@ -38,7 +38,7 @@ const PROSPECTS: ProspectColumn[] = [
       },
       {
         id: 2,
-        businessName: "Test Prospect",
+        name: "Test Prospect",
         rating: "3.5",
         reviews: "50",
         phone: "+123456789",
@@ -49,7 +49,7 @@ const PROSPECTS: ProspectColumn[] = [
       },
       {
         id: 3,
-        businessName: "Test Prospect",
+        name: "Test Prospect",
         rating: "3.5",
         reviews: "50",
         phone: "+123456789",
@@ -66,7 +66,7 @@ const PROSPECTS: ProspectColumn[] = [
     items: [
       {
         id: 4,
-        businessName: "Test Prospect",
+        name: "Test Prospect",
         rating: "3.5",
         reviews: "50",
         phone: "+123456789",
