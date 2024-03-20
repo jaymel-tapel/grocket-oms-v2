@@ -8,16 +8,32 @@ import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = API_URL + "/scraper";
+const PROSPECTS_URL = API_URL + "/prospects";
 const EMAIL_TEMPLATES_URL = API_URL + "/templates";
+
+type Reviewer = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  prospectId: number;
+  name: string;
+  image: string;
+  rating: number;
+  google_review_id: string;
+};
 
 export type Prospect = {
   id: number;
   name: string;
-  rating: string;
-  reviews: string;
+  rating: number;
+  reviews: number;
+  emails: string[];
+  stars: number[];
+  note: string;
   phone: string;
   mapsUrl: string;
   website: string;
+  reviewers: Reviewer[];
   status?: "pending" | "queued" | "error" | "success";
 };
 
@@ -36,23 +52,10 @@ type ScrapeEmailsResponse = {
   emails: string[];
 };
 
-export type SavedProspect = {
-  id: number;
-  name: string;
-  rating: string;
-  reviews: string;
-  phone: string;
-  mapsUrl: string;
-  website: string;
-  // status: "new" | "sent_cold_email" | "follow_up_1" | "follow_up_2";
-  notes: string;
-  emails: string[];
-};
-
 export type ProspectColumn = {
   id: string;
   name: string;
-  items: SavedProspect[];
+  prospects: Prospect[];
 };
 
 export type NewEmailTemplate = {
@@ -63,6 +66,33 @@ export type NewEmailTemplate = {
 
 export type EmailTemplate = NewEmailTemplate & {
   id: number;
+  prospects: Prospect[];
+};
+
+export const useGetMyProspects = () => {
+  return useQuery({
+    queryKey: ["my-prospects"],
+    queryFn: async (): Promise<EmailTemplate[]> => {
+      const response = await axios.get(EMAIL_TEMPLATES_URL, {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+    staleTime: Infinity,
+  });
+};
+
+export const useGetProspectDetails = (prospectId: number) => {
+  return useQuery({
+    enabled: prospectId ? true : false,
+    queryKey: ["my-prospects"],
+    queryFn: async (): Promise<Prospect> => {
+      const response = await axios.get(PROSPECTS_URL + `/${prospectId}`, {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+  });
 };
 
 export const useScrapeProspects = () => {
@@ -219,7 +249,16 @@ export const useScrapeProspectEmails = () => {
     },
     onSuccess: (data, arg) => {
       const newEmails = [...prospectsEmails];
-      const excludedDomains = ["wixpress.com", ".png", ".jpg", ".webp", ".gif", ".svg", ".tiff", ".bmp"];
+      const excludedDomains = [
+        "wixpress.com",
+        ".png",
+        ".jpg",
+        ".webp",
+        ".gif",
+        ".svg",
+        ".tiff",
+        ".bmp",
+      ];
       const filteredEmails = data.emails.filter((email) => {
         return !excludedDomains.some((domain) => email.includes(domain));
       });

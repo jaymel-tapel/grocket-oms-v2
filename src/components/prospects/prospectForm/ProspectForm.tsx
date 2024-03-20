@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { SavedProspect } from "../../../services/queries/prospectsQueries";
+import { Prospect } from "../../../services/queries/prospectsQueries";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
 import Pill from "../../tools/pill/Pill";
@@ -10,7 +10,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 
 const prospectFormSchema = z.object({
   name: z.string(),
-  notes: z.string().optional(),
+  note: z.string().optional(),
   website: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
 });
@@ -18,7 +18,7 @@ const prospectFormSchema = z.object({
 export type ProspectFormSchema = z.infer<typeof prospectFormSchema>;
 
 type FormProps = {
-  prospect: SavedProspect;
+  prospect: Prospect;
 };
 
 const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
@@ -39,6 +39,12 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
   const onSubmit = () => {
     return;
   };
+
+  useEffect(() => {
+    if (prospect.emails.length > 0) {
+      setEmails(prospect.emails);
+    }
+  }, [prospect]);
 
   return (
     <form
@@ -160,7 +166,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
             </label>
             <div className="w-full mt-2">
               <div className="flex flex-wrap py-1.5 pl-4 gap-2 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset">
-                {emails.map((email, index) => (
+                {emails?.map((email, index) => (
                   <Pill
                     key={index}
                     className="self-center"
@@ -199,7 +205,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
 
           <div className="col-span-2">
             <label
-              htmlFor="notes"
+              htmlFor="note"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Notes
@@ -208,14 +214,14 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
               <textarea
                 id="notes"
                 rows={3}
-                {...register("notes")}
+                {...register("note")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.notes && "border-red-500"
+                  errors.note && "border-red-500"
                 }`}
               />
-              {errors.notes && (
+              {errors.note && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.notes?.message}
+                  {errors.note?.message}
                 </p>
               )}
             </div>
