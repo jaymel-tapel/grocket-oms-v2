@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { Step1Schema } from "../../components/prospects/findProspects/FindProspectsFormStep1";
 import { useFindProspectsContext } from "../../components/prospects/findProspects/FindProspectsContext";
@@ -78,21 +83,26 @@ export const useGetMyProspects = () => {
       });
       return response.data;
     },
-    staleTime: Infinity,
+  });
+};
+
+const getProspectDetails = async (prospectId: number): Promise<Prospect> => {
+  const response = await axios.get(PROSPECTS_URL + `/${prospectId}`, {
+    headers: getHeaders(),
+  });
+  return response.data;
+};
+
+export const getProspectDetailsOption = (prospectId: number) => {
+  return queryOptions({
+    enabled: prospectId ? !isNaN(prospectId) : false,
+    queryKey: ["my-prospects", prospectId],
+    queryFn: () => getProspectDetails(prospectId),
   });
 };
 
 export const useGetProspectDetails = (prospectId: number) => {
-  return useQuery({
-    enabled: prospectId ? true : false,
-    queryKey: ["my-prospects"],
-    queryFn: async (): Promise<Prospect> => {
-      const response = await axios.get(PROSPECTS_URL + `/${prospectId}`, {
-        headers: getHeaders(),
-      });
-      return response.data;
-    },
-  });
+  return useQuery(getProspectDetailsOption(prospectId));
 };
 
 export const useScrapeProspects = () => {
