@@ -60,6 +60,7 @@ type ScrapeEmailsResponse = {
 export type ProspectColumn = {
   id: string;
   name: string;
+  templateId: number;
   prospects: Prospect[];
 };
 
@@ -104,6 +105,52 @@ export const getProspectDetailsOption = (prospectId: number) => {
 export const useGetProspectDetails = (prospectId: number) => {
   return useQuery(getProspectDetailsOption(prospectId));
 };
+
+export const useMoveProspect = () => {
+  return useMutation({
+    mutationFn: async (arg: {
+      templateId: number;
+      payload: { newProspectIds: string };
+    }) => {
+      return axios.put(
+        EMAIL_TEMPLATES_URL + `/position/${arg.templateId}`,
+        arg.payload,
+        { headers: getHeaders() }
+      );
+    },
+  });
+};
+
+type UpdateProspectPayload = {
+  name: string;
+  emails: string[];
+  url: string;
+  phone: string;
+  note: string;
+  industryId: number;
+  templateId: number;
+};
+
+export const useUpdateProspectDetails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: {
+      prospectId: number;
+      payload: UpdateProspectPayload;
+    }) => {
+      return axios.patch(PROSPECTS_URL + `/${arg.prospectId}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Prospect has been updated!");
+      queryClient.invalidateQueries({ queryKey: ["my-prospects"] });
+    },
+  });
+};
+
+// -- SCRAPER -- //
 
 export const useScrapeProspects = () => {
   const { setProspects, setIsScraping, setHasWebsites } =

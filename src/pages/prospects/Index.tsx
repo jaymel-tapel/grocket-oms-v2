@@ -3,6 +3,7 @@ import { Button } from "../../components/tools/buttons/Button";
 import {
   ProspectColumn,
   useGetMyProspects,
+  useMoveProspect,
 } from "../../services/queries/prospectsQueries";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -28,6 +29,7 @@ const Index = () => {
   const [activeItemId, setActiveItemId] = useState<null | number>(null);
   const [myProspects, setMyProspects] = useState<ProspectColumn[]>([]);
 
+  const { mutateAsync } = useMoveProspect();
   const { data } = useGetMyProspects();
 
   useEffect(() => {
@@ -36,9 +38,9 @@ const Index = () => {
     }
 
     const columns = data?.map((template, index) => {
-      const templateId = String.fromCharCode(65 + index);
+      const stringId = String.fromCharCode(65 + index);
 
-      return { ...template, id: templateId };
+      return { ...template, id: stringId, templateId: template.id };
     });
 
     setMyProspects(columns);
@@ -81,6 +83,7 @@ const Index = () => {
     if (!activeColumn || !overColumn || activeColumn === overColumn) {
       return null;
     }
+
     setMyProspects((prevState) => {
       const activeItems = activeColumn.prospects;
       const overItems = overColumn.prospects;
@@ -121,7 +124,6 @@ const Index = () => {
     const overId = over ? over.id : undefined;
     const activeColumn = findColumn(activeId);
     const overColumn = findColumn(overId);
-
     if (!activeColumn || !overColumn || activeColumn !== overColumn) {
       setActiveItemId(null);
       return null;
@@ -148,6 +150,15 @@ const Index = () => {
         });
       });
     }
+
+    // Update my prospect db
+    const newProspectIds = overColumn.prospects.map((prospect) => prospect.id);
+    newProspectIds.splice(overIndex, 0, activeId as number);
+
+    mutateAsync({
+      templateId: overColumn.templateId,
+      payload: { newProspectIds: JSON.stringify(newProspectIds) },
+    });
 
     setActiveItemId(null);
   };
@@ -184,7 +195,7 @@ const Index = () => {
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
       >
-        <div className="mt-6 flex gap-8">
+        <div className="mt-6 flex gap-8 overflow-x-auto overflow-y-hidden">
           {myProspects.map((column) => {
             return (
               <div key={column.id}>
