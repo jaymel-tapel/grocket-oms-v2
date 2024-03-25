@@ -4,7 +4,7 @@ import LoggedSection from "../../components/sections/LoggedSection";
 const Clients = () => {
   return (
     <LoggedSection>
-      <Outlet />;
+      <Outlet />
     </LoggedSection>
   );
 };

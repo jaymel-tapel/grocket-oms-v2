@@ -1,27 +1,35 @@
 import { Disclosure } from "@headlessui/react";
 import { Fragment, useState, useMemo } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import {
-  Bars3Icon,
-  BellIcon,
-  GlobeAltIcon,
-  KeyIcon,
-  ClipboardDocumentCheckIcon,
-  XMarkIcon,
-  UserGroupIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Link, useRouterState } from "@tanstack/react-router";
+import {
+  UserLocalInfo,
+  cleanAuthorization,
+  getUserInfo,
+} from "../../utils/utils";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
+import {
+  brandAtom,
+  useGetAllBrand,
+} from "../../services/queries/brandsQueries";
+import DropdownText from "../tools/dropdowntext/DropdownText";
+import { useAtom } from "jotai/react";
+import { accountantSellerNav, adminNav } from "./NavigationData";
+
+const handleLogout = () => {
+  cleanAuthorization();
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
+};
 
 const userNavigation = [
-  { name: "Your profile", to: "#" },
-  { name: "Sign out", to: "#" },
-];
+  { name: "Your profile", to: "/profile" },
+  { name: "Sign out", to: "/" },
+] as const;
 
 function classNames(...classes: (string | null)[]): string {
   return classes.filter(Boolean).join(" ");
@@ -31,9 +39,37 @@ export default function SidebarNavigation() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { location } = useRouterState();
 
+  const { data: brands } = useGetAllBrand();
+  const [selectedBrand, setSelectedBrand] = useAtom(brandAtom);
+  const user = getUserInfo() as UserLocalInfo;
+
+  const brandList = useMemo(() => {
+    if (brands) {
+      const list = brands.map((brand) => {
+        return { id: brand.id, label: brand.name };
+      });
+
+      if (!selectedBrand) {
+        setSelectedBrand(brands[0]);
+      }
+
+      return list;
+    }
+
+    return [];
+    //eslint-disable-next-line
+  }, [brands, selectedBrand]);
+
+  const handleBrandChange = (newBrand: { id: number; label: string }) => {
+    const foundBrand = brands?.find((brand) => brand.id === newBrand.id);
+    if (!foundBrand) return;
+
+    setSelectedBrand(foundBrand);
+  };
+
   const activeGroup = useMemo(() => {
     if (
-      location.pathname === "/dashboard" ||
+      location.pathname.includes("/dashboard") ||
       location.pathname === "/inbox" ||
       location.pathname === "/tasks"
     )
@@ -113,7 +149,7 @@ export default function SidebarNavigation() {
                     </div>
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
-                  <SidebarComponent activeGroup={activeGroup} />
+                  <SidebarComponent activeGroup={activeGroup} user={user} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -123,7 +159,7 @@ export default function SidebarNavigation() {
         {/* Static sidebar for desktop */}
         <div className="no-scrollbar hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <SidebarComponent activeGroup={activeGroup} />
+          <SidebarComponent activeGroup={activeGroup} user={user} />
         </div>
 
         <div className="lg:pl-72">
@@ -144,17 +180,18 @@ export default function SidebarNavigation() {
             />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <div className="flex flex-1">
-                <p className="relative flex gap-2 mt-5">
-                  G-Rocket
-                  <button
-                    type="button"
-                    className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-                  >
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </p>
+              <div className="flex flex-1 items-center">
+                <DropdownText
+                  value={
+                    selectedBrand && {
+                      id: selectedBrand.id,
+                      label: selectedBrand.name,
+                    }
+                  }
+                  onChange={handleBrandChange}
+                  list={brandList}
+                  removeBorders={true}
+                />
               </div>
 
               <div className="flex items-center gap-x-4 lg:gap-x-6">
@@ -167,22 +204,32 @@ export default function SidebarNavigation() {
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative">
                   <Menu.Button className="-m-1.5 flex items-center p-1.5">
-                    <div className="flex flex-col mr-6 items-center">
+                    <div className="max-md:hidden flex flex-col mr-6 items-center">
                       <span
                         className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                         aria-hidden="true"
                       >
-                        Jaymel Tapel
+                        {user?.name ?? ""}
                       </span>
-                      <span className="ml-auto">Admin</span>
+                      <span className="ml-auto capitalize">
+                        {user?.role?.toLowerCase() ?? ""}
+                      </span>
                     </div>
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full bg-gray-50"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
-                    />
-                    <span className="flex flex-colhidden lg:flex lg:items-center">
+                    {user?.profile_image ? (
+                      <div className="rounded-full h-8 w-8 overflow-hidden">
+                        <img
+                          src={user.profile_image}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <UserCircleIcon
+                        className="h-12 w-12 text-gray-300"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="flex flex-col lg:flex lg:items-center">
                       <ChevronDownIcon
                         className="ml-2 h-5 w-5 text-gray-400"
                         aria-hidden="true"
@@ -199,21 +246,35 @@ export default function SidebarNavigation() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                      {userNavigation.map((item) => (
-                        <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <a
-                              href={item.to}
-                              className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "block px-3 py-1 text-sm leading-6 text-gray-900"
-                              )}
-                            >
-                              {item.name}
-                            </a>
-                          )}
-                        </Menu.Item>
-                      ))}
+                      {userNavigation.map((item) => {
+                        return (
+                          <Menu.Item key={item.name}>
+                            {({ active }) => (
+                              <Link
+                                to={item.to}
+                                params={
+                                  item.name === "Your profile"
+                                    ? {
+                                        userId: user.id,
+                                      }
+                                    : undefined
+                                }
+                                onClick={
+                                  item.name === "Sign out"
+                                    ? () => handleLogout()
+                                    : undefined
+                                }
+                                className={classNames(
+                                  active ? "bg-gray-50" : "",
+                                  "block px-3 py-1 text-sm leading-6 text-gray-900 hover:cursor-pointer"
+                                )}
+                              >
+                                {item.name}
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        );
+                      })}
                     </Menu.Items>
                   </Transition>
                 </Menu>
@@ -228,77 +289,20 @@ export default function SidebarNavigation() {
 
 function SidebarComponent(props) {
   const navigation = useMemo(() => {
-    return [
-      {
-        name: "Dashboard",
-        to: "/dashboard",
-        icon: Squares2X2Icon,
-        children: [
-          { name: "My Dashboard", to: "/dashboard" },
-          { name: "My Inbox", to: "/inbox" },
-          { name: "My Tasks", to: "/tasks" },
-        ],
-      },
-      {
-        name: "Orders",
-        to: "/orders",
-        icon: ClipboardDocumentCheckIcon,
-        children: [
-          { name: "Orders Report", to: "/orders/orders_report" },
-          { name: "Orders Manager", to: "/orders/orders_manager" },
-          { name: "Deleted Orders", to: "/orders/deleted" },
-        ],
-      },
-      {
-        name: "Clients",
-        to: "/clients",
-        icon: UserGroupIcon,
-        children: [
-          { name: "Client Report", to: "/clients/clients_report" },
-          {
-            name: "Clients Manager",
-            to: "/clients/clients_manager",
-          },
-        ],
-      },
-      {
-        name: "Prospects",
-        to: "/prospects",
-        icon: MagnifyingGlassIcon,
-        children: [
-          { name: "My Prospects", to: "#" },
-          { name: "Email Templates", to: "#" },
-        ],
-      },
-      {
-        name: "Accounts",
-        to: "/accounts",
-        icon: KeyIcon,
-        children: [
-          { name: "Seller Report", to: "/accounts/seller_reports" },
-          { name: "Users Manager", to: "/accounts/users_manager" },
-          {
-            name: "Inactive Users",
-            to: "/accounts/inactive_users",
-          },
-        ],
-      },
-      {
-        name: "Brands",
-        to: "/brands",
-        icon: GlobeAltIcon,
-        children: [{ name: "Brands Manager", to: "#" }],
-      },
-    ];
-  }, []);
+    if (props.user.role === "ADMIN") {
+      return adminNav;
+    }
+
+    return accountantSellerNav;
+  }, [props.user]);
 
   return (
     <div className="no-scrollbar flex grow flex-col overflow-y-auto bg-[#1C2434] px-6 pb-4 ring-1 ring-white/10">
       <div className="flex items-center justify-center">
         <div className="flex justify-center gap-4 py-8">
           <p className="text-4xl text-white font-bold">OMS</p>
-          <p className="border-none bg-[#41B2E9] font-medium text-sm text-white rounded-md self-center py-1.5 px-3">
-            Admin
+          <p className="capitalize border-none bg-[#41B2E9] font-medium text-sm text-white rounded-md self-center py-1.5 px-3">
+            {props.user.role.toLowerCase() ?? "Seller"}
           </p>
         </div>
       </div>
@@ -314,12 +318,12 @@ function SidebarComponent(props) {
                   <li key={index}>
                     {!item.children ? (
                       <Link
-                        params={null}
                         to={item.to}
                         className={classNames(
-                          isActiveGroup ? "bg-gray-50" : "",
+                          isActiveGroup ? "bg-GrBlue-base" : "",
                           "group hover:bg-gray-50 flex gap-x-3 rounded-md p-2 text-sm leading-6 text-gray-700"
                         )}
+                        params={true}
                       >
                         {/* <item.icon
                  className="h-6 w-6  shrink-0 text-gray-400"
@@ -359,12 +363,12 @@ function SidebarComponent(props) {
                               {item.children?.map((subItem) => (
                                 <li key={subItem.name}>
                                   <Link
-                                    params={null}
                                     to={subItem.to}
                                     className={
                                       "block py-2 pr-2 text-sm leading-6 text-[#8A99AF]"
                                     }
                                     activeProps={{ className: `text-white` }}
+                                    params={true}
                                   >
                                     {subItem.name}
                                   </Link>

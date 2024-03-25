@@ -1,151 +1,128 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TableContainer from "../../tools/table/TableContainer";
 import Table from "../../tools/table/Table";
 import TableBody from "../../tools/table/TableBody";
 import TableBodyCell from "../../tools/table/TableBodyCell";
-import TableContainer from "../../tools/table/TableContainer";
 import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
+import { Pagination } from "../../../services/queries/accountsQueries";
+import { useNavigate } from "@tanstack/react-router";
+import TablePagination, {
+  PaginationNavs,
+} from "../../tools/table/TablePagination";
+import { Order } from "../../../services/queries/orderQueries";
+import dayjs from "dayjs";
+import Pill from "../../tools/pill/Pill";
+import { getPaymentStatus } from "../../../utils/utils";
 
-const DataHead: string[] = [
-  "Date",
-  "Order ID",
-  "Client",
-  "Total",
-  "Review",
-  "Payment Status",
-  "Remarks",
+const COLUMNS = [
+  "DATE",
+  "ORDER ID",
+  "ClIENT",
+  "TOTAL",
+  "REVIEWS",
+  "PAYMENT STATUS",
+  "REMARKS",
 ];
 
-const DeletedOrdersTable: React.FC = () => {
-  const [tabledata] = useState([
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-    {
-      Date: "09/15/2022 2:04:59 PM",
-      Order_ID: "1021",
-      Client: "Micheal Angelo D. Russel",
-      Total: "$1.49",
-      Review: "1",
-      Payment_status: "New",
-      Remarks: "test",
-    },
-  ]);
+const itemsPerPage = 10;
+
+type TableProps = {
+  orders: Order[];
+  pagination: Pagination;
+};
+
+const DeletedOrdersTable: React.FC<TableProps> = ({ orders, pagination }) => {
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (value: number | PaginationNavs) => {
+    if (typeof value === "number") {
+      setCurrentPage(value);
+      return;
+    }
+
+    const lastPage = pagination.lastPage;
+
+    if (value === "first") {
+      setCurrentPage(1);
+    } else if (value === "prev") {
+      if (currentPage !== 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else if (value === "next") {
+      if (currentPage !== lastPage) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else if (value === "last") {
+      setCurrentPage(lastPage);
+    }
+  };
+
+  useEffect(() => {
+    navigate({
+      search: (old) => {
+        return {
+          ...old,
+          page: currentPage,
+          perPage: itemsPerPage,
+        };
+      },
+      params: true,
+    });
+    //eslint-disable-next-line
+  }, [currentPage]);
+
   return (
-    <div>
-      <div className="flex mt-4 justify-between mb-6">
-        <div>
-          <span className="flex gap-2">
-            <p>Orders</p> / <p className="text-[#41B2E9]">Deleted Orders</p>
-          </span>
-        </div>
-      </div>
-      <div className="bg-white">
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {DataHead.map((head, i) => (
-                  <TableHeadCell key={i}>{head}</TableHeadCell>
-                ))}
+    <TableContainer className="bg-white">
+      <Table>
+        <TableHead>
+          <TableRow>
+            {COLUMNS.map((col, index) => (
+              <TableHeadCell key={index}>{col}</TableHeadCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {orders.length === 0 && (
+            <TableRow>
+              <TableBodyCell className="text-center text-gray-500" colSpan={7}>
+                No data found.
+              </TableBodyCell>
+            </TableRow>
+          )}
+          {orders.map((order, i) => {
+            const paymentStatus = getPaymentStatus(order.payment_status);
+
+            return (
+              <TableRow key={i}>
+                <TableBodyCell className="whitespace-nowrap">
+                  {dayjs(order.createdAt).format("MM-DD-YYYY")}
+                </TableBodyCell>
+                <TableBodyCell>{order.id}</TableBodyCell>
+                <TableBodyCell>{order.client.name}</TableBodyCell>
+                <TableBodyCell>{order.total_price}</TableBodyCell>
+                <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
+                <TableBodyCell>
+                  <Pill bgColor={paymentStatus.color}>
+                    {paymentStatus.label}
+                  </Pill>
+                </TableBodyCell>
+                <TableBodyCell>{order.remarks}</TableBodyCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {tabledata.map((item, i) => (
-                <TableRow key={i}>
-                  <TableBodyCell>{item.Date}</TableBodyCell>
-                  <TableBodyCell>{item.Order_ID}</TableBodyCell>
-                  <TableBodyCell>{item.Client}</TableBodyCell>
-                  <TableBodyCell>{item.Total}</TableBodyCell>
-                  <TableBodyCell>{item.Review}</TableBodyCell>
-                  <TableBodyCell>{item.Payment_status}</TableBodyCell>
-                  <TableBodyCell>{item.Remarks}</TableBodyCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-    </div>
+            );
+          })}
+        </TableBody>
+      </Table>
+      <TablePagination
+        itemsPerPage={10}
+        currentPage={currentPage}
+        lastPage={pagination.lastPage}
+        handlePageChange={handlePageChange}
+        totalItems={pagination.total}
+      />
+    </TableContainer>
   );
 };
 

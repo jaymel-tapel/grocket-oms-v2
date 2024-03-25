@@ -1,12 +1,14 @@
-import DashboardTasks from "../../components/dashboard/tasks/DashboardTasks";
-import LoggedSection from "../../components/sections/LoggedSection";
+import TaskForm from "../../components/dashboard/tasks/TaskForm";
+import { taskRoute } from "../routeTree";
 
-const Tasks: React.FC = () => {
+const Task = () => {
+  const { taskId } = taskRoute.useParams();
+
   return (
-    <LoggedSection>
-      <DashboardTasks />
-    </LoggedSection>
+    <div>
+      <TaskForm taskId={taskId} />
+    </div>
   );
 };
 
-export default Tasks;
+export default Task;

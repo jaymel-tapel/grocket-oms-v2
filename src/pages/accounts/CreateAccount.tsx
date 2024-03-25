@@ -1,11 +1,5 @@
-import SelectSellerForm from "../../components/orders/OrdersManager/newOrderForm/SelectSellerForm";
-
 const CreateAccount = () => {
-  return (
-    <>
-      <SelectSellerForm />
-    </>
-  );
+  return <div></div>;
 };
 
 export default CreateAccount;
