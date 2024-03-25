@@ -166,3 +166,23 @@ export const sliceDate = (date: string) => {
 
   return date.slice(0, 10);
 };
+
+export const parseEstimate = (durationStr: string) => {
+  const units: { [key: string]: number } = {
+    d: 86400000,
+    h: 3600000,
+    m: 60000,
+    s: 1000,
+  };
+  const regex = /(\d+)\s*(d|h|m|s)/g;
+  let totalMilliseconds = 0;
+
+  let match;
+  while ((match = regex.exec(durationStr)) !== null) {
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+    totalMilliseconds += value * units[unit];
+  }
+
+  return totalMilliseconds;
+};

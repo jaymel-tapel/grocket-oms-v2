@@ -7,7 +7,7 @@ import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { useFindProspectsContext } from "./FindProspectsContext";
-import { useIsMutating } from "@tanstack/react-query";
+// import { useIsMutating } from "@tanstack/react-query";
 import Spinner from "../../tools/spinner/Spinner";
 import TablePagination, {
   PaginationNavs,
@@ -28,10 +28,10 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     step,
     hasWebsites,
     prospects,
-    setProspects,
+    // setProspects,
     // selectedProspects,
     // setSelectedProspects,
-    setProspectsEmail,
+    // setProspectsEmail,
   } = useFindProspectsContext();
 
   const paginatedProspects = useMemo(() => {
@@ -90,16 +90,16 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     [currentPage, prospects]
   );
 
-  const isMutating = useIsMutating({ mutationKey: ["scrape-prospects"] });
+  // const isMutating = useIsMutating({ mutationKey: ["scrape-prospects"] });
 
-  useEffect(() => {
-    if (isMutating) {
-      setProspects([]);
-      // setSelectedProspects([]);
-      setProspectsEmail([]);
-    }
-    //eslint-disable-next-line
-  }, [isMutating]);
+  // useEffect(() => {
+  //   if (isMutating) {
+  //     setProspects([]);
+  //     // setSelectedProspects([]);
+  //     setProspectsEmail([]);
+  //   }
+  //   //eslint-disable-next-line
+  // }, [isMutating]);
 
   useEffect(() => {
     if (
@@ -171,13 +171,13 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {isMutating ? (
+          {/* {isMutating ? (
             <TableRow>
               <TableBodyCell className="py-8" colSpan={5}>
                 <Spinner className="h-8 w-8 mx-auto" />
               </TableBodyCell>
             </TableRow>
-          ) : null}
+          ) : null} */}
           {paginatedProspects.map((prospect, index) => {
             return (
               <TableRow key={index}>

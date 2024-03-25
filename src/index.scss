@@ -91,6 +91,11 @@
   letter-spacing: 0.25px;
 }
 
+.popover-content-max-width {
+  width: var(--radix-popover-trigger-width);
+  max-height: var(--radix-popover-content-available-height);
+}
+
 .icon {
   path {
     color: #dee4ee;

@@ -6,8 +6,11 @@ import {
 } from "@tanstack/react-query";
 import axios from "axios";
 import { Step1Schema } from "../../components/prospects/findProspects/FindProspectsFormStep1";
-import { useFindProspectsContext } from "../../components/prospects/findProspects/FindProspectsContext";
-import { useRef } from "react";
+import {
+  City,
+  useFindProspectsContext,
+} from "../../components/prospects/findProspects/FindProspectsContext";
+import { useRef, useState } from "react";
 import { getHeaders } from "../../utils/utils";
 import toast from "react-hot-toast";
 
@@ -43,6 +46,13 @@ export type Prospect = {
   status?: "pending" | "queued" | "error" | "success";
 };
 
+type Country = {
+  country: string;
+  cities: string[];
+  iso2: string;
+  iso3: string;
+};
+
 type ScrapeProspectsResponse = {
   message: string;
   hasWebSites: boolean;
@@ -74,6 +84,13 @@ export type NewEmailTemplate = {
 export type EmailTemplate = NewEmailTemplate & {
   id: number;
   prospects: Prospect[];
+};
+
+export type Estimate = {
+  estimated_search: string;
+  estimated_web: string;
+  estimated_email: string;
+  total_estimated_time: string;
 };
 
 export const useGetMyProspects = () => {
@@ -201,43 +218,175 @@ export const useSendColdEmail = () => {
 
 // -- SCRAPER -- //
 
-export const useScrapeProspects = () => {
-  const { setProspects, setIsScraping, setHasWebsites } =
-    useFindProspectsContext();
+export const useGetCountries = () => {
+  return useQuery({
+    queryKey: ["countries"],
+    queryFn: async (): Promise<Country[]> => {
+      const response = await axios.get(
+        "https://countriesnow.space/api/v0.1/countries"
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+};
 
-  return useMutation({
+export const useGetCities = (countryCode: string) => {
+  return useQuery({
+    enabled: countryCode.length > 0 ? true : false,
+    queryKey: ["cities", countryCode],
+    queryFn: async (): Promise<City[]> => {
+      const response = await axios.get("https://api.api-ninjas.com/v1/city", {
+        params: {
+          min_population: 500000,
+          limit: 30,
+          country: countryCode,
+        },
+        headers: { "X-Api-Key": import.meta.env.VITE_API_NINJA_KEY },
+      });
+
+      const cities: City[] = response.data.map((city) => {
+        return { name: city.name, checked: true, status: "queued" };
+      });
+
+      return cities;
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useGetScraperEstimate = (params: {
+  limit: number;
+  no_of_cities: number;
+}) => {
+  const { setEstimates } = useFindProspectsContext();
+
+  return useQuery({
+    enabled: params.no_of_cities > 0 ? true : false,
+    queryKey: ["estimate", params],
+    queryFn: async (): Promise<Estimate> => {
+      const response = await axios.get(SCRAPER_URL + "/estimate", {
+        params,
+        headers: getHeaders(),
+      });
+
+      setEstimates(response.data);
+      return response.data;
+    },
+  });
+};
+
+export const useScrapeProspects = () => {
+  const [currentCity, setCurrentCity] = useState("");
+
+  const {
+    setStep,
+    cities,
+    setCities,
+    prospectFinder,
+    setProspects,
+    setHasWebsites,
+  } = useFindProspectsContext();
+
+  const scrapeProspectsQuery = useMutation({
     mutationKey: ["scrape-prospects"],
-    mutationFn: async (
-      payload: Step1Schema
-    ): Promise<ScrapeProspectsResponse> => {
-      const response = await axios.post(SCRAPER_URL + "/search", payload, {
+    mutationFn: async (arg: {
+      payload: Step1Schema & { city: string };
+      index: number;
+    }): Promise<ScrapeProspectsResponse> => {
+      const response = await axios.post(SCRAPER_URL + "/search", arg.payload, {
         headers: getHeaders(),
       });
       return response.data;
     },
-    onMutate: () => {
-      setIsScraping(true);
+    onMutate: ({ index }) => {
+      const newCities = [...cities];
+      newCities[index] = { ...newCities[index], status: "pending" };
+      setCities(newCities);
     },
-    onSuccess: (data) => {
+    onSuccess: (data, { index }) => {
       const hasWebsite = data.hasWebSites;
 
-      const prospectsWithId: Prospect[] = data.prospects.map(
-        (prospect, index) => {
-          return {
-            ...prospect,
+      // const prospectsWithId: Prospect[] = data.prospects.map(
+      //   (prospect, index) => {
+      //     return {
+      //       ...prospect,
+      //       id: index + 1,
+      //       status: hasWebsite ? "success" : "queued",
+      //     };
+      //   }
+      // );
+
+      // setProspects((prev) => [...prev, ...prospectsWithId]);
+
+      // update city status
+      const newCities = [...cities];
+      newCities[index] = { ...newCities[index], status: "success" };
+      setCities(newCities);
+
+      // set prospect on prep for next step
+      setProspects((prevProspects) => {
+        const updatedProspects = new Array(data.prospects.length);
+
+        for (let index = 0; index < data.prospects.length; index++) {
+          updatedProspects[index] = {
+            ...data.prospects[index],
             id: index + 1,
             status: hasWebsite ? "success" : "queued",
           };
         }
-      );
 
-      setProspects(prospectsWithId);
+        return [...prevProspects, ...updatedProspects];
+      });
+
       setHasWebsites(hasWebsite);
     },
-    onSettled: () => {
-      setIsScraping(false);
+    onError: (_, { index }) => {
+      const newCities = [...cities];
+      newCities[index] = { ...newCities[index], status: "error" };
+      setCities(newCities);
     },
   });
+
+  const stopScrapingRef = useRef(false);
+
+  const scrapeProspects = async () => {
+    stopScrapingRef.current = false;
+
+    for (const city of cities) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const index = cities.indexOf(city);
+
+      if (stopScrapingRef.current) {
+        break;
+      } else {
+        setCurrentCity(city.name);
+
+        try {
+          await scrapeProspectsQuery.mutateAsync({
+            payload: { ...prospectFinder, city: city.name },
+            index,
+          });
+        } catch (error) {
+          console.error(`Error scraping prospects for ${city.name}:`, error);
+        }
+      }
+    }
+
+    setCurrentCity("");
+    setStep(3);
+  };
+
+  const stopScrapeProspects = () => {
+    stopScrapingRef.current = true;
+  };
+
+  return {
+    currentCity,
+    scrapeProspects,
+    stopScrapeProspects,
+  };
 };
 
 export const useScrapeProspectWebsite = () => {
@@ -303,7 +452,7 @@ export const useScrapeProspectWebsite = () => {
       }
     }
 
-    setStep(3);
+    setStep(4);
     setHasWebsites(true);
   };
 
@@ -406,7 +555,7 @@ export const useScrapeProspectEmails = () => {
       }
     }
 
-    setStep(4);
+    setStep(5);
   };
 
   const stopScrapeEmails = () => {
