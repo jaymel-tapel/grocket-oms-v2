@@ -39,6 +39,7 @@ export type Prospect = {
   mapsUrl: string;
   website: string;
   reviewers: Reviewer[];
+  templateId: number;
   status?: "pending" | "queued" | "error" | "success";
 };
 
@@ -84,6 +85,7 @@ export const useGetMyProspects = () => {
       });
       return response.data;
     },
+    staleTime: Infinity,
   });
 };
 
@@ -91,6 +93,14 @@ const getProspectDetails = async (prospectId: number): Promise<Prospect> => {
   const response = await axios.get(PROSPECTS_URL + `/${prospectId}`, {
     headers: getHeaders(),
   });
+  return response.data;
+};
+
+const getProspectEmailLogs = async (prospectId: number) => {
+  const response = await axios.get(
+    PROSPECTS_URL + `/send-email/${prospectId}`,
+    { headers: getHeaders() }
+  );
   return response.data;
 };
 
@@ -102,8 +112,20 @@ export const getProspectDetailsOption = (prospectId: number) => {
   });
 };
 
+export const getProspectEmailLogsOption = (prospectId: number) => {
+  return queryOptions({
+    enabled: prospectId ? !isNaN(prospectId) : false,
+    queryKey: ["email-logs", prospectId],
+    queryFn: () => getProspectEmailLogs(prospectId),
+  });
+};
+
 export const useGetProspectDetails = (prospectId: number) => {
   return useQuery(getProspectDetailsOption(prospectId));
+};
+
+export const useGetProspectEmailLogs = (prospectId: number) => {
+  return useQuery(getProspectEmailLogsOption(prospectId));
 };
 
 export const useMoveProspect = () => {
@@ -121,14 +143,16 @@ export const useMoveProspect = () => {
   });
 };
 
+// -- PROSPECT FORM -- //
+
 type UpdateProspectPayload = {
-  name: string;
-  emails: string[];
-  url: string;
-  phone: string;
-  note: string;
-  industryId: number;
-  templateId: number;
+  name?: string;
+  emails?: string[];
+  url?: string;
+  phone?: string;
+  note?: string;
+  industryId?: number;
+  templateId?: number;
 };
 
 export const useUpdateProspectDetails = () => {
@@ -139,13 +163,38 @@ export const useUpdateProspectDetails = () => {
       prospectId: number;
       payload: UpdateProspectPayload;
     }) => {
-      return axios.patch(PROSPECTS_URL + `/${arg.prospectId}`, arg.payload, {
-        headers: getHeaders(),
-      });
+      return await axios.patch(
+        PROSPECTS_URL + `/${arg.prospectId}`,
+        arg.payload,
+        {
+          headers: getHeaders(),
+        }
+      );
     },
     onSuccess: () => {
       toast.success("Prospect has been updated!");
       queryClient.invalidateQueries({ queryKey: ["my-prospects"] });
+    },
+  });
+};
+
+export const useSendColdEmail = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (arg: {
+      prospectId: number;
+      payload: { templateId: number };
+    }) => {
+      return await axios.post(
+        PROSPECTS_URL + `/send-email/manual/${arg.prospectId}`,
+        arg.payload,
+        { headers: getHeaders() }
+      );
+    },
+    onSuccess: (_, { prospectId }) => {
+      toast.success("Prospect has been updated!");
+      queryClient.invalidateQueries({ queryKey: ["my-prospects", prospectId] });
     },
   });
 };

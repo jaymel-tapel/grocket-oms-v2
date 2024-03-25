@@ -1,18 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Prospect } from "../../../services/queries/prospectsQueries";
+import {
+  Prospect,
+  useUpdateProspectDetails,
+} from "../../../services/queries/prospectsQueries";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
 import Pill from "../../tools/pill/Pill";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { useNavigate } from "@tanstack/react-router";
 
 const prospectFormSchema = z.object({
   name: z.string(),
-  note: z.string().optional(),
-  website: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  note: z.string().optional().catch(""),
+  website: z.string().optional().catch(""),
+  phone: z.string().optional().catch(""),
 });
 
 export type ProspectFormSchema = z.infer<typeof prospectFormSchema>;
@@ -22,7 +26,8 @@ type FormProps = {
 };
 
 const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
-  const isUpdating = false;
+  const navigate = useNavigate();
+  const { mutateAsync, isPending } = useUpdateProspectDetails();
 
   const {
     register,
@@ -36,8 +41,15 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
   const [emailDraft, setEmailDraft] = useState("");
   const [emails, setEmails] = useState(prospect.emails);
 
-  const onSubmit = () => {
-    return;
+  const onSubmit: SubmitHandler<ProspectFormSchema> = async (data) => {
+    const response = await mutateAsync({
+      prospectId: prospect.id,
+      payload: { ...data, emails },
+    });
+
+    if (response.status === 200) {
+      navigate({ to: "/prospects/" });
+    }
   };
 
   useEffect(() => {
@@ -48,7 +60,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
 
   return (
     <form
-      className="bg-white w-full shadow-md"
+      className="bg-white w-full shadow-md flex flex-col"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="p-8 flex flex-col border-b border-b-gray-300">
@@ -229,15 +241,12 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
         </div>
       </div>
 
-      <div className="p-8 flex justify-end gap-4">
+      <div className="mt-auto p-8 flex justify-end gap-4">
         <Button type="button" variant="noBorder">
           Cancel
         </Button>
-        <Button
-          type="submit"
-          // disabled={isCreating || isUpdating || isUpdatingProfile}
-        >
-          {isUpdating ? (
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
             <>
               <Spinner /> Submitting
             </>
