@@ -6,15 +6,17 @@ const TotalResultsLabel = () => {
   const { prospects, prospectsEmails } = useFindProspectsContext();
 
   const total = useMemo(() => {
+    console.log(`reults label: ${prospectsEmails}`);
+
     return {
       business: prospects.length,
       // selected: selectedProspects.length,
-      website: prospects.filter((prospect) => prospect.url).length,
+      website: prospects.filter((prospect) => prospect?.url)?.length,
       emails: prospectsEmails.reduce((acc, prospect) => {
-        return acc + prospect.emails.length;
+        return acc + prospect?.emails?.length ?? 0;
       }, 0),
       websitesWithEmail: prospectsEmails.filter(
-        (prospect) => prospect.emails.length > 0
+        (prospect) => prospect?.emails?.length > 0
       ).length,
     };
   }, [prospects, prospectsEmails]);

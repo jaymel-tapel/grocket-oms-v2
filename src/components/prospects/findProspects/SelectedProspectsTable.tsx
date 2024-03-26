@@ -34,8 +34,6 @@ const SelectedProspectsTable = () => {
     return prospectsEmails.slice(firstProspectIndex, lastProspectIndex);
   }, [prospectsEmails, currentPage]);
 
-  console.log(paginatedEmails);
-
   const handlePageChange = useCallback(
     (value: number | PaginationNavs) => {
       if (typeof value === "number") {
