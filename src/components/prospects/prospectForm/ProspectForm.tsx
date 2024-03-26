@@ -15,7 +15,7 @@ import { useNavigate } from "@tanstack/react-router";
 const prospectFormSchema = z.object({
   name: z.string(),
   note: z.string().optional().catch(""),
-  website: z.string().optional().catch(""),
+  url: z.string().optional().catch(""),
   phone: z.string().optional().catch(""),
 });
 
@@ -123,7 +123,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
 
           <div>
             <label
-              htmlFor="website"
+              htmlFor="url"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Website
@@ -131,15 +131,15 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
             <div className="w-full mt-2">
               <input
                 type="text"
-                id="website"
-                {...register("website")}
+                id="url"
+                {...register("url")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.website && "border-red-500"
+                  errors.url && "border-red-500"
                 }`}
               />
-              {errors.website && (
+              {errors.url && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.website?.message}
+                  {errors.url?.message}
                 </p>
               )}
             </div>
