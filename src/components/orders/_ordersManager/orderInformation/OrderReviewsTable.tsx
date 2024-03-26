@@ -74,7 +74,6 @@ const OrderReviewsTable: React.FC<Props> = ({
 
   const handleDeleteClick = async (id: number | undefined, index: number) => {
     if (!window.confirm("Do you wish to delete this review?")) return;
-    console.log(id);
     if (id === undefined) {
       if (!handleDeleteLocal) return;
 
