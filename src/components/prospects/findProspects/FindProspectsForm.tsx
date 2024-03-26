@@ -98,7 +98,7 @@ const ProspectFormNavigation = () => {
             prospect.name,
             prospect.rating?.toFixed() ?? "",
             prospect.phone,
-            prospect.website,
+            prospect.url,
             email,
           ]);
         });
@@ -108,7 +108,7 @@ const ProspectFormNavigation = () => {
           prospect.name,
           prospect.rating?.toFixed() ?? "",
           prospect.phone,
-          prospect.website,
+          prospect.url,
           "",
         ]);
       }
