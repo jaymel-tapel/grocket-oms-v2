@@ -339,6 +339,9 @@ export const useScrapeProspects = () => {
   });
 
   const stopScrapingRef = useRef(false);
+  const stopScrapeProspects = () => {
+    stopScrapingRef.current = true;
+  };
 
   const scrapeProspects = async () => {
     stopScrapingRef.current = false;
@@ -368,11 +371,8 @@ export const useScrapeProspects = () => {
     }
 
     setCurrentCity("");
+    stopScrapeProspects();
     setStep(3);
-  };
-
-  const stopScrapeProspects = () => {
-    stopScrapingRef.current = true;
   };
 
   return {
@@ -383,7 +383,13 @@ export const useScrapeProspects = () => {
 };
 
 export const useScrapeProspectWebsite = () => {
-  const { setStep, prospects, setProspects } = useFindProspectsContext();
+  const {
+    setStep,
+    prospects,
+    setProspects,
+    prospectsEmails,
+    setProspectsEmail,
+  } = useFindProspectsContext();
 
   const scrapeWebsiteQuery = useMutation({
     mutationKey: ["scrape-website"],
@@ -417,10 +423,22 @@ export const useScrapeProspectWebsite = () => {
         status: "success",
       };
       setProspects(newProspects);
+
+      const hasEmails = prospects[index].emails.length > 0;
+      const newEmails = [...prospectsEmails];
+      newEmails[index] = {
+        id: prospects[index].id,
+        emails: prospects[index].emails,
+        status: prospects[index]?.url && hasEmails ? "success" : "queued",
+      };
+      setProspectsEmail(newEmails);
     },
   });
 
   const stopScrapingRef = useRef(false);
+  const stopScrapeWebsite = () => {
+    stopScrapingRef.current = true;
+  };
 
   const scrapeWebsite = async () => {
     stopScrapingRef.current = false;
@@ -444,11 +462,8 @@ export const useScrapeProspectWebsite = () => {
       }
     }
 
+    stopScrapeWebsite();
     setStep(4);
-  };
-
-  const stopScrapeWebsite = () => {
-    stopScrapingRef.current = true;
   };
 
   return {
@@ -520,6 +535,9 @@ export const useScrapeProspectEmails = () => {
   });
 
   const stopScrapingRef = useRef(false);
+  const stopScrapeEmails = () => {
+    stopScrapingRef.current = true;
+  };
 
   const scrapeEmails = async () => {
     stopScrapingRef.current = false;
@@ -550,11 +568,8 @@ export const useScrapeProspectEmails = () => {
       }
     }
 
+    stopScrapeEmails();
     setStep(5);
-  };
-
-  const stopScrapeEmails = () => {
-    stopScrapingRef.current = true;
   };
 
   return {

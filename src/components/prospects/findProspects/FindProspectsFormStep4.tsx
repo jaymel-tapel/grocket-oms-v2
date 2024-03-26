@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect } from "react";
 import {
   FindProspectsContext,
-  ProspectsEmails,
   useFindProspectsContext,
 } from "./FindProspectsContext";
 import SelectedProspectsTable from "./SelectedProspectsTable";
@@ -12,8 +11,7 @@ type FormProps = {
 };
 
 const FindProspectsFormStep4: React.FC<FormProps> = ({ children }) => {
-  const { setStep, prospects, setProspectsEmail } =
-    useFindProspectsContext() as FindProspectsContext;
+  const { setStep } = useFindProspectsContext() as FindProspectsContext;
 
   const { scrapeEmails, stopScrapeEmails } = useScrapeProspectEmails();
 
@@ -24,19 +22,19 @@ const FindProspectsFormStep4: React.FC<FormProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const initialProspectEmails: ProspectsEmails[] = prospects.map(
-      (prospect) => {
-        const hasEmails = prospect.emails.length > 0;
+    // const initialProspectEmails: ProspectsEmails[] = prospects.map(
+    //   (prospect) => {
+    //     const hasEmails = prospect.emails.length > 0;
 
-        return {
-          id: prospect?.id,
-          status: prospect?.url && hasEmails ? "success" : "queued",
-          emails: [],
-        };
-      }
-    );
+    //     return {
+    //       id: prospect?.id,
+    //       status: prospect?.url && hasEmails ? "success" : "queued",
+    //       emails: [],
+    //     };
+    //   }
+    // );
 
-    setProspectsEmail(initialProspectEmails);
+    // setProspectsEmail(initialProspectEmails);
     scrapeEmails();
     //eslint-disable-next-line
   }, []);

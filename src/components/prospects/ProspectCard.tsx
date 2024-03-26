@@ -87,8 +87,10 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
             <span className="text-[#8A99AF] text-sm">{prospect.phone}</span>
           </div>
           <div className="flex gap-4 items-center">
-            <GlobeAltIcon className="text-[#8A99AF] h-4 w-4" />
-            <span className="text-[#8A99AF] text-sm">{prospect.url}</span>
+            <GlobeAltIcon className="text-[#8A99AF] h-4 w-4 shrink-0" />
+            <span className="text-[#8A99AF] text-sm truncate">
+              {prospect.url}
+            </span>
           </div>
           <div
             // type="button"

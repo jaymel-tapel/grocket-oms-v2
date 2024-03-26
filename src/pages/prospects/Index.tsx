@@ -198,7 +198,7 @@ const Index = () => {
         <div className="mt-6 flex gap-8 overflow-x-auto overflow-y-hidden">
           {myProspects.map((column) => {
             return (
-              <div key={column.id}>
+              <div key={column.id} className="max-w-[300px] w-full">
                 <ProspectCardsContainer column={column} />
               </div>
             );
