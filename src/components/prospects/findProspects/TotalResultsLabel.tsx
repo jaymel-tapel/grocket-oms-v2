@@ -6,8 +6,6 @@ const TotalResultsLabel = () => {
   const { prospects, prospectsEmails } = useFindProspectsContext();
 
   const total = useMemo(() => {
-    console.log(prospectsEmails);
-
     return {
       business: prospects.length,
       // selected: selectedProspects.length,

@@ -340,7 +340,7 @@ export const useScrapeProspects = () => {
       });
 
       // set initial emails if done scraping all cities
-      if (index + 1 === cities.length) {
+      if (index + 1 === cities.filter((city) => city.checked).length) {
         // check if last index
         const newEmails: ProspectsEmails[] = prospects.map((prospect) => {
           const hasEmails = prospect.emails.length > 0;
