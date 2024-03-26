@@ -32,7 +32,7 @@ const EmailTemplateCard: React.FC<Props> = ({ template }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       <div className="bg-slate-300 px-4 py-2 flex justify-between items-center">
-        <span className="font-medium">{template.name}</span>
+        <span className="font-medium text-lg">{template.name}</span>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -58,10 +58,10 @@ const EmailTemplateCard: React.FC<Props> = ({ template }) => {
         </div>
       </div>
       <div className="px-4 py-2 border-b border-[#bg-slate-300]">
-        <span>Subject: {template.subject}</span>
+        <span className="text-[#555555]">Subject: {template.subject}</span>
       </div>
       <div
-        className="px-4 py-2 [&>*:nth-child(1)]:line-clamp-6"
+        className="px-4 py-2 [&>*:nth-child(1)]:line-clamp-6 text-[#555555]"
         dangerouslySetInnerHTML={{ __html: template.content }}
       />
     </div>

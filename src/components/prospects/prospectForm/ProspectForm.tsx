@@ -1,28 +1,33 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { SavedProspect } from "../../../services/queries/prospectsQueries";
+import {
+  Prospect,
+  useUpdateProspectDetails,
+} from "../../../services/queries/prospectsQueries";
 import { Button } from "../../tools/buttons/Button";
 import Spinner from "../../tools/spinner/Spinner";
 import Pill from "../../tools/pill/Pill";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { useNavigate } from "@tanstack/react-router";
 
 const prospectFormSchema = z.object({
-  businessName: z.string(),
-  notes: z.string().optional(),
-  website: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  name: z.string(),
+  note: z.string().optional().catch(""),
+  url: z.string().optional().catch(""),
+  phone: z.string().optional().catch(""),
 });
 
 export type ProspectFormSchema = z.infer<typeof prospectFormSchema>;
 
 type FormProps = {
-  prospect: SavedProspect;
+  prospect: Prospect;
 };
 
 const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
-  const isUpdating = false;
+  const navigate = useNavigate();
+  const { mutateAsync, isPending } = useUpdateProspectDetails();
 
   const {
     register,
@@ -36,13 +41,26 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
   const [emailDraft, setEmailDraft] = useState("");
   const [emails, setEmails] = useState(prospect.emails);
 
-  const onSubmit = () => {
-    return;
+  const onSubmit: SubmitHandler<ProspectFormSchema> = async (data) => {
+    const response = await mutateAsync({
+      prospectId: prospect.id,
+      payload: { ...data, emails },
+    });
+
+    if (response.status === 200) {
+      navigate({ to: "/prospects/" });
+    }
   };
+
+  useEffect(() => {
+    if (prospect.emails.length > 0) {
+      setEmails(prospect.emails);
+    }
+  }, [prospect]);
 
   return (
     <form
-      className="bg-white w-full shadow-md"
+      className="bg-white w-full shadow-md flex flex-col"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="p-8 flex flex-col border-b border-b-gray-300">
@@ -66,15 +84,15 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
               <input
                 type="text"
                 id="userName"
-                {...register("businessName")}
+                {...register("name")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.businessName && "border-red-500"
+                  errors.name && "border-red-500"
                 }`}
               />
             </div>
-            {errors.businessName && (
+            {errors.name && (
               <p className="text-xs italic text-red-500 mt-2">
-                {errors.businessName?.message}
+                {errors.name?.message}
               </p>
             )}
           </div>
@@ -105,7 +123,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
 
           <div>
             <label
-              htmlFor="website"
+              htmlFor="url"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Website
@@ -113,15 +131,15 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
             <div className="w-full mt-2">
               <input
                 type="text"
-                id="website"
-                {...register("website")}
+                id="url"
+                {...register("url")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.website && "border-red-500"
+                  errors.url && "border-red-500"
                 }`}
               />
-              {errors.website && (
+              {errors.url && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.website?.message}
+                  {errors.url?.message}
                 </p>
               )}
             </div>
@@ -160,7 +178,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
             </label>
             <div className="w-full mt-2">
               <div className="flex flex-wrap py-1.5 pl-4 gap-2 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset">
-                {emails.map((email, index) => (
+                {emails?.map((email, index) => (
                   <Pill
                     key={index}
                     className="self-center"
@@ -199,7 +217,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
 
           <div className="col-span-2">
             <label
-              htmlFor="notes"
+              htmlFor="note"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
               Notes
@@ -208,14 +226,14 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
               <textarea
                 id="notes"
                 rows={3}
-                {...register("notes")}
+                {...register("note")}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.notes && "border-red-500"
+                  errors.note && "border-red-500"
                 }`}
               />
-              {errors.notes && (
+              {errors.note && (
                 <p className="text-xs italic text-red-500 mt-2">
-                  {errors.notes?.message}
+                  {errors.note?.message}
                 </p>
               )}
             </div>
@@ -223,15 +241,12 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
         </div>
       </div>
 
-      <div className="p-8 flex justify-end gap-4">
+      <div className="mt-auto p-8 flex justify-end gap-4">
         <Button type="button" variant="noBorder">
           Cancel
         </Button>
-        <Button
-          type="submit"
-          // disabled={isCreating || isUpdating || isUpdatingProfile}
-        >
-          {isUpdating ? (
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
             <>
               <Spinner /> Submitting
             </>

@@ -1,46 +1,48 @@
 import { useMemo } from "react";
 import { useFindProspectsContext } from "./FindProspectsContext";
 import { isEmpty } from "../../../utils/utils";
-import {
-  useScrapeProspectEmails,
-  useScrapeProspectWebsite,
-} from "../../../services/queries/prospectsQueries";
+// import {
+//   useScrapeProspectEmails,
+//   useScrapeProspectWebsite,
+// } from "../../../services/queries/prospectsQueries";
 
 const steps = [
   { id: 1, name: "Enter Keywords" },
-  { id: 2, name: "Select Prospects" },
-  { id: 3, name: "Scrape Website Emails" },
-  { id: 4, name: "Save Prospects" },
+  { id: 2, name: "Scrape Prospects" },
+  { id: 3, name: "Scrape Prospect Details" },
+  { id: 4, name: "Scrape Emails" },
+  { id: 5, name: "Save Prospects" },
 ] as const;
 
 const FindProspectsStepper = () => {
   const {
     step: currentStep,
-    setStep,
+    // setStep,
     prospectFinder,
-    prospects,
+    // prospects,
   } = useFindProspectsContext();
 
-  const { stopScrapeWebsite } = useScrapeProspectWebsite();
-  const { stopScrapeEmails } = useScrapeProspectEmails();
+  // const { stopScrapeWebsite } = useScrapeProspectWebsite();
+  // const { stopScrapeEmails } = useScrapeProspectEmails();
 
   const isStepDone = useMemo(() => {
     return [
       !isEmpty(prospectFinder),
-      prospects.length > 0,
+      currentStep >= 2,
       currentStep >= 3,
       currentStep >= 4,
+      currentStep >= 5,
     ];
-  }, [prospectFinder, prospects, currentStep]);
+  }, [prospectFinder, currentStep]);
 
   const handleClick = (step: number) => {
-    setStep(step);
-
-    if (step === 1 || step === 3) {
-      stopScrapeWebsite();
-    } else if (step === 2 || step === 4) {
-      stopScrapeEmails();
-    }
+    console.log(step);
+    // setStep(step);
+    // if (step === 2 || step === 4) {
+    //   stopScrapeWebsite();
+    // } else if (step === 3 || step === 5) {
+    //   stopScrapeEmails();
+    // }
   };
 
   return (
@@ -52,7 +54,7 @@ const FindProspectsStepper = () => {
             <li key={index} className="md:flex-1">
               {isStepDone[index] ? (
                 <div
-                  className="cursor-pointer group flex flex-col border-l-4 border-grBlue-light py-2 pl-4 hover:border-grBlue-base md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
+                  className="group flex flex-col border-l-4 border-grBlue-light py-2 pl-4 hover:border-grBlue-base md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
                   onClick={() => handleClick(step.id)}
                 >
                   <span className="text-sm font-medium text-grBlue-light group-hover:text-grBlue-base">
@@ -62,7 +64,7 @@ const FindProspectsStepper = () => {
                 </div>
               ) : step.id === currentStep ? (
                 <div
-                  className="cursor-pointer flex flex-col border-l-4 border-grBlue-light py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
+                  className="flex flex-col border-l-4 border-grBlue-light py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
                   aria-current="step"
                   onClick={() => handleClick(step.id)}
                 >

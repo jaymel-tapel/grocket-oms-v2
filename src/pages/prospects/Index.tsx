@@ -1,7 +1,11 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "../../components/tools/buttons/Button";
-import { ProspectColumn } from "../../services/queries/prospectsQueries";
-import { useMemo, useState } from "react";
+import {
+  ProspectColumn,
+  useGetMyProspects,
+  useMoveProspect,
+} from "../../services/queries/prospectsQueries";
+import { useEffect, useMemo, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -20,107 +24,54 @@ import ProspectCardsContainer from "../../components/prospects/ProspectCardsCont
 import ProspectCard from "../../components/prospects/ProspectCard";
 import { SmartPointerSensor } from "./DndSensor";
 
-const PROSPECTS: ProspectColumn[] = [
-  {
-    id: "A",
-    name: "New",
-    items: [
-      {
-        id: 1,
-        businessName: "Test Prospect",
-        rating: "3.5",
-        reviews: "50",
-        phone: "+123456789",
-        mapsUrl: "https://testbusiness.com",
-        website: "john@testbusiness.com",
-        notes: "",
-        emails: ["testasdasdasdasdasdasdasdasdasdasdasd@gmail.com"],
-      },
-      {
-        id: 2,
-        businessName: "Test Prospect",
-        rating: "3.5",
-        reviews: "50",
-        phone: "+123456789",
-        mapsUrl: "https://testbusiness.com",
-        website: "john@testbusiness.com",
-        notes: "",
-        emails: ["test@gmail.com"],
-      },
-      {
-        id: 3,
-        businessName: "Test Prospect",
-        rating: "3.5",
-        reviews: "50",
-        phone: "+123456789",
-        mapsUrl: "https://testbusiness.com",
-        website: "john@testbusiness.com",
-        notes: "",
-        emails: ["test@gmail.com"],
-      },
-    ],
-  },
-  {
-    id: "B",
-    name: "Sent Cold Email",
-    items: [
-      {
-        id: 4,
-        businessName: "Test Prospect",
-        rating: "3.5",
-        reviews: "50",
-        phone: "+123456789",
-        mapsUrl: "https://testbusiness.com",
-        website: "john@testbusiness.com",
-        notes: "This is a note",
-        emails: ["test@gmail.com", "test2@gmail.com", "test3@gmail.com"],
-      },
-    ],
-  },
-  {
-    id: "C",
-    name: "Sent Follow Up 1",
-    items: [],
-  },
-  {
-    id: "D",
-    name: "Sent Follow Up 2",
-    items: [],
-  },
-];
-
 const Index = () => {
   const navigate = useNavigate();
   const [activeItemId, setActiveItemId] = useState<null | number>(null);
-  const [mockProspects, setMockProspects] =
-    useState<ProspectColumn[]>(PROSPECTS);
+  const [myProspects, setMyProspects] = useState<ProspectColumn[]>([]);
+
+  const { mutateAsync } = useMoveProspect();
+  const { data } = useGetMyProspects();
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const columns = data?.map((template, index) => {
+      const stringId = String.fromCharCode(65 + index);
+
+      return { ...template, id: stringId, templateId: template.id };
+    });
+
+    setMyProspects(columns);
+  }, [data]);
 
   const activeProspect = useMemo(() => {
     if (!activeItemId) return undefined;
 
-    for (const column of mockProspects) {
-      for (const item of column.items) {
+    for (const column of myProspects) {
+      for (const item of column.prospects) {
         if (item.id === activeItemId) {
           return item;
         }
       }
     }
     return undefined;
-  }, [activeItemId, mockProspects]);
+  }, [activeItemId, myProspects]);
 
   const findColumn = (id: UniqueIdentifier | undefined) => {
     if (!id) {
       return null;
     }
-    if (mockProspects.some((c) => c.id === id)) {
-      return mockProspects.find((c) => c.id === id) ?? null;
+    if (myProspects.some((c) => c.id === id)) {
+      return myProspects.find((c) => c.id === id) ?? null;
     }
-    const itemWithColumnId = mockProspects.flatMap((c) => {
+    const itemWithColumnId = myProspects.flatMap((c) => {
       const columnId = c.id;
-      return c.items.map((i) => ({ itemId: i.id, columnId: columnId }));
+      return c.prospects.map((i) => ({ itemId: i.id, columnId: columnId }));
     });
     const columnId = itemWithColumnId.find((i) => i.itemId === id)?.columnId;
-    return mockProspects.find((c) => c.id === columnId) ?? null;
+    return myProspects.find((c) => c.id === columnId) ?? null;
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -132,9 +83,10 @@ const Index = () => {
     if (!activeColumn || !overColumn || activeColumn === overColumn) {
       return null;
     }
-    setMockProspects((prevState) => {
-      const activeItems = activeColumn.items;
-      const overItems = overColumn.items;
+
+    setMyProspects((prevState) => {
+      const activeItems = activeColumn.prospects;
+      const overItems = overColumn.prospects;
       const activeIndex = activeItems.findIndex((i) => i.id === activeId);
       const overIndex = overItems.findIndex((i) => i.id === overId);
       const newIndex = () => {
@@ -145,10 +97,10 @@ const Index = () => {
       };
       return prevState.map((c) => {
         if (c.id === activeColumn.id) {
-          c.items = activeItems.filter((i) => i.id !== activeId);
+          c.prospects = activeItems.filter((i) => i.id !== activeId);
           return c;
         } else if (c.id === overColumn.id) {
-          c.items = [
+          c.prospects = [
             ...overItems.slice(0, newIndex()),
             activeItems[activeIndex],
             ...overItems.slice(newIndex(), overItems.length),
@@ -172,20 +124,25 @@ const Index = () => {
     const overId = over ? over.id : undefined;
     const activeColumn = findColumn(activeId);
     const overColumn = findColumn(overId);
-
     if (!activeColumn || !overColumn || activeColumn !== overColumn) {
       setActiveItemId(null);
       return null;
     }
 
-    const activeIndex = activeColumn.items.findIndex((i) => i.id === activeId);
-    const overIndex = overColumn.items.findIndex((i) => i.id === overId);
+    const activeIndex = activeColumn.prospects.findIndex(
+      (i) => i.id === activeId
+    );
+    const overIndex = overColumn.prospects.findIndex((i) => i.id === overId);
 
     if (activeIndex !== overIndex) {
-      setMockProspects((prevState) => {
+      setMyProspects((prevState) => {
         return prevState.map((column) => {
           if (column.id === activeColumn.id) {
-            column.items = arrayMove(overColumn.items, activeIndex, overIndex);
+            column.prospects = arrayMove(
+              overColumn.prospects,
+              activeIndex,
+              overIndex
+            );
             return column;
           } else {
             return column;
@@ -193,6 +150,15 @@ const Index = () => {
         });
       });
     }
+
+    // Update my prospect db
+    const newProspectIds = overColumn.prospects.map((prospect) => prospect.id);
+    newProspectIds.splice(overIndex, 0, activeId as number);
+
+    mutateAsync({
+      templateId: overColumn.templateId,
+      payload: { newProspectIds: JSON.stringify(newProspectIds) },
+    });
 
     setActiveItemId(null);
   };
@@ -229,9 +195,13 @@ const Index = () => {
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
       >
-        <div className="mt-6 flex gap-8">
-          {mockProspects.map((column) => {
-            return <ProspectCardsContainer key={column.id} column={column} />;
+        <div className="mt-6 flex gap-8 overflow-x-auto overflow-y-hidden">
+          {myProspects.map((column) => {
+            return (
+              <div key={column.id} className="max-w-[300px] w-full">
+                <ProspectCardsContainer column={column} />
+              </div>
+            );
           })}
         </div>
 

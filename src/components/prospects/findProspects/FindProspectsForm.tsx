@@ -6,11 +6,14 @@ import FindProspectsFormStep1 from "./FindProspectsFormStep1";
 import FindProspectsFormStep2 from "./FindProspectsFormStep2";
 import FindProspectsFormStep3 from "./FindProspectsFormStep3";
 import FindProspectsFormStep4 from "./FindProspectsFormStep4";
+import FindProspectsFormStep5 from "./FindProspectsFormStep5";
+
 import { useMemo } from "react";
 import {
   useScrapeProspectEmails,
   useScrapeProspectWebsite,
 } from "../../../services/queries/prospectsQueries";
+import { useNavigate } from "@tanstack/react-router";
 
 const FindProspectsForm = () => {
   const { step } = useFindProspectsContext();
@@ -60,6 +63,11 @@ const FindProspectsForm = () => {
             <ProspectFormNavigation />
           </FindProspectsFormStep4>
         )}
+        {step === 5 && (
+          <FindProspectsFormStep5>
+            <ProspectFormNavigation />
+          </FindProspectsFormStep5>
+        )}
       </div>
     </div>
   );
@@ -70,6 +78,7 @@ export default FindProspectsForm;
 const csvColumns = [["Business Name", "Rating", "Phone", "Website", "Email"]];
 
 const ProspectFormNavigation = () => {
+  const navigate = useNavigate();
   const { step, setStep, selectedProspects, prospectsEmails } =
     useFindProspectsContext();
 
@@ -86,20 +95,20 @@ const ProspectFormNavigation = () => {
         // Add a row for each email
         emails.forEach((email) => {
           mappedData.push([
-            prospect.businessName,
-            prospect.rating,
+            prospect.name,
+            prospect.rating?.toFixed() ?? "",
             prospect.phone,
-            prospect.website,
+            prospect.url,
             email,
           ]);
         });
       } else {
         // If there are no emails, add a single row
         mappedData.push([
-          prospect.businessName,
-          prospect.rating,
+          prospect.name,
+          prospect.rating?.toFixed() ?? "",
           prospect.phone,
-          prospect.website,
+          prospect.url,
           "",
         ]);
       }
@@ -109,9 +118,12 @@ const ProspectFormNavigation = () => {
   }, [prospectsEmails, selectedProspects]);
 
   const handlePrevious = () => {
-    if (step === 1 || step === 3) {
-      stopScrapeWebsite();
+    if (step === 1) {
+      navigate({ to: "/prospects" });
+      return;
     } else if (step === 2 || step === 4) {
+      stopScrapeWebsite();
+    } else if (step === 3 || step === 5) {
       stopScrapeEmails();
     }
 
@@ -120,13 +132,12 @@ const ProspectFormNavigation = () => {
 
   return (
     <div className="pt-8 border-t border-t-gray-300 flex max-sm:flex-col gap-4 justify-between">
-      {step > 1 && (
-        <Button type="button" variant="delete" onClick={handlePrevious}>
-          Previous
-        </Button>
-      )}
+      <Button type="button" variant="delete" onClick={handlePrevious}>
+        {step > 1 ? "Previous" : "Go back"}
+      </Button>
+
       <div className="flex gap-4 max-sm:flex-col">
-        {step === 4 && (
+        {step === 5 && (
           <Button
             type="button"
             variant={"lightBlue"}
@@ -137,13 +148,13 @@ const ProspectFormNavigation = () => {
             </CSVLink>
           </Button>
         )}
-        <Button type="submit">
-          {step === 4
-            ? "Save Prospects"
-            : step === 3
-            ? "Skip email scraping?"
-            : "Next"}
-        </Button>
+        {/* {step !== 5 && (
+          <Button type="submit">
+            {step === 4 ? "Skip email scraping?" : "Next"}
+          </Button>
+        )} */}
+
+        {step === 1 && <Button type="submit">Next</Button>}
       </div>
     </div>
   );

@@ -24,7 +24,10 @@ import {
   taskSearchParams,
   usersSearchSchema,
 } from "./routeSearchSchemas";
-import { getEmailTemplateOptions } from "../services/queries/prospectsQueries";
+import {
+  getEmailTemplateOptions,
+  getProspectDetailsOption,
+} from "../services/queries/prospectsQueries";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
@@ -393,9 +396,9 @@ export const prospectRoute = createRoute({
   path: "$prospectId",
   parseParams: ({ prospectId }) => ({ prospectId: Number(prospectId) }),
   stringifyParams: ({ prospectId }) => ({ prospectId: `${prospectId}` }),
-  // loader: async ({ context: { queryClient }, params: { prospectId } }) => {
-  //   queryClient.ensureQueryData(getUserOption(prospectId));
-  // },
+  loader: async ({ context: { queryClient }, params: { prospectId } }) => {
+    queryClient.ensureQueryData(getProspectDetailsOption(prospectId));
+  },
   component: lazyRouteComponent(() => import("./prospects/Prospect")),
 });
 
