@@ -606,6 +606,12 @@ export const useScrapeProspectEmails = () => {
 
     stopScrapeEmails();
     setStep(5);
+    toast.success(
+      "Scraping is finished. Prospects are saved to My Prospects page",
+      {
+        duration: Infinity,
+      }
+    );
   };
 
   return {
