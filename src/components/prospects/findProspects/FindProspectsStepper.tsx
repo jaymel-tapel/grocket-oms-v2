@@ -9,8 +9,8 @@ import { isEmpty } from "../../../utils/utils";
 const steps = [
   { id: 1, name: "Enter Keywords" },
   { id: 2, name: "Scrape Prospects" },
-  { id: 3, name: "Scrape Websites" },
-  { id: 4, name: "Scrape Website Emails" },
+  { id: 3, name: "Scrape Prospect Details" },
+  { id: 4, name: "Scrape Emails" },
   { id: 5, name: "Save Prospects" },
 ] as const;
 

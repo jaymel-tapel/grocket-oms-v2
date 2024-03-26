@@ -14,7 +14,7 @@ import TablePagination, {
 } from "../../tools/table/TablePagination";
 import TotalResultsLabel from "./TotalResultsLabel";
 
-const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE"];
+const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE", "STATUS"];
 const itemsPerPage = 10;
 
 type TableProps = {
@@ -42,10 +42,6 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
 
   const showWebsite = useCallback(
     (index: number) => {
-      if (prospects[index]?.url) {
-        return prospects[index]?.url;
-      }
-
       const status = prospects[index]?.status;
 
       if (status === "queued" && step === 3) {
@@ -53,7 +49,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
       } else if (status === "pending") {
         return "In Progress";
       } else if (status === "success") {
-        return prospects[index].url;
+        return "Success";
       } else if (status === "error") {
         return "Error";
       } else {
@@ -193,10 +189,14 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                   {prospect.phone}
                 </TableBodyCell>
                 <TableBodyCell
-                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis ${
-                    prospects[prospect.id - 1]?.status === "success" &&
-                    "text-grBlue-dark"
-                  }`}
+                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis text-grBlue-dark`}
+                >
+                  <div className="flex gap-2 items-center">
+                    {prospects[index]?.url ?? ""}
+                  </div>
+                </TableBodyCell>
+                <TableBodyCell
+                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis`}
                 >
                   <div className="flex gap-2 items-center">
                     {prospects[prospect.id - 1]?.status === "pending" && (

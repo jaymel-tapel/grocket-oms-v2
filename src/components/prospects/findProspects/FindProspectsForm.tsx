@@ -137,7 +137,7 @@ const ProspectFormNavigation = () => {
       </Button>
 
       <div className="flex gap-4 max-sm:flex-col">
-        {step === 4 && (
+        {step === 5 && (
           <Button
             type="button"
             variant={"lightBlue"}
