@@ -57,7 +57,10 @@ const Prospect = () => {
               templates={templates}
               prospectId={prospectId}
             />
-            <ProspectFormSendEmail />
+            <ProspectFormSendEmail
+              templates={templates}
+              prospectId={prospectId}
+            />
             <ProspectFormLogs />
           </div>
         </div>
