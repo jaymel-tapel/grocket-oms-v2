@@ -26,13 +26,15 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
   };
 
   const scrapeProgress = useMemo(() => {
-    const done = cities.filter(
+    const selectedCities = cities.filter((item) => item.checked);
+
+    const done = selectedCities.filter(
       (item) => item.status === "success" || item.status === "error"
     ).length;
 
-    const percent = (done / cities.length) * 100;
+    const percent = (done / selectedCities.length) * 100;
 
-    const status = `${done} out of ${cities.length} cities`;
+    const status = `${done} out of ${selectedCities.length} cities`;
 
     return { percent, status };
   }, [cities]);

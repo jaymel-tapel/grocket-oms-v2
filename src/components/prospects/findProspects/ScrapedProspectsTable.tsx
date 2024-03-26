@@ -26,7 +26,6 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
 
   const {
     step,
-    hasWebsites,
     prospects,
     // setProspects,
     // selectedProspects,
@@ -43,25 +42,25 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
 
   const showWebsite = useCallback(
     (index: number) => {
-      if (hasWebsites) {
-        return prospects[index]?.website;
+      if (prospects[index]?.url) {
+        return prospects[index]?.url;
       }
 
       const status = prospects[index]?.status;
 
-      if (status === "queued" && step === 2) {
+      if (status === "queued" && step === 3) {
         return "Queued";
       } else if (status === "pending") {
         return "In Progress";
       } else if (status === "success") {
-        return prospects[index].website;
+        return prospects[index].url;
       } else if (status === "error") {
         return "Error";
       } else {
         return "Skipped";
       }
     },
-    [hasWebsites, prospects, step]
+    [prospects, step]
   );
 
   const handlePageChange = useCallback(
@@ -70,7 +69,6 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
         setCurrentPage(value);
         return;
       }
-      console.log(value);
       const lastPage = Math.ceil(prospects.length / itemsPerPage);
 
       if (value === "first") {
@@ -102,10 +100,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
   // }, [isMutating]);
 
   useEffect(() => {
-    if (
-      !hasWebsites &&
-      prospects.some((prospect) => prospect.status === "queued")
-    ) {
+    if (prospects.some((prospect) => prospect.status === "queued")) {
       if (
         paginatedProspects.every(
           (prospect) =>
@@ -116,7 +111,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
       }
     }
     // eslint-disable-next-line
-  }, [hasWebsites, paginatedProspects, handlePageChange]);
+  }, [paginatedProspects, handlePageChange]);
 
   // const isChecked = useCallback(
   //   (prospectId: number) => {

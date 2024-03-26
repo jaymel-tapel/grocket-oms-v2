@@ -40,7 +40,7 @@ export type Prospect = {
   note: string;
   phone: string;
   mapsUrl: string;
-  website: string;
+  url: string;
   reviewers: Reviewer[];
   templateId: number;
   status?: "pending" | "queued" | "error" | "success";
@@ -55,7 +55,6 @@ type Country = {
 
 type ScrapeProspectsResponse = {
   message: string;
-  hasWebSites: boolean;
   prospects: Prospect[];
 };
 
@@ -280,14 +279,8 @@ export const useGetScraperEstimate = (params: {
 export const useScrapeProspects = () => {
   const [currentCity, setCurrentCity] = useState("");
 
-  const {
-    setStep,
-    cities,
-    setCities,
-    prospectFinder,
-    setProspects,
-    setHasWebsites,
-  } = useFindProspectsContext();
+  const { setStep, cities, setCities, prospectFinder, setProspects } =
+    useFindProspectsContext();
 
   const scrapeProspectsQuery = useMutation({
     mutationKey: ["scrape-prospects"],
@@ -306,8 +299,6 @@ export const useScrapeProspects = () => {
       setCities(newCities);
     },
     onSuccess: (data, { index }) => {
-      const hasWebsite = data.hasWebSites;
-
       // const prospectsWithId: Prospect[] = data.prospects.map(
       //   (prospect, index) => {
       //     return {
@@ -333,14 +324,12 @@ export const useScrapeProspects = () => {
           updatedProspects[index] = {
             ...data.prospects[index],
             id: index + 1,
-            status: hasWebsite ? "success" : "queued",
+            status: data.prospects[index]?.url ? "success" : "queued",
           };
         }
 
         return [...prevProspects, ...updatedProspects];
       });
-
-      setHasWebsites(hasWebsite);
     },
     onError: (_, { index }) => {
       const newCities = [...cities];
@@ -357,6 +346,10 @@ export const useScrapeProspects = () => {
     for (const city of cities) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const index = cities.indexOf(city);
+
+      if (!city.checked) {
+        continue;
+      }
 
       if (stopScrapingRef.current) {
         break;
@@ -390,8 +383,7 @@ export const useScrapeProspects = () => {
 };
 
 export const useScrapeProspectWebsite = () => {
-  const { setStep, prospects, setProspects, setHasWebsites } =
-    useFindProspectsContext();
+  const { setStep, prospects, setProspects } = useFindProspectsContext();
 
   const scrapeWebsiteQuery = useMutation({
     mutationKey: ["scrape-website"],
@@ -433,7 +425,7 @@ export const useScrapeProspectWebsite = () => {
   const scrapeWebsite = async () => {
     stopScrapingRef.current = false;
 
-    for (const prospect of prospects) {
+    for (const prospect of prospects.filter((prospect) => !prospect?.url)) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const index = prospects.indexOf(prospect);
 
@@ -453,7 +445,6 @@ export const useScrapeProspectWebsite = () => {
     }
 
     setStep(4);
-    setHasWebsites(true);
   };
 
   const stopScrapeWebsite = () => {
@@ -533,16 +524,20 @@ export const useScrapeProspectEmails = () => {
   const scrapeEmails = async () => {
     stopScrapingRef.current = false;
 
-    for (const prospect of prospects.filter((prospect) => prospect.website)) {
+    for (const prospect of prospects.filter((prospect) => prospect?.url)) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const index = prospects.indexOf(prospect);
+
+      if (prospectsEmails[index].status !== "queued") {
+        continue;
+      }
 
       if (stopScrapingRef.current) {
         break;
       } else {
         try {
           await scrapeEmailsQuery.mutateAsync({
-            payload: { url: prospect.website },
+            payload: { url: prospect.url },
             index,
             prospectId: prospect.id,
           });

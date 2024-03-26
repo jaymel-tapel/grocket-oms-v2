@@ -209,6 +209,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
             <select
               id="country"
               autoComplete="off"
+              defaultValue={""}
               {...register("country", {
                 onChange: (e) => handleSelect(e.target.value),
               })}
@@ -216,7 +217,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
                 errors.country && "border-red-500"
               }`}
             >
-              <option disabled selected value={""}>
+              <option disabled value={""}>
                 Select Country
               </option>
               {countries?.map((item, index) => {

@@ -67,7 +67,7 @@ const SelectedProspectsTable = () => {
 
       const status = email.status;
 
-      if (status === "queued" && step === 3) {
+      if (status === "queued" && step === 4) {
         return "Queued";
       } else if (status === "pending") {
         return "In Progress";
@@ -119,7 +119,7 @@ const SelectedProspectsTable = () => {
                   {prospect.phone}
                 </TableBodyCell>
                 <TableBodyCell className="text-grBlue-dark max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {prospect.website}
+                  {prospect.url}
                 </TableBodyCell>
                 <TableBodyCell
                   className={`${
