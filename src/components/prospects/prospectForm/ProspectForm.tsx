@@ -52,6 +52,10 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
     }
   };
 
+  const handleCancel = () => {
+    navigate({ to: "/prospects/" });
+  };
+
   useEffect(() => {
     if (prospect.emails.length > 0) {
       setEmails(prospect.emails);
@@ -242,7 +246,7 @@ const ProspectForm: React.FC<FormProps> = ({ prospect }) => {
       </div>
 
       <div className="mt-auto p-8 flex justify-end gap-4">
-        <Button type="button" variant="noBorder">
+        <Button type="button" variant="noBorder" onClick={handleCancel}>
           Cancel
         </Button>
         <Button type="submit" disabled={isPending}>
