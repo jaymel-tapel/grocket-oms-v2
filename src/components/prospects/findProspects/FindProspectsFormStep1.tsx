@@ -75,7 +75,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
 
   const { data: estimate } = useGetScraperEstimate({
     limit: watchLimit,
-    no_of_cities: cities.length,
+    no_of_cities: cities.filter((city) => city.checked).length,
   });
 
   useEffect(() => {
