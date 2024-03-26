@@ -8,6 +8,7 @@ import axios from "axios";
 import { Step1Schema } from "../../components/prospects/findProspects/FindProspectsFormStep1";
 import {
   City,
+  ProspectsEmails,
   useFindProspectsContext,
 } from "../../components/prospects/findProspects/FindProspectsContext";
 import { useRef, useState } from "react";
@@ -279,8 +280,15 @@ export const useGetScraperEstimate = (params: {
 export const useScrapeProspects = () => {
   const [currentCity, setCurrentCity] = useState("");
 
-  const { setStep, cities, setCities, prospectFinder, setProspects } =
-    useFindProspectsContext();
+  const {
+    setStep,
+    cities,
+    setCities,
+    prospectFinder,
+    prospects,
+    setProspects,
+    setProspectsEmail,
+  } = useFindProspectsContext();
 
   const scrapeProspectsQuery = useMutation({
     mutationKey: ["scrape-prospects"],
@@ -330,6 +338,32 @@ export const useScrapeProspects = () => {
 
         return [...prevProspects, ...updatedProspects];
       });
+
+      // set initial emails if done scraping all cities
+      if (index + 1 === cities.length) {
+        // check if last index
+        const newEmails: ProspectsEmails[] = prospects.map((prospect) => {
+          const hasEmails = prospect.emails.length > 0;
+          return {
+            id: prospect?.id,
+            status: hasEmails ? "success" : "queued",
+            emails: prospect.emails,
+          };
+        });
+
+        const newEmails2: ProspectsEmails[] = data.prospects.map(
+          (nProspect, nIndex) => {
+            const hasEmails = nProspect.emails.length > 0;
+            return {
+              id: prospects.length + nIndex + 1,
+              status: hasEmails ? "success" : "queued",
+              emails: nProspect.emails,
+            };
+          }
+        );
+
+        setProspectsEmail([...newEmails, ...newEmails2]);
+      }
     },
     onError: (_, { index }) => {
       const newCities = [...cities];
@@ -425,11 +459,13 @@ export const useScrapeProspectWebsite = () => {
       setProspects(newProspects);
 
       const hasEmails = prospects[index].emails.length > 0;
+      if (hasEmails) return;
+
+      const hasUrl = prospects[index]?.url;
       const newEmails = [...prospectsEmails];
       newEmails[index] = {
-        id: prospects[index].id,
-        emails: prospects[index].emails,
-        status: prospects[index]?.url && hasEmails ? "success" : "queued",
+        ...newEmails[index],
+        status: hasUrl ? "queued" : "success",
       };
       setProspectsEmail(newEmails);
     },
