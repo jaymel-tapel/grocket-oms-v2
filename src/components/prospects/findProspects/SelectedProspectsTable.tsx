@@ -109,7 +109,7 @@ const SelectedProspectsTable = () => {
         <TableBody>
           {paginatedProspects.map((prospect, index) => {
             const email = prospectsEmails.find(
-              (email) => email.id === prospect.id
+              (email) => email?.id === prospect?.id
             );
             return (
               <TableRow key={index}>
