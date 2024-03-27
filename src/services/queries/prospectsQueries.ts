@@ -292,7 +292,7 @@ export const useScrapeProspects = () => {
   } = useFindProspectsContext();
 
   const scrapeProspectsQuery = useMutation({
-    meta: { dontNotifyError: true },
+    // meta: { dontNotifyError: true },
     mutationKey: ["scrape-prospects"],
     mutationFn: async (arg: {
       payload: Step1Schema & { city: string };
