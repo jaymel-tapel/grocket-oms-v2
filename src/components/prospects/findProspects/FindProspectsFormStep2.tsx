@@ -36,7 +36,16 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
 
     const status = `${done} out of ${selectedCities.length} cities`;
 
-    return { percent, status };
+    const errorCities = selectedCities.filter(
+      (city) => city.status === "error"
+    );
+
+    const errors =
+      errorCities.length > 0
+        ? errorCities.map((city) => city.name).join(", ")
+        : "None";
+
+    return { percent, status, errors };
   }, [cities]);
 
   useEffect(() => {
@@ -61,6 +70,11 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
           <div className="flex flex-col">
             <span className="font-bold">Scraped Prospects:</span>
             <span>{prospects.length}</span>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="font-bold">Errors:</span>
+            <span>{scrapeProgress.errors}</span>
           </div>
         </div>
 

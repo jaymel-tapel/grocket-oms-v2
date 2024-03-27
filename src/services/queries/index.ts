@@ -9,7 +9,11 @@ interface ValidationError {
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: (error, query) => {
+      if (query?.meta?.dontNotifyError) {
+        return;
+      }
+
       if (axios.isAxiosError<ValidationError, Record<string, unknown>>(error)) {
         toast.error(
           error.response?.data.message ??
