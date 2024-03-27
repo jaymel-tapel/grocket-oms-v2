@@ -41,9 +41,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
   }, [prospects, currentPage]);
 
   const showWebsite = useCallback(
-    (index: number) => {
-      const status = prospects[index]?.status;
-
+    (status?: string) => {
       if (status === "queued" && step === 3) {
         return "Queued";
       } else if (status === "pending") {
@@ -56,7 +54,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
         return "Skipped";
       }
     },
-    [prospects, step]
+    [step]
   );
 
   const handlePageChange = useCallback(
@@ -192,17 +190,15 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                   className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis text-grBlue-dark`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospects[index]?.url ?? ""}
+                    {prospect.url ?? ""}
                   </div>
                 </TableBodyCell>
                 <TableBodyCell
                   className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospects[prospect.id - 1]?.status === "pending" && (
-                      <Spinner />
-                    )}
-                    {showWebsite(prospect.id - 1)}
+                    {prospect.status === "pending" && <Spinner />}
+                    {showWebsite(prospect.status)}
                   </div>
                 </TableBodyCell>
               </TableRow>
