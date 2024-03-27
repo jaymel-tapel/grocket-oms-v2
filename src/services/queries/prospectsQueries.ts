@@ -480,6 +480,13 @@ export const useScrapeProspectWebsite = () => {
       const newProspects = [...prospects];
       newProspects[index] = { ...newProspects[index], status: "error" };
       setProspects(newProspects);
+
+      const newEmails = [...prospectsEmails];
+      newEmails[index] = {
+        ...newEmails[index],
+        status: "skip",
+      };
+      setProspectsEmail(newEmails);
     },
     onSuccess: (data, { index }) => {
       const newProspects = [...prospects];
