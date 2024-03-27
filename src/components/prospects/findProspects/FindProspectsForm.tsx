@@ -79,7 +79,7 @@ const csvColumns = [["Business Name", "Rating", "Phone", "Website", "Email"]];
 
 const ProspectFormNavigation = () => {
   const navigate = useNavigate();
-  const { step, setStep, selectedProspects, prospectsEmails } =
+  const { step, setStep, prospects, prospectsEmails } =
     useFindProspectsContext();
 
   const { stopScrapeWebsite } = useScrapeProspectWebsite();
@@ -88,7 +88,7 @@ const ProspectFormNavigation = () => {
   const finalCsvData = useMemo(() => {
     const mappedData: Array<string[]> = [];
 
-    selectedProspects.forEach((prospect, index) => {
+    prospects.forEach((prospect, index) => {
       const emails = prospectsEmails[index]?.emails || [];
 
       if (emails?.length > 0) {
@@ -115,7 +115,7 @@ const ProspectFormNavigation = () => {
     });
 
     return csvColumns.concat(mappedData);
-  }, [prospectsEmails, selectedProspects]);
+  }, [prospectsEmails, prospects]);
 
   const handlePrevious = () => {
     if (step === 1) {

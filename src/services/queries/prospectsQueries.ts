@@ -308,18 +308,6 @@ export const useScrapeProspects = () => {
       setCities(newCities);
     },
     onSuccess: (data, { index }) => {
-      // const prospectsWithId: Prospect[] = data.prospects.map(
-      //   (prospect, index) => {
-      //     return {
-      //       ...prospect,
-      //       id: index + 1,
-      //       status: hasWebsite ? "success" : "queued",
-      //     };
-      //   }
-      // );
-
-      // setProspects((prev) => [...prev, ...prospectsWithId]);
-
       // update city status
       const newCities = [...cities];
       newCities[index] = { ...newCities[index], status: "success" };
@@ -332,7 +320,6 @@ export const useScrapeProspects = () => {
         for (let index = 0; index < data.prospects.length; index++) {
           updatedProspects[index] = {
             ...data.prospects[index],
-            id: index + 1,
             status: data.prospects[index]?.url ? "success" : "queued",
           };
         }
@@ -354,10 +341,10 @@ export const useScrapeProspects = () => {
         });
 
         const newEmails2: ProspectsEmails[] = data.prospects.map(
-          (nProspect, nIndex) => {
+          (nProspect) => {
             const hasEmails = nProspect.emails.length > 0;
             return {
-              id: prospects.length + nIndex + 1,
+              id: nProspect.id,
               status: hasEmails ? "success" : "queued",
               emails: nProspect.emails,
             };
@@ -371,6 +358,34 @@ export const useScrapeProspects = () => {
       const newCities = [...cities];
       newCities[index] = { ...newCities[index], status: "error" };
       setCities(newCities);
+
+      if (index + 1 === cities.filter((city) => city.checked).length) {
+        if (prospects.length === 0) {
+          setHasWebsites(true);
+          return;
+        }
+
+        const newEmails: ProspectsEmails[] = prospects.map((prospect) => {
+          const hasEmails = prospect?.emails?.length > 0 ?? false;
+
+          return {
+            id: prospect?.id,
+            status: hasEmails ? "success" : "queued",
+            emails: prospect.emails,
+          };
+        });
+
+        setProspects(
+          prospects.map((prospect) => {
+            return {
+              ...prospect,
+              status: prospect?.url ? "success" : "queued",
+            };
+          })
+        );
+
+        setProspectsEmail([...newEmails]);
+      }
     },
   });
 
@@ -384,11 +399,11 @@ export const useScrapeProspects = () => {
 
     for (const city of cities) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const index = cities.indexOf(city);
-
       if (!city.checked) {
         continue;
       }
+
+      const index = cities.filter((city) => city.checked).indexOf(city);
 
       if (stopScrapingRef.current) {
         break;
@@ -465,7 +480,7 @@ export const useScrapeProspectWebsite = () => {
       const hasEmails = prospects[index].emails.length > 0;
       if (hasEmails) return;
 
-      const hasUrl = prospects[index]?.url;
+      const hasUrl = prospects[index]?.url?.length > 0 ?? false;
       const newEmails = [...prospectsEmails];
       newEmails[index] = {
         ...newEmails[index],
