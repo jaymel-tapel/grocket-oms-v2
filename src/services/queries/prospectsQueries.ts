@@ -316,13 +316,13 @@ export const useScrapeProspects = () => {
       return response.data;
     },
     onMutate: ({ index }) => {
-      const newCities = [...cities];
+      const newCities = cities.filter((city) => city.checked);
       newCities[index] = { ...newCities[index], status: "pending" };
       setCities(newCities);
     },
     onSuccess: (data, { index }) => {
       // update city status
-      const newCities = [...cities];
+      const newCities = cities.filter((city) => city.checked);
       newCities[index] = { ...newCities[index], status: "success" };
       setCities(newCities);
 
@@ -368,7 +368,7 @@ export const useScrapeProspects = () => {
       }
     },
     onError: (_, { index }) => {
-      const newCities = [...cities];
+      const newCities = cities.filter((city) => city.checked);
       newCities[index] = { ...newCities[index], status: "error" };
       setCities(newCities);
 

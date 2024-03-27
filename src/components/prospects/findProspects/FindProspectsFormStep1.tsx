@@ -20,7 +20,6 @@ import {
 import {
   Command,
   CommandGroup,
-  CommandInput,
   CommandItem,
 } from "../../tools/command/Command";
 import Spinner from "../../tools/spinner/Spinner";
@@ -115,6 +114,21 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
     const newCities = [...cities];
     newCities[cityIndex].checked = !newCities[cityIndex].checked;
     setCities(newCities);
+  };
+
+  const handleCheckAll = () => {
+    if (cities.every((city) => city.checked === true)) {
+      const newCities = cities.map((city) => {
+        return { ...city, checked: false };
+      });
+      setCities(newCities);
+    } else {
+      console.log("else");
+      const newCities = cities.map((city) => {
+        return { ...city, checked: true };
+      });
+      setCities(newCities);
+    }
   };
 
   const cityLabel = useMemo(() => {
@@ -257,8 +271,20 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
             </PopoverTrigger>
             <PopoverContent className="p-0 popover-content-max-width">
               <Command>
-                <CommandInput placeholder="Search cities..." />
+                {/* <CommandInput placeholder="Search cities..." /> */}
                 <CommandGroup className="max-h-[200px] overflow-y-auto">
+                  <CommandItem className="cursor-pointer">
+                    <input
+                      id={`check-all`}
+                      aria-describedby="check-all"
+                      name={`check-all`}
+                      type="checkbox"
+                      checked={cities.every((city) => city.checked)}
+                      onChange={handleCheckAll}
+                      className="h-4 w-4 rounded border-gray-300 text-grBlue-dark focus:ring-grBlue-dark"
+                    />
+                    <span className="ml-2">Select All</span>
+                  </CommandItem>
                   {cities?.map((city, index) => {
                     return (
                       <CommandItem
