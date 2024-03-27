@@ -12,7 +12,7 @@ type FormProps = {
 };
 
 const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { setStep, selectedProspects } =
+  const { setStep, hasWebsites, selectedProspects } =
     useFindProspectsContext() as FindProspectsContext;
 
   const { scrapeWebsite, stopScrapeWebsite } = useScrapeProspectWebsite();
@@ -30,7 +30,9 @@ const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    scrapeWebsite();
+    if (!hasWebsites) {
+      scrapeWebsite();
+    }
     //eslint-disable-next-line
   }, []);
 
