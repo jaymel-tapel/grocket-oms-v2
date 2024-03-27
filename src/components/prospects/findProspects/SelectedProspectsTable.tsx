@@ -59,7 +59,6 @@ const SelectedProspectsTable = () => {
     },
     [currentPage, prospects]
   );
-  console.log(prospectsEmails);
 
   const showEmails = useCallback(
     (prospectId: number) => {

@@ -292,6 +292,7 @@ export const useScrapeProspects = () => {
   } = useFindProspectsContext();
 
   const scrapeProspectsQuery = useMutation({
+    // meta: { dontNotifyError: true },
     mutationKey: ["scrape-prospects"],
     mutationFn: async (arg: {
       payload: Step1Schema & { city: string };
@@ -444,6 +445,7 @@ export const useScrapeProspectWebsite = () => {
   } = useFindProspectsContext();
 
   const scrapeWebsiteQuery = useMutation({
+    meta: { dontNotifyError: true },
     mutationKey: ["scrape-website"],
     mutationFn: async (arg: {
       payload: { url: string };
@@ -533,6 +535,7 @@ export const useScrapeProspectEmails = () => {
     useFindProspectsContext();
 
   const scrapeEmailsQuery = useMutation({
+    meta: { dontNotifyError: true },
     mutationKey: ["scrape-emails"],
     mutationFn: async (arg: {
       payload: { url: string };
