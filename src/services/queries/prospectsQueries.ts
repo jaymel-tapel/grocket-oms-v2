@@ -454,6 +454,7 @@ export const useScrapeProspectWebsite = () => {
       newProspects[index] = {
         ...newProspects[index],
         ...data,
+        url: data.website,
         status: "success",
       };
       setProspects(newProspects);
