@@ -288,6 +288,7 @@ export const useScrapeProspects = () => {
     prospects,
     setProspects,
     setProspectsEmail,
+    setHasWebsites,
   } = useFindProspectsContext();
 
   const scrapeProspectsQuery = useMutation({
@@ -342,6 +343,7 @@ export const useScrapeProspects = () => {
       // set initial emails if done scraping all cities
       if (index + 1 === cities.filter((city) => city.checked).length) {
         // check if last index
+        setHasWebsites(true);
         const newEmails: ProspectsEmails[] = prospects.map((prospect) => {
           const hasEmails = prospect.emails.length > 0;
           return {
@@ -423,6 +425,7 @@ export const useScrapeProspectWebsite = () => {
     setProspects,
     prospectsEmails,
     setProspectsEmail,
+    setHasWebsites,
   } = useFindProspectsContext();
 
   const scrapeWebsiteQuery = useMutation({
@@ -479,6 +482,7 @@ export const useScrapeProspectWebsite = () => {
 
   const scrapeWebsite = async () => {
     stopScrapingRef.current = false;
+    setHasWebsites(true);
 
     for (const prospect of prospects.filter((prospect) => !prospect?.url)) {
       await new Promise((resolve) => setTimeout(resolve, 500));
