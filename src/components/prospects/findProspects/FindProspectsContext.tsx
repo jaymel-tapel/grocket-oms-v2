@@ -11,7 +11,7 @@ type ProspectFinder = {
 export type ProspectsEmails = {
   id: number;
   emails: string[];
-  status: "pending" | "queued" | "error" | "success";
+  status: "pending" | "queued" | "error" | "success" | "skip";
 };
 
 export type City = {
