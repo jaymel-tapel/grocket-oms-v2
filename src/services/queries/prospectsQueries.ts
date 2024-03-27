@@ -263,7 +263,7 @@ export const useGetScraperEstimate = (params: {
   const { setEstimates } = useFindProspectsContext();
 
   return useQuery({
-    enabled: params.no_of_cities > 0 ? true : false,
+    enabled: params.no_of_cities > 0 && params.limit > 0 ? true : false,
     queryKey: ["estimate", params],
     queryFn: async (): Promise<Estimate> => {
       const response = await axios.get(SCRAPER_URL + "/estimate", {
