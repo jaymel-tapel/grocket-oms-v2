@@ -80,7 +80,7 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
     limit: 10,
   });
   const [prospects, setProspects] = useState<Prospect[]>([]);
-  const [hasWebsites, setHasWebsites] = useState(true);
+  const [hasWebsites, setHasWebsites] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
   const [estimates, setEstimates] = useState({
     estimated_email: "",
