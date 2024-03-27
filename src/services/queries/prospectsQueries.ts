@@ -93,6 +93,17 @@ export type Estimate = {
   total_estimated_time: string;
 };
 
+export type EmailLogsResponse = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
+  prospectId: number;
+  template: string;
+  by: string;
+  action: string;
+}[];
+
 export const useGetMyProspects = () => {
   return useQuery({
     queryKey: ["my-prospects"],
@@ -113,11 +124,12 @@ const getProspectDetails = async (prospectId: number): Promise<Prospect> => {
   return response.data;
 };
 
-const getProspectEmailLogs = async (prospectId: number) => {
-  const response = await axios.get(
-    PROSPECTS_URL + `/send-email/${prospectId}`,
-    { headers: getHeaders() }
-  );
+const getProspectEmailLogs = async (
+  prospectId: number
+): Promise<EmailLogsResponse> => {
+  const response = await axios.get(API_URL + `/prospect-logs/${prospectId}`, {
+    headers: getHeaders(),
+  });
   return response.data;
 };
 
@@ -601,7 +613,7 @@ export const useScrapeProspectEmails = () => {
   const scrapeEmails = async () => {
     stopScrapingRef.current = false;
 
-    for (const prospect of prospects.filter((prospect) => prospect?.url)) {
+    for (const prospect of prospects) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const index = prospects.indexOf(prospect);
 

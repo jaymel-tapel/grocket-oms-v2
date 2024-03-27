@@ -6,11 +6,13 @@ import ProspectFormSendEmail from "../../components/prospects/prospectForm/Prosp
 import {
   useGetMyProspects,
   useGetProspectDetails,
+  useGetProspectEmailLogs,
 } from "../../services/queries/prospectsQueries";
 import { prospectRoute } from "../routeTree";
 
 const Prospect = () => {
   const { prospectId } = prospectRoute.useParams();
+  const { data: logs } = useGetProspectEmailLogs(prospectId);
   const { data: prospect } = useGetProspectDetails(prospectId);
   const { data: prospects } = useGetMyProspects();
 
@@ -61,7 +63,7 @@ const Prospect = () => {
               templates={templates}
               prospectId={prospectId}
             />
-            <ProspectFormLogs />
+            <ProspectFormLogs logs={logs ?? []} templates={templates} />
           </div>
         </div>
       )}
