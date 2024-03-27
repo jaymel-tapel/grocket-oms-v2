@@ -494,7 +494,7 @@ export const useScrapeProspectWebsite = () => {
       const hasEmails = prospects[index].emails.length > 0;
       if (hasEmails) return;
 
-      const hasUrl = prospects[index]?.url?.length > 0 ?? false;
+      const hasUrl = data.website.length > 0 ?? false;
       const newEmails = [...prospectsEmails];
       newEmails[index] = {
         ...newEmails[index],

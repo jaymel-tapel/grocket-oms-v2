@@ -96,6 +96,13 @@ const SelectedProspectsTable = () => {
     //eslint-disable-next-line
   }, [prospectsEmails, paginatedEmails, handlePageChange]);
 
+  useEffect(() => {
+    if (step === 5) {
+      handlePageChange("last");
+    }
+    //eslint-disable-next-line
+  }, [step]);
+
   return (
     <TableContainer shadowOff={true}>
       <Table>
