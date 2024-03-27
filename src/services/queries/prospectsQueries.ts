@@ -436,7 +436,17 @@ export const useScrapeProspects = () => {
 
     setCurrentCity("");
     stopScrapeProspects();
-    setStep(3);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    if (prospects.length === 0) {
+      setStep(1);
+      toast.error(
+        "No prospect found. Please try again with different keywords"
+      );
+    } else {
+      setStep(3);
+    }
   };
 
   return {
