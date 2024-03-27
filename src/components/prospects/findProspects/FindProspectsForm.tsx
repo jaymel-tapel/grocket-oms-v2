@@ -1,4 +1,4 @@
-import { CSVLink } from "react-csv";
+import { CSVLink, CSVDownload } from "react-csv";
 import { useFindProspectsContext } from "./FindProspectsContext";
 import { Button } from "../../tools/buttons/Button";
 import FindProspectsStepper from "./FindProspectsStepper";
@@ -135,6 +135,14 @@ const ProspectFormNavigation = () => {
       <Button type="button" variant="delete" onClick={handlePrevious}>
         {step > 1 ? "Previous" : "Go back"}
       </Button>
+
+      {step === 5 && (
+        <CSVDownload
+          data={finalCsvData}
+          filename={"oms-prospects.csv"}
+          target="_blank"
+        />
+      )}
 
       <div className="flex gap-4 max-sm:flex-col">
         {step === 5 && (
