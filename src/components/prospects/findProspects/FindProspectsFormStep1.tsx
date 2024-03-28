@@ -273,7 +273,10 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
               <Command>
                 {/* <CommandInput placeholder="Search cities..." /> */}
                 <CommandGroup className="max-h-[200px] overflow-y-auto">
-                  <CommandItem className="cursor-pointer">
+                  <CommandItem
+                    className="cursor-pointer"
+                    onSelect={handleCheckAll}
+                  >
                     <input
                       id={`check-all`}
                       aria-describedby="check-all"
