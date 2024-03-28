@@ -14,6 +14,7 @@ import {
 import { useRef, useState } from "react";
 import { getHeaders } from "../../utils/utils";
 import toast from "react-hot-toast";
+import ToastContent from "../../components/tools/toastContent/ToastContent";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = API_URL + "/scraper";
@@ -518,7 +519,7 @@ export const useScrapeProspectWebsite = () => {
         )
       );
 
-      const hasEmails = prospects[index].emails.length > 0;
+      const hasEmails = prospects[index]?.emails?.length > 0 ?? false;
       if (hasEmails) return;
 
       const hasUrl = data.website.length > 0 ?? false;
@@ -543,21 +544,25 @@ export const useScrapeProspectWebsite = () => {
     stopScrapingRef.current = true;
   };
 
+  // Function to chunk the array
+  const chunkArray = (arr, size) =>
+    Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+      arr.slice(i * size, i * size + size)
+    );
+
   const scrapeWebsite = async () => {
     stopScrapingRef.current = false;
     setHasWebsites(true);
 
-    // Function to chunk the array
-    const chunkArray = (arr, size) =>
-      Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-        arr.slice(i * size, i * size + size)
-      );
-
     // Only consider prospects without a URL
-    const filteredProspects = prospects.filter((prospect) => !prospect?.url);
+    const filteredProspects = prospects.filter(
+      (prospect) => !prospect?.url && prospect.status === "queued"
+    );
 
     // Chunk the filtered prospects array into chunks of size 10
     const chunks = chunkArray(filteredProspects, 4);
+
+    console.log(chunks);
 
     for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -565,7 +570,7 @@ export const useScrapeProspectWebsite = () => {
       // Use Promise.all to process up to 10 requests in parallel
       await Promise.all(
         chunk.map(async (prospect) => {
-          const index = filteredProspects.indexOf(prospect);
+          const index = prospects.indexOf(prospect);
 
           try {
             await scrapeWebsiteQuery.mutateAsync({
@@ -696,7 +701,11 @@ export const useScrapeProspectEmails = () => {
     stopScrapeEmails();
     setStep(5);
     toast.success(
-      "Scraping is finished. Prospects are saved to My Prospects page",
+      (t) =>
+        ToastContent(
+          t,
+          "Scraping is finished. Prospects are saved to My Prospects page"
+        ),
       {
         duration: Infinity,
       }
