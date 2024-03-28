@@ -33,6 +33,8 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     // setProspectsEmail,
   } = useFindProspectsContext();
 
+  console.log(prospects);
+
   const paginatedProspects = useMemo(() => {
     const lastProspectIndex = currentPage * itemsPerPage;
     const firstProspectIndex = lastProspectIndex - itemsPerPage;
@@ -105,7 +107,7 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
       }
     }
     // eslint-disable-next-line
-  }, [paginatedProspects, handlePageChange]);
+  }, [paginatedProspects]);
 
   // const isChecked = useCallback(
   //   (prospectId: number) => {

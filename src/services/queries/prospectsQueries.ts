@@ -451,7 +451,7 @@ export const useScrapeProspectWebsite = () => {
     setStep,
     prospects,
     setProspects,
-    prospectsEmails,
+    // prospectsEmails,
     setProspectsEmail,
     setHasWebsites,
   } = useFindProspectsContext();
@@ -472,42 +472,69 @@ export const useScrapeProspectWebsite = () => {
       return response.data;
     },
     onMutate: ({ index }) => {
-      const newProspects = [...prospects];
-      newProspects[index] = { ...newProspects[index], status: "pending" };
-      setProspects(newProspects);
+      // const newProspects = [...prospects];
+      // newProspects[index] = { ...newProspects[index], status: "pending" };
+      setProspects((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, status: "pending" } : item
+        )
+      );
     },
     onError: (_, { index }) => {
-      const newProspects = [...prospects];
-      newProspects[index] = { ...newProspects[index], status: "error" };
-      setProspects(newProspects);
+      // const newProspects = [...prospects];
+      // newProspects[index] = { ...newProspects[index], status: "error" };
+      setProspects((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, status: "error" } : item
+        )
+      );
 
-      const newEmails = [...prospectsEmails];
-      newEmails[index] = {
-        ...newEmails[index],
-        status: "skip",
-      };
-      setProspectsEmail(newEmails);
+      // const newEmails = [...prospectsEmails];
+      // newEmails[index] = {
+      //   ...newEmails[index],
+      //   status: "skip",
+      // };
+      // setProspectsEmail(newEmails);
+      setProspectsEmail((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, status: "skip" } : item
+        )
+      );
     },
     onSuccess: (data, { index }) => {
-      const newProspects = [...prospects];
-      newProspects[index] = {
-        ...newProspects[index],
-        ...data,
-        url: data.website,
-        status: "success",
-      };
-      setProspects(newProspects);
+      // const newProspects = [...prospects];
+      // newProspects[index] = {
+      //   ...newProspects[index],
+      //   ...data,
+      //   url: data.website,
+      //   status: "success",
+      // };
+
+      setProspects((prev) =>
+        prev.map((item, idx) =>
+          idx === index
+            ? { ...item, ...data, url: data.website, status: "success" }
+            : item
+        )
+      );
 
       const hasEmails = prospects[index].emails.length > 0;
       if (hasEmails) return;
 
       const hasUrl = data.website.length > 0 ?? false;
-      const newEmails = [...prospectsEmails];
-      newEmails[index] = {
-        ...newEmails[index],
-        status: hasUrl ? "queued" : "success",
-      };
-      setProspectsEmail(newEmails);
+      // const newEmails = [...prospectsEmails];
+      // newEmails[index] = {
+      //   ...newEmails[index],
+      //   status: hasUrl ? "queued" : "success",
+      // };
+      // setProspectsEmail(newEmails);
+      setProspectsEmail((prev) =>
+        prev.map((item, idx) =>
+          idx === index
+            ? { ...item, status: hasUrl ? "queued" : "success" }
+            : item
+        )
+      );
     },
   });
 
@@ -520,23 +547,43 @@ export const useScrapeProspectWebsite = () => {
     stopScrapingRef.current = false;
     setHasWebsites(true);
 
-    for (const prospect of prospects.filter((prospect) => !prospect?.url)) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const index = prospects.indexOf(prospect);
+    // Function to chunk the array
+    const chunkArray = (arr, size) =>
+      Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+        arr.slice(i * size, i * size + size)
+      );
 
-      if (stopScrapingRef.current) {
-        break;
-      } else {
-        try {
-          await scrapeWebsiteQuery.mutateAsync({
-            payload: { url: prospect.mapsUrl },
-            index,
-            prospectId: prospect.id,
-          });
-        } catch (error) {
-          console.error(`Error scraping details for ${prospect.name}:`, error);
-        }
-      }
+    // Only consider prospects without a URL
+    const filteredProspects = prospects.filter((prospect) => !prospect?.url);
+
+    // Chunk the filtered prospects array into chunks of size 10
+    const chunks = chunkArray(filteredProspects, 4);
+
+    for (const chunk of chunks) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Use Promise.all to process up to 10 requests in parallel
+      await Promise.all(
+        chunk.map(async (prospect) => {
+          const index = filteredProspects.indexOf(prospect);
+
+          try {
+            await scrapeWebsiteQuery.mutateAsync({
+              payload: { url: prospect.mapsUrl },
+              index,
+              prospectId: prospect.id,
+            });
+          } catch (error) {
+            console.error(
+              `Error scraping details for ${prospect.name}:`,
+              error
+            );
+          }
+        })
+      );
+
+      // Optional: delay between chunks
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     stopScrapeWebsite();
