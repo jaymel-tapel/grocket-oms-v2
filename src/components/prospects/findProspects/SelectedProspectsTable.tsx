@@ -87,7 +87,10 @@ const SelectedProspectsTable = () => {
     if (prospectsEmails.some((email) => email.status === "queued")) {
       if (
         paginatedEmails.every(
-          (email) => email.status === "success" || email.status === "error"
+          (email) =>
+            email.status === "success" ||
+            email.status === "error" ||
+            email.status === "skip"
         )
       ) {
         handlePageChange("next");

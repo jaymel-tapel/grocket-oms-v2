@@ -14,6 +14,7 @@ import {
 import { useRef, useState } from "react";
 import { getHeaders } from "../../utils/utils";
 import toast from "react-hot-toast";
+import ToastContent from "../../components/tools/toastContent/ToastContent";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = API_URL + "/scraper";
@@ -554,7 +555,9 @@ export const useScrapeProspectWebsite = () => {
       );
 
     // Only consider prospects without a URL
-    const filteredProspects = prospects.filter((prospect) => !prospect?.url);
+    const filteredProspects = prospects.filter(
+      (prospect) => !prospect?.url && prospect.status === "queued"
+    );
 
     // Chunk the filtered prospects array into chunks of size 10
     const chunks = chunkArray(filteredProspects, 4);
@@ -696,7 +699,11 @@ export const useScrapeProspectEmails = () => {
     stopScrapeEmails();
     setStep(5);
     toast.success(
-      "Scraping is finished. Prospects are saved to My Prospects page",
+      (t) =>
+        ToastContent(
+          t,
+          "Scraping is finished. Prospects are saved to My Prospects page"
+        ),
       {
         duration: Infinity,
       }
