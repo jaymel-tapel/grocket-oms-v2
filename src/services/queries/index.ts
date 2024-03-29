@@ -8,6 +8,9 @@ interface ValidationError {
 }
 
 export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { refetchOnWindowFocus: false },
+  },
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (query?.meta?.dontNotifyError === true) {
