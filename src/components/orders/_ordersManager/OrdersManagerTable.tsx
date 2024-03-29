@@ -26,7 +26,7 @@ import Spinner from "../../tools/spinner/Spinner";
 const COLUMNS = [
   "DATE",
   "ORDER ID",
-  "ClIENT",
+  "CLIENT",
   "TOTAL",
   "REVIEWS",
   "PAYMENT STATUS",
@@ -37,7 +37,7 @@ const PAYMENT_STATUS = [
   { label: "New", payload: "NEW", color: "default" },
   { label: "Reminder 1", payload: "PR1", color: "yellow" },
   { label: "Reminder 2", payload: "PR2", color: "orange" },
-  { label: "Sent Invoice", payload: "SENT INVOICE", color: "lightBlue" },
+  { label: "Sent Invoice", payload: "SENT_INVOICE", color: "lightBlue" },
   { label: "Paid", payload: "PAID", color: "green" },
   { label: "Unpaid", payload: "UNPAID", color: "red" },
 ] as const;

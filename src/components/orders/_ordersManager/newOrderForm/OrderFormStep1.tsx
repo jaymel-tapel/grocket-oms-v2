@@ -2,10 +2,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 import { UserLocalInfo, getUserInfo } from "../../../../utils/utils";
+import { debounce } from "lodash";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -20,6 +21,8 @@ type FormProps = {
 
 const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
+  const [keyword, setKeyword] = useState("");
+  const [sellerDraft, setSellerDraft] = useState("");
 
   const user = getUserInfo() as UserLocalInfo;
 
@@ -34,8 +37,8 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   });
 
   const { data: sellers } = useGetAllSellers({
-    keyword: "",
-    perPage: 5,
+    keyword,
+    perPage: 10,
   });
 
   const handleChange = (field: keyof typeof seller, value) => {
@@ -46,6 +49,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
 
     if (field === "email") {
       setValue("email", value as string);
+      setSellerDraft(value);
     }
   };
 
@@ -59,6 +63,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
       email: seller.email,
     });
 
+    setSellerDraft(seller.email);
     setValue("name", seller.name);
     setValue("email", seller.email);
   };
@@ -78,9 +83,19 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
   };
 
   useEffect(() => {
+    const debounceSeller = debounce(() => {
+      setKeyword(sellerDraft);
+    }, 500);
+
+    debounceSeller();
+    return () => debounceSeller.cancel();
+  }, [sellerDraft]);
+
+  useEffect(() => {
     if (user.role === "SELLER") {
       setValue("email", user.email ?? "");
       setValue("name", user.name);
+      setSellerDraft(user.email);
 
       setSeller({
         id: user.id,
@@ -105,7 +120,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
           <AutoComplete
             suggestions={sellers?.data.map((seller) => seller.email) ?? []}
             type="email"
-            value={seller.email}
+            value={sellerDraft}
             handleChange={(value) => handleChange("email", value)}
             handleSelect={(value) => handleEmailSelect(value)}
             disabled={user.role === "SELLER"}

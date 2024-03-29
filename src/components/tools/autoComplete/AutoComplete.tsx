@@ -17,20 +17,20 @@ const AutoComplete: React.FC<Props> = (props) => {
     ...inputProps
   } = props;
 
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  // const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const onChange = (e) => {
-    const userInput = e.target.value;
+    // const userInput = e.target.value;
 
     // Filter our suggestions that don't contain the user's input
-    const unLinked = suggestions.filter(
-      (suggestion) =>
-        suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
-    );
+    // const unLinked = suggestions.filter(
+    //   (suggestion) =>
+    //     suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
+    // );
 
-    setFilteredSuggestions(unLinked);
+    // setFilteredSuggestions(unLinked);
     setActiveSuggestionIndex(0);
 
     if (handleChange) {
@@ -39,8 +39,9 @@ const AutoComplete: React.FC<Props> = (props) => {
   };
 
   const onClick = (e) => {
-    setFilteredSuggestions([]);
+    // setFilteredSuggestions([]);
     setActiveSuggestionIndex(0);
+    setShowSuggestions(false);
 
     if (handleSelect) {
       handleSelect(e.currentTarget.innerText);
@@ -55,7 +56,7 @@ const AutoComplete: React.FC<Props> = (props) => {
       setActiveSuggestionIndex(0);
 
       if (handleSelect) {
-        handleSelect(filteredSuggestions[activeSuggestionIndex]);
+        handleSelect(suggestions[activeSuggestionIndex]);
       }
     }
     // User pressed the up arrow
@@ -67,7 +68,7 @@ const AutoComplete: React.FC<Props> = (props) => {
     }
     // User pressed the down arrow
     else if (e.keyCode === 40) {
-      if (activeSuggestionIndex - 1 === filteredSuggestions.length) {
+      if (activeSuggestionIndex - 1 === suggestions.length) {
         return;
       }
       setActiveSuggestionIndex(activeSuggestionIndex + 1);
@@ -97,7 +98,7 @@ const AutoComplete: React.FC<Props> = (props) => {
       />
       {showSuggestions && (
         <ul className="absolute z-10 left-0 right-0 max-h-48 overflow-auto border border-gray-300 bg-white">
-          {filteredSuggestions.map((suggestion, index) => {
+          {suggestions.map((suggestion, index) => {
             let className;
             // Flag the active suggestion with a class
             if (index === activeSuggestionIndex) {
