@@ -73,6 +73,10 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
     }
   };
 
+  const handleCancel = () => {
+    navigate({ to: "/accounts/users_manager" });
+  }
+
   return (
     <div className="bg-white self-start max-sm:w-full">
       <div className="px-8 py-4 border-b border-b-gray-300">Your Photo</div>
@@ -132,7 +136,7 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
         </div>
 
         <div className="flex gap-4 justify-end">
-          <Button type="button" variant="noBorder">
+          <Button type="button" variant="noBorder" onClick={() => handleCancel()}>
             Cancel
           </Button>
           <Button
