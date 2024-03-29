@@ -34,7 +34,7 @@ const REVIEW_STATUS = [
 const Index = () => {
   const navigate = useNavigate();
   const searchOrders = ordersManagerIndexRoute.useSearch();
-  const { data } = useGetAllOrders(searchOrders);
+  const { data, isFetching } = useGetAllOrders(searchOrders);
 
   const keyword = searchOrders?.keyword;
   const dateFrom = searchOrders?.from;
@@ -237,6 +237,7 @@ const Index = () => {
         <OrdersManagerTable
           orders={orders.data}
           pagination={orders.pagination}
+          isSearching={isFetching}
         />
       </div>
     </div>

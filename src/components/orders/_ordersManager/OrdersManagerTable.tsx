@@ -47,11 +47,13 @@ const itemsPerPage = 10;
 type TableProps = {
   orders: Order[];
   pagination: Pagination;
+  isSearching: boolean;
 };
 
 const OrdersManagerTable: React.FC<TableProps> = ({
   orders = [],
   pagination,
+  isSearching,
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -139,7 +141,13 @@ const OrdersManagerTable: React.FC<TableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {orders.length === 0 ? (
+          {isSearching ? (
+            <TableRow>
+              <TableBodyCell className="text-center text-gray-500" colSpan={7}>
+                <Spinner className="h-12 w-12 mx-auto" />
+              </TableBodyCell>
+            </TableRow>
+          ) : orders.length === 0 ? (
             <TableRow>
               <TableBodyCell className="text-center text-gray-500" colSpan={7}>
                 No data found.
