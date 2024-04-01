@@ -26,7 +26,7 @@ import Spinner from "../../tools/spinner/Spinner";
 const COLUMNS = [
   "DATE",
   "ORDER ID",
-  "ClIENT",
+  "CLIENT",
   "TOTAL",
   "REVIEWS",
   "PAYMENT STATUS",
@@ -37,7 +37,7 @@ const PAYMENT_STATUS = [
   { label: "New", payload: "NEW", color: "default" },
   { label: "Reminder 1", payload: "PR1", color: "yellow" },
   { label: "Reminder 2", payload: "PR2", color: "orange" },
-  { label: "Sent Invoice", payload: "SENT INVOICE", color: "lightBlue" },
+  { label: "Sent Invoice", payload: "SENT_INVOICE", color: "lightBlue" },
   { label: "Paid", payload: "PAID", color: "green" },
   { label: "Unpaid", payload: "UNPAID", color: "red" },
 ] as const;
@@ -47,11 +47,13 @@ const itemsPerPage = 10;
 type TableProps = {
   orders: Order[];
   pagination: Pagination;
+  isSearching: boolean;
 };
 
 const OrdersManagerTable: React.FC<TableProps> = ({
   orders = [],
   pagination,
+  isSearching,
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -139,7 +141,13 @@ const OrdersManagerTable: React.FC<TableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {orders.length === 0 ? (
+          {isSearching ? (
+            <TableRow>
+              <TableBodyCell className="text-center text-gray-500" colSpan={7}>
+                <Spinner className="h-12 w-12 mx-auto" />
+              </TableBodyCell>
+            </TableRow>
+          ) : orders.length === 0 ? (
             <TableRow>
               <TableBodyCell className="text-center text-gray-500" colSpan={7}>
                 No data found.

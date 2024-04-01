@@ -2,7 +2,6 @@ import * as React from "react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -19,22 +18,28 @@ type Props = {
   buttonLabel?: string;
   sellers: Seller[];
   setSelectedSellers: React.Dispatch<React.SetStateAction<Seller[]>>;
+  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const TransferSellersSelector: React.FC<Props> = ({
   sellers,
   setSelectedSellers,
   buttonLabel,
+  setSearchInput,
 }) => {
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (email: string) => {
-    const foundSeller = sellers?.find((seller) => seller.email === email);
+    const foundSeller = sellers?.find(
+      (seller) => seller.email.toLowerCase() === email
+    );
     if (!foundSeller) return;
 
     buttonLabel
       ? setSelectedSellers([foundSeller])
       : setSelectedSellers((prev) => [...prev, foundSeller]);
+
+    setSearchInput("");
   };
 
   return (
@@ -52,8 +57,11 @@ const TransferSellersSelector: React.FC<Props> = ({
       </PopoverTrigger>
       <PopoverContent className="w-screen sm:max-w-[400px] p-0">
         <Command>
-          <CommandInput placeholder="Search sellers..." />
-          <CommandEmpty>No sellers found.</CommandEmpty>
+          <CommandInput
+            placeholder="Search sellers..."
+            onValueChange={setSearchInput}
+          />
+          {/* <CommandEmpty>No sellers found.</CommandEmpty> */}
           <CommandGroup>
             {sellers?.map((seller) => (
               <CommandItem
