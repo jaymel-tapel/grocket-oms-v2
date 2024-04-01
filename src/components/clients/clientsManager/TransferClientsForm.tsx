@@ -16,6 +16,7 @@ import {
   Seller,
   useGetAllSellers,
 } from "../../../services/queries/sellerQueries";
+import { debounce } from "lodash";
 
 type Props = {
   clients: Client[];
@@ -26,8 +27,12 @@ const TransferClientsForm: React.FC<Props> = ({
   clients = [],
   onSuccessHandler,
 }) => {
+  const [keyword, setKeyword] = React.useState("");
+  const [sellerDraft, setSellerDraft] = React.useState("");
   const [receiverSeller, setReceiverSeller] = React.useState<Seller[]>([]);
-  const { data: sellers } = useGetAllSellers();
+  const { data: sellers } = useGetAllSellers({
+    keyword,
+  });
 
   const { mutateAsync: transferClients } = useTransferClients();
 
@@ -41,6 +46,15 @@ const TransferClientsForm: React.FC<Props> = ({
       onSuccessHandler();
     }
   };
+
+  React.useEffect(() => {
+    const debounceSeller = debounce(() => {
+      setKeyword(sellerDraft);
+    }, 500);
+
+    debounceSeller();
+    return () => debounceSeller.cancel();
+  }, [sellerDraft]);
 
   return (
     <DialogContent className="sm:max-w-[450px]">
@@ -60,6 +74,7 @@ const TransferClientsForm: React.FC<Props> = ({
           }
           sellers={sellers?.data ?? []}
           setSelectedSellers={setReceiverSeller}
+          setSearchInput={setSellerDraft}
         />
       </div>
 
