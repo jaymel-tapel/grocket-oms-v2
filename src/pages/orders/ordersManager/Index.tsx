@@ -13,10 +13,28 @@ import { getActiveFilterLabel } from "../../../utils/utils";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
 
+const PAYMENT_STATUS = [
+  { label: "New", payload: "NEW" },
+  { label: "Reminder 1", payload: "PR1" },
+  { label: "Reminder 2", payload: "PR2" },
+  { label: "Sent Invoice", payload: "SENT_INVOICE" },
+  { label: "Paid", payload: "PAID" },
+  { label: "Unpaid", payload: "UNPAID" },
+] as const;
+
+const REVIEW_STATUS = [
+  { label: "Neu", payload: "NEU" },
+  { label: "Beauftragt", payload: "BEAUFTRAGT" },
+  { label: "Weiterleitung", payload: "WEITERLEITUNG" },
+  { label: "Gescheitert", payload: "GESCHEITERT" },
+  { label: "Widerspruch", payload: "WIDERSPRUCH" },
+  { label: "Geloscht", payload: "GELOSCHT" },
+] as const;
+
 const Index = () => {
   const navigate = useNavigate();
   const searchOrders = ordersManagerIndexRoute.useSearch();
-  const { data } = useGetAllOrders(searchOrders);
+  const { data, isFetching } = useGetAllOrders(searchOrders);
 
   const keyword = searchOrders?.keyword;
   const dateFrom = searchOrders?.from;
@@ -64,16 +82,28 @@ const Index = () => {
   };
 
   const handleFilterChange = (filter: OrdersFiltersType) => {
+    const keyword =
+      filter === "payment_status"
+        ? "NEW"
+        : filter === "review_status"
+        ? "NEU"
+        : keywordDraft;
+
     navigate({
       search: (old) => {
         return {
           ...old,
+          keyword,
           filter: filter,
         };
       },
       params: true,
       replace: true,
     });
+  };
+
+  const handleSelectDropdown = (filter: string) => {
+    setKeywordDraft(filter);
   };
 
   useEffect(() => {
@@ -137,13 +167,33 @@ const Index = () => {
       <div className="bg-white">
         <div className="p-8 gap-y-4 flex justify-between max-md:flex-col">
           <div className="flex gap-4 items-center">
-            <SearchInput
-              placeholder="Search here..."
-              className="w-full min-md:max-w-[20rem]"
-              grayBg={true}
-              value={keywordDraft}
-              onChange={(e) => setKeywordDraft(e.target.value)}
-            />
+            {filter === "payment_status" || filter === "review_status" ? (
+              <select
+                onChange={(e) => handleSelectDropdown(e.target.value)}
+                className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+              >
+                {filter === "payment_status" &&
+                  PAYMENT_STATUS.map((status, index) => (
+                    <option value={status.payload} key={index}>
+                      {status.label}
+                    </option>
+                  ))}
+                {filter === "review_status" &&
+                  REVIEW_STATUS.map((status, index) => (
+                    <option value={status.payload} key={index}>
+                      {status.label}
+                    </option>
+                  ))}
+              </select>
+            ) : (
+              <SearchInput
+                placeholder="Search here..."
+                className="w-full min-md:max-w-[20rem]"
+                grayBg={true}
+                value={keywordDraft}
+                onChange={(e) => setKeywordDraft(e.target.value)}
+              />
+            )}
             <FiltersButton
               activeFilter={filter}
               label={activeFilterLabel}
@@ -187,6 +237,7 @@ const Index = () => {
         <OrdersManagerTable
           orders={orders.data}
           pagination={orders.pagination}
+          isSearching={isFetching}
         />
       </div>
     </div>

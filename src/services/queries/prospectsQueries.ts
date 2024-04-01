@@ -11,7 +11,7 @@ import {
   ProspectsEmails,
   useFindProspectsContext,
 } from "../../components/prospects/findProspects/FindProspectsContext";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { getHeaders } from "../../utils/utils";
 import toast from "react-hot-toast";
 import ToastContent from "../../components/tools/toastContent/ToastContent";
@@ -104,6 +104,12 @@ export type EmailLogsResponse = {
   by: string;
   action: string;
 }[];
+
+// Function to chunk the array
+const chunkArray = (arr, size) =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size)
+  );
 
 export const useGetMyProspects = () => {
   return useQuery({
@@ -291,7 +297,7 @@ export const useGetScraperEstimate = (params: {
 };
 
 export const useScrapeProspects = () => {
-  const [currentCity, setCurrentCity] = useState("");
+  // const [currentCity, setCurrentCity] = useState("");
 
   const {
     setStep,
@@ -317,15 +323,27 @@ export const useScrapeProspects = () => {
       return response.data;
     },
     onMutate: ({ index }) => {
-      const newCities = cities.filter((city) => city.checked);
-      newCities[index] = { ...newCities[index], status: "pending" };
-      setCities(newCities);
+      // const newCities = cities.filter((city) => city.checked);
+      // newCities[index] = { ...newCities[index], status: "pending" };
+
+      // setCities(newCities);
+      setCities((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, status: "pending" } : item
+        )
+      );
     },
     onSuccess: (data, { index }) => {
       // update city status
-      const newCities = cities.filter((city) => city.checked);
-      newCities[index] = { ...newCities[index], status: "success" };
-      setCities(newCities);
+      // const newCities = cities.filter((city) => city.checked);
+      // newCities[index] = { ...newCities[index], status: "success" };
+      // setCities(newCities);
+
+      setCities((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, status: "success" } : item
+        )
+      );
 
       // set prospect on prep for next step
       setProspects((prevProspects) => {
@@ -369,9 +387,15 @@ export const useScrapeProspects = () => {
       }
     },
     onError: (_, { index }) => {
-      const newCities = cities.filter((city) => city.checked);
-      newCities[index] = { ...newCities[index], status: "error" };
-      setCities(newCities);
+      // const newCities = cities.filter((city) => city.checked);
+      // newCities[index] = { ...newCities[index], status: "error" };
+      // setCities(newCities);
+
+      setCities((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, status: "error" } : item
+        )
+      );
 
       if (index + 1 === cities.filter((city) => city.checked).length) {
         if (prospects.length === 0) {
@@ -411,37 +435,66 @@ export const useScrapeProspects = () => {
   const scrapeProspects = async () => {
     stopScrapingRef.current = false;
 
-    for (const city of cities) {
+    // for (const city of cities) {
+    //   await new Promise((resolve) => setTimeout(resolve, 500));
+    //   if (!city.checked) {
+    //     continue;
+    //   }
+
+    //   const index = cities.filter((city) => city.checked).indexOf(city);
+
+    //   if (stopScrapingRef.current) {
+    //     break;
+    //   } else {
+    //     setCurrentCity(city.name);
+
+    //     try {
+    //       await scrapeProspectsQuery.mutateAsync({
+    //         payload: { ...prospectFinder, city: city.name },
+    //         index,
+    //       });
+    //     } catch (error) {
+    //       console.error(`Error scraping prospects for ${city.name}:`, error);
+    //     }
+    //   }
+    // }
+
+    // Only consider prospects without a URL
+    const checkedCities = cities.filter((city) => city?.checked);
+
+    // Chunk the cities array into chunks of size 4
+    const chunks = chunkArray(checkedCities, 4);
+
+    for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      if (!city.checked) {
-        continue;
-      }
 
-      const index = cities.filter((city) => city.checked).indexOf(city);
+      // Use Promise.all to process up to 10 requests in parallel
+      await Promise.all(
+        chunk.map(async (city) => {
+          const index = checkedCities.indexOf(city);
 
-      if (stopScrapingRef.current) {
-        break;
-      } else {
-        setCurrentCity(city.name);
+          try {
+            await scrapeProspectsQuery.mutateAsync({
+              payload: { ...prospectFinder, city: city.name },
+              index,
+            });
+          } catch (error) {
+            console.error(`Error scraping details for ${city.name}:`, error);
+          }
+        })
+      );
 
-        try {
-          await scrapeProspectsQuery.mutateAsync({
-            payload: { ...prospectFinder, city: city.name },
-            index,
-          });
-        } catch (error) {
-          console.error(`Error scraping prospects for ${city.name}:`, error);
-        }
-      }
+      // Optional: delay between chunks
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
-    setCurrentCity("");
+    // setCurrentCity("");
     stopScrapeProspects();
     setStep(3);
   };
 
   return {
-    currentCity,
+    // currentCity,
     scrapeProspects,
     stopScrapeProspects,
   };
@@ -544,12 +597,6 @@ export const useScrapeProspectWebsite = () => {
     stopScrapingRef.current = true;
   };
 
-  // Function to chunk the array
-  const chunkArray = (arr, size) =>
-    Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-      arr.slice(i * size, i * size + size)
-    );
-
   const scrapeWebsite = async () => {
     stopScrapingRef.current = false;
     setHasWebsites(true);
@@ -559,10 +606,8 @@ export const useScrapeProspectWebsite = () => {
       (prospect) => !prospect?.url && prospect.status === "queued"
     );
 
-    // Chunk the filtered prospects array into chunks of size 10
+    // Chunk the filtered prospects array into chunks of size 4
     const chunks = chunkArray(filteredProspects, 4);
-
-    console.log(chunks);
 
     for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -621,25 +666,35 @@ export const useScrapeProspectEmails = () => {
       return response.data;
     },
     onMutate: (arg) => {
-      const newEmails = [...prospectsEmails];
-      newEmails[arg.index] = {
-        ...newEmails[arg.index],
-        emails: [],
-        status: "pending",
-      };
-      setProspectsEmail(newEmails);
+      // const newEmails = [...prospectsEmails];
+      // newEmails[arg.index] = {
+      //   ...newEmails[arg.index],
+      //   emails: [],
+      //   status: "pending",
+      // };
+      // setProspectsEmail(newEmails);
+      setProspectsEmail((prev) =>
+        prev.map((item, idx) =>
+          idx === arg.index ? { ...item, status: "pending", emails: [] } : item
+        )
+      );
     },
     onError: (_, arg) => {
-      const newEmails = [...prospectsEmails];
-      newEmails[arg.index] = {
-        ...newEmails[arg.index],
-        emails: [],
-        status: "error",
-      };
-      setProspectsEmail(newEmails);
+      // const newEmails = [...prospectsEmails];
+      // newEmails[arg.index] = {
+      //   ...newEmails[arg.index],
+      //   emails: [],
+      //   status: "error",
+      // };
+      // setProspectsEmail(newEmails);
+      setProspectsEmail((prev) =>
+        prev.map((item, idx) =>
+          idx === arg.index ? { ...item, status: "error", emails: [] } : item
+        )
+      );
     },
     onSuccess: (data, arg) => {
-      const newEmails = [...prospectsEmails];
+      // const newEmails = [...prospectsEmails];
       const excludedDomains = [
         "wixpress.com",
         ".png",
@@ -656,13 +711,20 @@ export const useScrapeProspectEmails = () => {
         return !excludedDomains.some((domain) => email.includes(domain));
       });
 
-      newEmails[arg.index] = {
-        ...newEmails[arg.index],
-        emails: filteredEmails,
-        status: "success",
-      };
+      // newEmails[arg.index] = {
+      //   ...newEmails[arg.index],
+      //   emails: filteredEmails,
+      //   status: "success",
+      // };
 
-      setProspectsEmail(newEmails);
+      // setProspectsEmail(newEmails);
+      setProspectsEmail((prev) =>
+        prev.map((item, idx) =>
+          idx === arg.index
+            ? { ...item, status: "success", emails: filteredEmails }
+            : item
+        )
+      );
     },
   });
 
@@ -674,30 +736,62 @@ export const useScrapeProspectEmails = () => {
   const scrapeEmails = async () => {
     stopScrapingRef.current = false;
 
-    for (const prospect of prospects) {
+    // for (const prospect of prospects) {
+    //   await new Promise((resolve) => setTimeout(resolve, 500));
+    //   const index = prospects.indexOf(prospect);
+
+    //   if (prospectsEmails[index].status !== "queued") {
+    //     continue;
+    //   }
+
+    //   if (stopScrapingRef.current) {
+    //     break;
+    //   } else {
+    //     try {
+    //       await scrapeEmailsQuery.mutateAsync({
+    //         payload: { url: prospect.url },
+    //         index,
+    //         prospectId: prospect.id,
+    //       });
+    //     } catch (error) {
+    //       console.error(
+    //         `Error scraping emails for ${prospect.name}'s website:`,
+    //         error
+    //       );
+    //     }
+    //   }
+    // }
+
+    // Only consider prospects without a URL
+    const queuedEmails = prospects.filter(
+      (_, index) => prospectsEmails[index].status === "queued"
+    );
+
+    // Chunk the cities array into chunks of size 4
+    const chunks = chunkArray(queuedEmails, 4);
+
+    for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const index = prospects.indexOf(prospect);
 
-      if (prospectsEmails[index].status !== "queued") {
-        continue;
-      }
+      // Use Promise.all to process up to 10 requests in parallel
+      await Promise.all(
+        chunk.map(async (prospect) => {
+          const index = prospects.indexOf(prospect);
 
-      if (stopScrapingRef.current) {
-        break;
-      } else {
-        try {
-          await scrapeEmailsQuery.mutateAsync({
-            payload: { url: prospect.url },
-            index,
-            prospectId: prospect.id,
-          });
-        } catch (error) {
-          console.error(
-            `Error scraping emails for ${prospect.name}'s website:`,
-            error
-          );
-        }
-      }
+          try {
+            await scrapeEmailsQuery.mutateAsync({
+              payload: { url: prospect.url },
+              index,
+              prospectId: prospect.id,
+            });
+          } catch (error) {
+            console.error(`Error scraping emails for ${prospect.name}:`, error);
+          }
+        })
+      );
+
+      // Optional: delay between chunks
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     stopScrapeEmails();

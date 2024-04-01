@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../../tools/buttons/Button";
 import {
   DialogContent,
@@ -15,6 +15,8 @@ import {
 } from "../../../services/queries/sellerQueries";
 import Pill from "../../tools/pill/Pill";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { debounce } from "lodash";
+import Spinner from "../../tools/spinner/Spinner";
 
 type Props = {
   onSuccessHandler: () => void;
@@ -24,9 +26,14 @@ const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
   const [step, setStep] = useState(1);
   const [selectedSellers, setSelectedSellers] = useState<Seller[]>([]);
   const [receiverSeller, setReceiverSeller] = useState<Seller[]>([]);
+  const [keyword, setKeyword] = useState("");
+  const [sellerDraft, setSellerDraft] = useState("");
 
-  const { data: sellers } = useGetAllSellers();
-  const { mutateAsync: transferOrders } = useTransferOrders();
+  const { data: sellers } = useGetAllSellers({
+    keyword,
+  });
+
+  const { mutateAsync: transferOrders, isPending } = useTransferOrders();
 
   const isDisabled = useMemo(() => {
     if (step === 1) {
@@ -67,6 +74,15 @@ const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
     }
   };
 
+  useEffect(() => {
+    const debounceSeller = debounce(() => {
+      setKeyword(sellerDraft);
+    }, 500);
+
+    debounceSeller();
+    return () => debounceSeller.cancel();
+  }, [sellerDraft]);
+
   return (
     <DialogContent className="sm:max-w-[450px]">
       <DialogHeader className="gap-2">
@@ -86,6 +102,7 @@ const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
             <TransferSellersSelector
               sellers={filteredSellers ?? []}
               setSelectedSellers={setSelectedSellers}
+              setSearchInput={setSellerDraft}
             />
           </div>
 
@@ -113,6 +130,7 @@ const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
             }
             sellers={sellers?.data ?? []}
             setSelectedSellers={setReceiverSeller}
+            setSearchInput={setSellerDraft}
           />
         </div>
       )}
@@ -123,8 +141,20 @@ const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
             Previous
           </Button>
         )}
-        <Button type="button" onClick={handleSubmit} disabled={isDisabled}>
-          {step === 1 ? "Next" : "Submit"}
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isDisabled || isPending}
+        >
+          {isPending ? (
+            <>
+              <Spinner /> Submitting
+            </>
+          ) : step === 1 ? (
+            "Next"
+          ) : (
+            "Submit"
+          )}
         </Button>
       </DialogFooter>
     </DialogContent>
