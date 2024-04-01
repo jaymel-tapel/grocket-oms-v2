@@ -762,12 +762,11 @@ export const useScrapeProspectEmails = () => {
     //   }
     // }
 
-    // Only consider prospects without a URL
     const queuedEmails = prospects.filter(
-      (_, index) => prospectsEmails[index].status === "queued"
+      (_, index) => prospectsEmails[index]?.status === "queued"
     );
 
-    // Chunk the cities array into chunks of size 4
+    // Chunk the emails array into chunks of size 4
     const chunks = chunkArray(queuedEmails, 4);
 
     for (const chunk of chunks) {
