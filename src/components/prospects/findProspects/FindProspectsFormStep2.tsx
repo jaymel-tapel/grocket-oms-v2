@@ -16,8 +16,7 @@ type FormProps = {
 const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
   const { setStep, cities, prospects, estimates, prospectFinder } =
     useFindProspectsContext() as FindProspectsContext;
-  const { currentCity, scrapeProspects, stopScrapeProspects } =
-    useScrapeProspects();
+  const { scrapeProspects, stopScrapeProspects } = useScrapeProspects();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,6 +31,11 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
       (item) => item.status === "success" || item.status === "error"
     ).length;
 
+    const pendingCities = selectedCities
+      .filter((item) => item.status === "pending")
+      .map((item) => item.name);
+    const pending = pendingCities.join(", ");
+
     const percent = (done / selectedCities.length) * 100;
 
     const status = `${done} out of ${selectedCities.length} cities`;
@@ -45,7 +49,7 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
         ? errorCities.map((city) => city.name).join(", ")
         : "None";
 
-    return { percent, status, errors };
+    return { percent, status, errors, pending };
   }, [cities]);
 
   useEffect(() => {
@@ -58,8 +62,12 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
       <div className="mb-8 text-sm grid grid-cols-3">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col">
-            <span className="font-bold">Estimated Time:</span>
-            <span>{estimates.estimated_search}</span>
+            <span className="font-bold">Country:</span>
+            <span>{prospectFinder.country}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold">Total Estimated Time:</span>
+            <span>{estimates.total_estimated_time}</span>
           </div>
 
           <div className="flex flex-col">
@@ -80,10 +88,10 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
 
         <div className="flex flex-col items-center">
           <div className="relative flex justify-center">
-            {currentCity && (
-              <div className="absolute w-[25%] text-center text-lg z-10 flex flex-col items-center h-full justify-center">
+            {scrapeProgress.pending && (
+              <div className="absolute w-[25%] text-center z-10 flex flex-col gap-2 items-center h-full justify-center">
                 <span>Searching</span>
-                <span className="font-bold">{`${currentCity}, ${prospectFinder.country}`}</span>
+                <span className="font-bold">{`${scrapeProgress.pending}`}</span>
               </div>
             )}
 
