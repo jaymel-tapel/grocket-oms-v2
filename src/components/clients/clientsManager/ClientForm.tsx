@@ -66,14 +66,14 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     resolver: zodResolver(clientFormSchema),
     values: client
       ? {
-          name: client.name,
-          email: client.email,
-          industryId: client.clientInfo.industryId,
-          sourceId: client.clientInfo.sourceId,
-          default_unit_cost: client.clientInfo.default_unit_cost,
-          phone: client.clientInfo.phone,
-          thirdPartyId: client.clientInfo.thirdPartyId,
-        }
+        name: client.name,
+        email: client.email,
+        industryId: client.clientInfo.industryId,
+        sourceId: client.clientInfo.sourceId,
+        default_unit_cost: client.clientInfo.default_unit_cost,
+        phone: client.clientInfo.phone,
+        thirdPartyId: client.clientInfo.thirdPartyId,
+      }
       : undefined,
   });
 
@@ -112,9 +112,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
     const response = client?.id
       ? await updateClient({
-          id: client.id,
-          payload: { ...data, brandId: selectedBrand.id, sellerId },
-        })
+        id: client.id,
+        payload: { ...data, brandId: selectedBrand.id, sellerId },
+      })
       : await createClient({ ...data, brandId: selectedBrand.id, sellerId });
 
     if (response.status === 200 || response.status === 201) {
@@ -122,6 +122,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     }
   };
 
+  const handleCancel = () => {
+    navigate({ to: "/clients/clients_manager" })
+  }
   return (
     <div className="bg-white shadow-sm p-8">
       <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
@@ -172,7 +175,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         )}
 
         <div className="pt-8 flex justify-end gap-4 border-t border-t-gray-300">
-          <Button type="button" variant={"noBorder"}>
+          <Button type="button" variant={"noBorder"} onClick={() => handleCancel()}>
             Cancel
           </Button>
           <Button type="submit">Submit</Button>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SavedProspect } from "../../services/queries/prospectsQueries";
+import { Prospect } from "../../services/queries/prospectsQueries";
 import { useSortable } from "@dnd-kit/sortable";
 import { cn } from "../../utils/utils";
 import {
@@ -18,7 +18,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "../tools/buttons/Button";
 
 type Props = {
-  prospect: SavedProspect;
+  prospect: Prospect;
 };
 
 const ProspectCard: React.FC<Props> = ({ prospect }) => {
@@ -58,19 +58,19 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
       onClick={() =>
         navigate({
           to: "/prospects/$prospectId",
-          params: { prospectId: 1 },
+          params: { prospectId: prospect.id },
         })
       }
     >
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="px-6 pt-4 flex justify-between w-full gap-4 items-center">
-          <span className="font-bold truncate">{prospect.businessName}</span>
+          <span className="font-bold truncate">{prospect.name}</span>
           <CollapsibleTrigger asChild>
             <Button
               variant={"noBorder"}
               type="button"
               className="px-3 h-4 hover:bg-gray-100 disabled:text-gray-400 disabled:pointer-events-none"
-              disabled={prospect.emails.length <= 1 && !prospect.notes}
+              disabled={prospect.emails.length <= 1 && !prospect.note}
               onClick={(e) => e.stopPropagation()}
             >
               <CaretSortIcon className="h-4 w-4 pointer-events-none" />
@@ -87,8 +87,10 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
             <span className="text-[#8A99AF] text-sm">{prospect.phone}</span>
           </div>
           <div className="flex gap-4 items-center">
-            <GlobeAltIcon className="text-[#8A99AF] h-4 w-4" />
-            <span className="text-[#8A99AF] text-sm">{prospect.mapsUrl}</span>
+            <GlobeAltIcon className="text-[#8A99AF] h-4 w-4 shrink-0" />
+            <span className="text-[#8A99AF] text-sm truncate">
+              {prospect.url}
+            </span>
           </div>
           <div
             // type="button"
@@ -121,10 +123,10 @@ const ProspectCard: React.FC<Props> = ({ prospect }) => {
           )}
         </div>
         <CollapsibleContent>
-          {prospect.notes && (
+          {prospect.note && (
             <div className="px-6 py-4 bg-[#AAAAAA] text-sm flex flex-col">
               <span className="text-white">Note:</span>
-              <span className="text-white">{prospect.notes}</span>
+              <span className="text-white">{prospect.note}</span>
             </div>
           )}
         </CollapsibleContent>

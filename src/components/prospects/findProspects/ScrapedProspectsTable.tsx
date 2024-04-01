@@ -7,15 +7,14 @@ import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { useFindProspectsContext } from "./FindProspectsContext";
-import { Prospect } from "../../../services/queries/prospectsQueries";
-import { useIsMutating } from "@tanstack/react-query";
+// import { useIsMutating } from "@tanstack/react-query";
 import Spinner from "../../tools/spinner/Spinner";
 import TablePagination, {
   PaginationNavs,
 } from "../../tools/table/TablePagination";
 import TotalResultsLabel from "./TotalResultsLabel";
 
-const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE"];
+const COLUMNS = ["BUSINESS NAME", "RATING", "PHONE", "WEBSITE", "STATUS"];
 const itemsPerPage = 10;
 
 type TableProps = {
@@ -27,12 +26,11 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
 
   const {
     step,
-    hasWebsites,
     prospects,
-    setProspects,
-    selectedProspects,
-    setSelectedProspects,
-    setProspectsEmail,
+    // setProspects,
+    // selectedProspects,
+    // setSelectedProspects,
+    // setProspectsEmail,
   } = useFindProspectsContext();
 
   const paginatedProspects = useMemo(() => {
@@ -43,26 +41,20 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
   }, [prospects, currentPage]);
 
   const showWebsite = useCallback(
-    (index: number) => {
-      if (hasWebsites) {
-        return prospects[index]?.website;
-      }
-
-      const status = prospects[index]?.status;
-
-      if (status === "queued" && step === 2) {
+    (status?: string) => {
+      if (status === "queued" && step === 3) {
         return "Queued";
       } else if (status === "pending") {
         return "In Progress";
       } else if (status === "success") {
-        return prospects[index].website;
+        return "Success";
       } else if (status === "error") {
         return "Error";
       } else {
         return "Skipped";
       }
     },
-    [hasWebsites, prospects, step]
+    [step]
   );
 
   const handlePageChange = useCallback(
@@ -71,7 +63,6 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
         setCurrentPage(value);
         return;
       }
-      console.log(value);
       const lastPage = Math.ceil(prospects.length / itemsPerPage);
 
       if (value === "first") {
@@ -91,22 +82,19 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
     [currentPage, prospects]
   );
 
-  const isMutating = useIsMutating({ mutationKey: ["scrape-prospects"] });
+  // const isMutating = useIsMutating({ mutationKey: ["scrape-prospects"] });
+
+  // useEffect(() => {
+  //   if (isMutating) {
+  //     setProspects([]);
+  //     // setSelectedProspects([]);
+  //     setProspectsEmail([]);
+  //   }
+  //   //eslint-disable-next-line
+  // }, [isMutating]);
 
   useEffect(() => {
-    if (isMutating) {
-      setProspects([]);
-      setSelectedProspects([]);
-      setProspectsEmail([]);
-    }
-    //eslint-disable-next-line
-  }, [isMutating]);
-
-  useEffect(() => {
-    if (
-      !hasWebsites &&
-      prospects.some((prospect) => prospect.status === "queued")
-    ) {
+    if (prospects.some((prospect) => prospect.status === "queued")) {
       if (
         paginatedProspects.every(
           (prospect) =>
@@ -117,45 +105,45 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
       }
     }
     // eslint-disable-next-line
-  }, [hasWebsites, paginatedProspects, handlePageChange]);
+  }, [paginatedProspects, handlePageChange]);
 
-  const isChecked = useCallback(
-    (prospectId: number) => {
-      return selectedProspects.some((prospect) => prospect.id === prospectId);
-    },
-    [selectedProspects]
-  );
+  // const isChecked = useCallback(
+  //   (prospectId: number) => {
+  //     return selectedProspects.some((prospect) => prospect.id === prospectId);
+  //   },
+  //   [selectedProspects]
+  // );
 
-  const handleCheckAll = () => {
-    if (selectedProspects.length === 0) {
-      setSelectedProspects(prospects);
-      return;
-    } else {
-      setSelectedProspects([]);
-    }
-  };
+  // const handleCheckAll = () => {
+  //   if (selectedProspects.length === 0) {
+  //     setSelectedProspects(prospects);
+  //     return;
+  //   } else {
+  //     setSelectedProspects([]);
+  //   }
+  // };
 
-  const handleCheck = (selectedProspect: Prospect) => {
-    const index = selectedProspects.findIndex(
-      (prospect) => prospect.id === selectedProspect.id
-    );
-    const newProspects = [...selectedProspects];
+  // const handleCheck = (selectedProspect: Prospect) => {
+  //   const index = selectedProspects.findIndex(
+  //     (prospect) => prospect.id === selectedProspect.id
+  //   );
+  //   const newProspects = [...selectedProspects];
 
-    if (index !== -1) {
-      newProspects.splice(index, 1);
-    } else {
-      newProspects.push(selectedProspect);
-    }
+  //   if (index !== -1) {
+  //     newProspects.splice(index, 1);
+  //   } else {
+  //     newProspects.push(selectedProspect);
+  //   }
 
-    setSelectedProspects(newProspects);
-  };
+  //   setSelectedProspects(newProspects);
+  // };
 
   return (
     <TableContainer shadowOff={true}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeadCell>
+            {/* <TableHeadCell>
               <input
                 id="checkAll"
                 aria-describedby="checkAll"
@@ -165,24 +153,24 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                 onChange={handleCheckAll}
                 className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
               />
-            </TableHeadCell>
+            </TableHeadCell> */}
             {COLUMNS.map((col, index) => (
               <TableHeadCell key={index}>{col}</TableHeadCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {isMutating ? (
+          {/* {isMutating ? (
             <TableRow>
               <TableBodyCell className="py-8" colSpan={5}>
                 <Spinner className="h-8 w-8 mx-auto" />
               </TableBodyCell>
             </TableRow>
-          ) : null}
+          ) : null} */}
           {paginatedProspects.map((prospect, index) => {
             return (
               <TableRow key={index}>
-                <TableBodyCell>
+                {/* <TableBodyCell>
                   <input
                     id={`prospect-${prospect.id}`}
                     aria-describedby={`prospect-${prospect.id}`}
@@ -192,23 +180,25 @@ const ScrapedProspectsTable: React.FC<TableProps> = () => {
                     onChange={() => handleCheck(prospect)}
                     className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
                   />
-                </TableBodyCell>
-                <TableBodyCell>{prospect.businessName}</TableBodyCell>
+                </TableBodyCell> */}
+                <TableBodyCell>{prospect.name}</TableBodyCell>
                 <TableBodyCell>{prospect.rating}</TableBodyCell>
                 <TableBodyCell className="text-grBlue-dark whitespace-nowrap">
                   {prospect.phone}
                 </TableBodyCell>
                 <TableBodyCell
-                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis ${
-                    prospects[prospect.id - 1]?.status === "success" &&
-                    "text-grBlue-dark"
-                  }`}
+                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis text-grBlue-dark`}
                 >
                   <div className="flex gap-2 items-center">
-                    {prospects[prospect.id - 1]?.status === "pending" && (
-                      <Spinner />
-                    )}
-                    {showWebsite(prospect.id - 1)}
+                    {prospect.url ?? ""}
+                  </div>
+                </TableBodyCell>
+                <TableBodyCell
+                  className={`max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis`}
+                >
+                  <div className="flex gap-2 items-center">
+                    {prospect.status === "pending" && <Spinner />}
+                    {showWebsite(prospect.status)}
                   </div>
                 </TableBodyCell>
               </TableRow>

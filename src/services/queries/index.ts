@@ -9,7 +9,11 @@ interface ValidationError {
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: (error, query) => {
+      if (query?.meta?.dontNotifyError === true) {
+        return;
+      }
+
       if (axios.isAxiosError<ValidationError, Record<string, unknown>>(error)) {
         toast.error(
           error.response?.data.message ??
@@ -21,7 +25,11 @@ export const queryClient = new QueryClient({
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error, _, __, mutation) => {
+      if (mutation?.meta?.dontNotifyError === true) {
+        return;
+      }
+
       if (axios.isAxiosError<ValidationError, Record<string, unknown>>(error)) {
         toast.error(
           error.response?.data.message ??

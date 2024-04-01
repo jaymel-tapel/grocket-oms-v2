@@ -59,15 +59,19 @@ const EmailTemplateForm: React.FC<Props> = ({ template }) => {
 
     const response = template?.id
       ? await updateEmailTemplate({
-          id: template.id,
-          payload: { ...data, content },
-        })
+        id: template.id,
+        payload: { ...data, content },
+      })
       : await createEmailTemplate({ ...data, content });
 
     if (response.status === 200 || response.status === 201) {
       navigate({ to: "/prospect-email-templates/" });
     }
   };
+
+  const handleCancel = () => {
+    navigate({ to: "/prospect-email-templates" })
+  }
 
   return (
     <form
@@ -146,7 +150,7 @@ const EmailTemplateForm: React.FC<Props> = ({ template }) => {
       </div>
 
       <div className="p-8 flex justify-end gap-4 border-t border-t-gray-300">
-        <Button type="button" variant="noBorder">
+        <Button type="button" variant="noBorder" onClick={() => handleCancel()}>
           Cancel
         </Button>
         <Button

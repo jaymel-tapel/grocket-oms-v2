@@ -1,47 +1,43 @@
 import React, { ReactNode, useEffect } from "react";
 import {
   FindProspectsContext,
-  ProspectsEmails,
   useFindProspectsContext,
 } from "./FindProspectsContext";
-import SelectedProspectsTable from "./SelectedProspectsTable";
-import { useScrapeProspectEmails } from "../../../services/queries/prospectsQueries";
+import ScrapedProspectsTable from "./ScrapedProspectsTable";
+import { useScrapeProspectWebsite } from "../../../services/queries/prospectsQueries";
 
 type FormProps = {
   children: ReactNode;
 };
 
 const FindProspectsFormStep3: React.FC<FormProps> = ({ children }) => {
-  const { setStep, selectedProspects, setProspectsEmail } =
+  const { setStep, hasWebsites } =
     useFindProspectsContext() as FindProspectsContext;
 
-  const { scrapeEmails, stopScrapeEmails } = useScrapeProspectEmails();
+  const { scrapeWebsite, stopScrapeWebsite } = useScrapeProspectWebsite();
 
   const handleSubmmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    stopScrapeEmails();
-    setStep(4);
+
+    // if (selectedProspects.length === 0) {
+    //   toast.error("Please select 1 or more prospects");
+    //   return;
+    // }
+
+    stopScrapeWebsite();
+    setStep(3);
   };
 
   useEffect(() => {
-    const initialProspectEmails: ProspectsEmails[] = selectedProspects.map(
-      (prospect) => {
-        return {
-          id: prospect?.id,
-          status: prospect?.website ? "queued" : "success",
-          emails: [],
-        };
-      }
-    );
-
-    setProspectsEmail(initialProspectEmails);
-    scrapeEmails();
+    if (!hasWebsites) {
+      scrapeWebsite();
+    }
     //eslint-disable-next-line
   }, []);
 
   return (
     <form onSubmit={handleSubmmit}>
-      <SelectedProspectsTable />
+      <ScrapedProspectsTable />
       {children}
     </form>
   );

@@ -1,46 +1,62 @@
 import React, { ReactNode, createContext, useContext, useState } from "react";
-import { Prospect } from "../../../services/queries/prospectsQueries";
+import { Estimate, Prospect } from "../../../services/queries/prospectsQueries";
 
 type ProspectFinder = {
   search: string;
-  location: string;
+  country: string;
   limit: number;
+  countryCode: string;
 };
 
 export type ProspectsEmails = {
   id: number;
   emails: string[];
+  status: "pending" | "queued" | "error" | "success" | "skip";
+};
+
+export type City = {
+  name: string;
+  checked: boolean;
   status: "pending" | "queued" | "error" | "success";
 };
 
 export type FindProspectsContext = {
   step: number;
   prospectFinder: ProspectFinder;
-  isScraping: boolean;
   prospects: Prospect[];
   hasWebsites: boolean;
   selectedProspects: Prospect[];
   prospectsEmails: ProspectsEmails[];
+  cities: City[];
+  estimates: Estimate;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setProspectFinder: React.Dispatch<React.SetStateAction<ProspectFinder>>;
-  setIsScraping: React.Dispatch<React.SetStateAction<boolean>>;
   setProspects: React.Dispatch<React.SetStateAction<Prospect[]>>;
   setHasWebsites: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedProspects: React.Dispatch<React.SetStateAction<Prospect[]>>;
   setProspectsEmail: React.Dispatch<React.SetStateAction<ProspectsEmails[]>>;
+  setCities: React.Dispatch<React.SetStateAction<City[]>>;
+  setEstimates: React.Dispatch<React.SetStateAction<Estimate>>;
 };
 
 export const FindProspectsContext = createContext<FindProspectsContext>({
   step: 10,
-  prospectFinder: { search: "", location: "", limit: 1 },
-  isScraping: false,
+  prospectFinder: { search: "", country: "", limit: 1, countryCode: "" },
+  cities: [],
+  estimates: {
+    estimated_email: "",
+    estimated_search: "",
+    estimated_web: "",
+    total_estimated_time: "",
+  },
   prospects: [],
   hasWebsites: true,
   selectedProspects: [],
   prospectsEmails: [],
   setStep: () => {},
+  setCities: () => {},
+  setEstimates: () => {},
   setProspectFinder: () => {},
-  setIsScraping: () => {},
   setProspects: () => {},
   setHasWebsites: () => {},
   setSelectedProspects: () => {},
@@ -59,12 +75,19 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
   const [step, setStep] = useState(1);
   const [prospectFinder, setProspectFinder] = useState<ProspectFinder>({
     search: "",
-    location: "",
+    country: "",
+    countryCode: "",
     limit: 10,
   });
-  const [isScraping, setIsScraping] = useState(false);
   const [prospects, setProspects] = useState<Prospect[]>([]);
-  const [hasWebsites, setHasWebsites] = useState(true);
+  const [hasWebsites, setHasWebsites] = useState(false);
+  const [cities, setCities] = useState<City[]>([]);
+  const [estimates, setEstimates] = useState({
+    estimated_email: "",
+    estimated_search: "",
+    estimated_web: "",
+    total_estimated_time: "",
+  });
   const [selectedProspects, setSelectedProspects] = useState<Prospect[]>([]);
   const [prospectsEmails, setProspectsEmail] = useState<ProspectsEmails[]>([]);
 
@@ -73,13 +96,15 @@ export const FindProspectsProvider: React.FC<ProviderProps> = ({
       value={{
         step,
         prospectFinder,
-        isScraping,
         prospects,
         hasWebsites,
         selectedProspects,
         prospectsEmails,
+        cities,
+        estimates,
         setStep,
-        setIsScraping,
+        setCities,
+        setEstimates,
         setProspectFinder,
         setProspects,
         setHasWebsites,

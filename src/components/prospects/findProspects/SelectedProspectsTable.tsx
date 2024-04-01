@@ -18,15 +18,14 @@ const itemsPerPage = 10;
 
 const SelectedProspectsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { step, selectedProspects, prospectsEmails } =
-    useFindProspectsContext();
+  const { step, prospects, prospectsEmails } = useFindProspectsContext();
 
   const paginatedProspects = useMemo(() => {
     const lastProspectIndex = currentPage * itemsPerPage;
     const firstProspectIndex = lastProspectIndex - itemsPerPage;
 
-    return selectedProspects.slice(firstProspectIndex, lastProspectIndex);
-  }, [selectedProspects, currentPage]);
+    return prospects.slice(firstProspectIndex, lastProspectIndex);
+  }, [prospects, currentPage]);
 
   const paginatedEmails = useMemo(() => {
     const lastProspectIndex = currentPage * itemsPerPage;
@@ -42,7 +41,7 @@ const SelectedProspectsTable = () => {
         return;
       }
 
-      const lastPage = Math.ceil(selectedProspects.length / itemsPerPage);
+      const lastPage = Math.ceil(prospects.length / itemsPerPage);
 
       if (value === "first") {
         setCurrentPage(1);
@@ -58,7 +57,7 @@ const SelectedProspectsTable = () => {
         setCurrentPage(lastPage);
       }
     },
-    [currentPage, selectedProspects]
+    [currentPage, prospects]
   );
 
   const showEmails = useCallback(
@@ -68,7 +67,7 @@ const SelectedProspectsTable = () => {
 
       const status = email.status;
 
-      if (status === "queued" && step === 3) {
+      if (status === "queued" && step === 4) {
         return "Queued";
       } else if (status === "pending") {
         return "In Progress";
@@ -88,7 +87,10 @@ const SelectedProspectsTable = () => {
     if (prospectsEmails.some((email) => email.status === "queued")) {
       if (
         paginatedEmails.every(
-          (email) => email.status === "success" || email.status === "error"
+          (email) =>
+            email.status === "success" ||
+            email.status === "error" ||
+            email.status === "skip"
         )
       ) {
         handlePageChange("next");
@@ -96,6 +98,13 @@ const SelectedProspectsTable = () => {
     }
     //eslint-disable-next-line
   }, [prospectsEmails, paginatedEmails, handlePageChange]);
+
+  useEffect(() => {
+    if (step === 5) {
+      handlePageChange("last");
+    }
+    //eslint-disable-next-line
+  }, [step]);
 
   return (
     <TableContainer shadowOff={true}>
@@ -110,17 +119,17 @@ const SelectedProspectsTable = () => {
         <TableBody>
           {paginatedProspects.map((prospect, index) => {
             const email = prospectsEmails.find(
-              (email) => email.id === prospect.id
+              (email) => email?.id === prospect?.id
             );
             return (
               <TableRow key={index}>
-                <TableBodyCell>{prospect.businessName}</TableBodyCell>
+                <TableBodyCell>{prospect.name}</TableBodyCell>
                 <TableBodyCell>{prospect.rating}</TableBodyCell>
                 <TableBodyCell className="text-grBlue-dark whitespace-nowrap">
                   {prospect.phone}
                 </TableBodyCell>
                 <TableBodyCell className="text-grBlue-dark max-w-[18rem] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {prospect.website}
+                  {prospect.url}
                 </TableBodyCell>
                 <TableBodyCell
                   className={`${
@@ -140,7 +149,7 @@ const SelectedProspectsTable = () => {
       <TablePagination
         currentPage={currentPage}
         handlePageChange={handlePageChange}
-        totalItems={selectedProspects.length}
+        totalItems={prospects.length}
         itemsPerPage={itemsPerPage}
         isFrontEndPagination={true}
         customTotalLabel={<TotalResultsLabel />}
