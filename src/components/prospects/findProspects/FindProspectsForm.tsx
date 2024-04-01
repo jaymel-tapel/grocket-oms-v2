@@ -96,7 +96,7 @@ const ProspectFormNavigation = () => {
         emails.forEach((email) => {
           mappedData.push([
             prospect.name,
-            prospect.rating?.toFixed() ?? "",
+            prospect.rating?.toFixed(1) ?? "",
             prospect.phone,
             prospect.url,
             email,
@@ -106,7 +106,7 @@ const ProspectFormNavigation = () => {
         // If there are no emails, add a single row
         mappedData.push([
           prospect.name,
-          prospect.rating?.toFixed() ?? "",
+          prospect.rating?.toFixed(1) ?? "",
           prospect.phone,
           prospect.url,
           "",
