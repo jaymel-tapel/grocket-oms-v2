@@ -12,20 +12,6 @@ const Index: React.FC = () => {
     navigate({ to: "/brands/brands_manager/new" });
   };
 
-  if (isLoading) {
-    return (
-      <>
-        <div className="flex justify-center">
-          <Spinner />
-        </div>
-      </>
-    );
-  }
-
-  if (!data || !Array.isArray(data)) {
-    return <p className="text-center">Error loading brands</p>;
-  }
-
   return (
     <>
       <div className="flex mt-4 justify-between mb-6">
@@ -39,9 +25,18 @@ const Index: React.FC = () => {
           Create Brand
         </Button>
       </div>
-      <div className="grid grid-cols-3 mt-24 gap-16 ml-9 max-lg:grid-cols-2 max-md:grid-cols-1 max-sm:grid-cols-1">
-        <BrandsCard brands={data} />
-      </div>
+      {isLoading && (
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      )}
+      {!data || !Array.isArray(data) ? (
+        " "
+      ) : (
+        <div className="grid grid-cols-3 mt-24 gap-16 ml-9 max-lg:grid-cols-2 max-md:grid-cols-1 max-sm:grid-cols-1">
+          <BrandsCard brands={data} />
+        </div>
+      )}
     </>
   );
 };

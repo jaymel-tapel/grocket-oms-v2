@@ -49,7 +49,6 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
 
   const {
     data: { data: tasksCompleted = [] } = {},
-    isLoading: completedLoading,
     isError: completedError,
     refetch: refetchCompletedTasks,
   } = useGetAllTasksCompleted(tasksSearch);
@@ -181,14 +180,6 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
     });
   }, [currentPage]);
 
-  if (activeLoading || completedLoading) {
-    return (
-      <div className="flex justify-center text-center">
-        <Spinner />
-      </div>
-    );
-  }
-
   if (activeError || completedError) {
     return <p className="text-center">Error fetching tasks.</p>;
   }
@@ -233,123 +224,127 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
           </div>
         </div>
         <div>
-          {tasksToDisplay.length > 0 ? (
-            tasksToDisplay.map((task, i) => (
-              <div
-                key={i}
-                className={` ${
-                  hiddenTasks.includes(task.taskId) ? "hidden" : ""
-                }  flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border  border-stroke hover:shadow-lg shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1 `}
-              >
-                <div className="grid grid-cols-2 gap-56  max-lg:grid-cols-1 max-lg:gap-0 ">
-                  <div className="max-lg:gap-0">
-                    <p className="text-black text-sm mb-1">{task.title}</p>
-                    <p className="text-slate text-sm mb-1 mt-4">
-                      {task.description}
-                    </p>
-                    <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
-                      <div className="gap-6 mt-2 flex ">
-                        <button
-                          type="button"
-                          className="hover:scale-125 transition-transform "
-                          onClick={() => {
-                            if (activeButton === "currentTasks") {
-                              handleTaskToCompleted(task.taskId);
-                            } else if (activeButton === "completedTasks") {
-                              handleTaskToActive(task.taskId);
+          {activeLoading ? (
+            <div className="flex justify-center">
+              <Spinner />
+            </div>
+          ) : (
+            ""
+          )}
+          {!activeLoading && tasksToDisplay.length === 0 && (
+            <div className="text-center">No tasks available.</div>
+          )}
+          {tasksToDisplay.map((task, i) => (
+            <div
+              key={i}
+              className={` ${
+                hiddenTasks.includes(task.taskId) ? "hidden" : ""
+              }  flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border  border-stroke hover:shadow-lg shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1 `}
+            >
+              <div className="grid grid-cols-2 gap-56  max-lg:grid-cols-1 max-lg:gap-0 ">
+                <div className="max-lg:gap-0">
+                  <p className="text-black text-sm mb-1">{task.title}</p>
+                  <p className="text-slate text-sm mb-1 mt-4">
+                    {task.description}
+                  </p>
+                  <div className="flex flex-1 gap-6 max-lg:gap-6 max-lg:flex-none">
+                    <div className="gap-6 mt-2 flex ">
+                      <button
+                        type="button"
+                        className="hover:scale-125 transition-transform "
+                        onClick={() => {
+                          if (activeButton === "currentTasks") {
+                            handleTaskToCompleted(task.taskId);
+                          } else if (activeButton === "completedTasks") {
+                            handleTaskToActive(task.taskId);
+                          }
+                        }}
+                      >
+                        {CheckCircle}
+                      </button>
+                      <button
+                        type="button"
+                        className="hover:scale-125 transition-transform"
+                        onClick={() => {
+                          handleClick(task.taskId);
+                        }}
+                      >
+                        {PencilAlt}
+                      </button>
+                      <button
+                        type="button"
+                        className="hover:scale-125 transition-transform"
+                        onClick={() => {
+                          handleDelete(task.taskId, "Delete");
+                        }}
+                      >
+                        {TrashIcon}
+                      </button>
+                    </div>
+
+                    <span className="border-r-2 max-lg:hidden"></span>
+                    <div className="gap-6 mt-2 flex">
+                      {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
+                        (icon, iconIndex) => (
+                          <Link
+                            key={iconIndex}
+                            to={
+                              icon === EnvelopeIcon
+                                ? "/inbox"
+                                : icon === PaperAirplaneIcon
+                                ? "/inbox"
+                                : undefined
                             }
-                          }}
-                        >
-                          {CheckCircle}
-                        </button>
-                        <button
-                          type="button"
-                          className="hover:scale-125 transition-transform"
-                          onClick={() => {
-                            handleClick(task.taskId);
-                          }}
-                        >
-                          {PencilAlt}
-                        </button>
-                        <button
-                          type="button"
-                          className="hover:scale-125 transition-transform"
-                          onClick={() => {
-                            handleDelete(task.taskId, "Delete");
-                          }}
-                        >
-                          {TrashIcon}
-                        </button>
-                      </div>
-
-                      <span className="border-r-2 max-lg:hidden"></span>
-                      <div className="gap-6 mt-2 flex">
-                        {[EnvelopeIcon, PhoneIcon, PaperAirplaneIcon].map(
-                          (icon, iconIndex) => (
-                            <Link
-                              key={iconIndex}
-                              to={
-                                icon === EnvelopeIcon
-                                  ? "/inbox"
-                                  : icon === PaperAirplaneIcon
-                                  ? "/inbox"
-                                  : undefined
-                              }
-                              params={{ taskId: task.taskId }}
-                              className="mt-2"
-                            >
-                              <button className="hover:scale-125 transition-transform">
-                                {icon}
-                              </button>
-                            </Link>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="w-96 ml-72 max-lg:ml-0 max-md:gap-10 max-lg:pb-10">
-                    <div className="flex gap-2 ">
-                      {CalendarIcon}
-                      <p className="text-black">
-                        {dayjs(task.task_date).format("YYYY-DD-MM")}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 mt-4">
-                      {LinkIcon}
-                      <p className="text-black">Order {task.taskId}</p>
-                    </div>
-                    <div className="flex gap-2 mt-4">
-                      {BuildingIcon}
-                      <p className="text-black">{task.name}</p>
+                            params={{ taskId: task.taskId }}
+                            className="mt-2"
+                          >
+                            <button className="hover:scale-125 transition-transform">
+                              {icon}
+                            </button>
+                          </Link>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
-                {task.task.taskNotes[0]?.note && (
-                  <div className="bg-grYellow-base m-[-2.3rem] max-lg:m-[-2.3rem] max-lg:mb-[-1.5rem] max-lg:pl-5 max-lg:pb-5 ">
-                    <div className="text-black text-base text mt-9 w-56 ml-4 ">
-                      <p>
-                        <label className="text-grYellow-dark">Remarks: </label>
-                        {task.remarks}
-                      </p>
-                      <p className="mt-6 ">
-                        <label className="text-grYellow-dark">
-                          Personal Note:{" "}
-                        </label>
-                        {task.task.taskNotes[0]?.note.length > 55
-                          ? `${task.task.taskNotes[0]?.note.slice(0, 55)}...`
-                          : task.task.taskNotes[0]?.note}
-                      </p>
-                    </div>
+
+                <div className="w-96 ml-72 max-lg:ml-0 max-md:gap-10 max-lg:pb-10">
+                  <div className="flex gap-2 ">
+                    {CalendarIcon}
+                    <p className="text-black">
+                      {dayjs(task.task_date).format("YYYY-DD-MM")}
+                    </p>
                   </div>
-                )}
+                  <div className="flex gap-2 mt-4">
+                    {LinkIcon}
+                    <p className="text-black">Order {task.taskId}</p>
+                  </div>
+                  <div className="flex gap-2 mt-4">
+                    {BuildingIcon}
+                    <p className="text-black">{task.name}</p>
+                  </div>
+                </div>
               </div>
-            ))
-          ) : (
-            <div className="flex items-center justify-center gap-2">
-              <p>Fetching Tasks.</p>
+              {task.task.taskNotes[0]?.note && (
+                <div className="bg-grYellow-base m-[-2.3rem] max-lg:m-[-2.3rem] max-lg:mb-[-1.5rem] max-lg:pl-5 max-lg:pb-5 ">
+                  <div className="text-black text-base text mt-9 w-56 ml-4 ">
+                    <p>
+                      <label className="text-grYellow-dark">Remarks: </label>
+                      {task.remarks}
+                    </p>
+                    <p className="mt-6 ">
+                      <label className="text-grYellow-dark">
+                        Personal Note:{" "}
+                      </label>
+                      {task.task.taskNotes[0]?.note.length > 55
+                        ? `${task.task.taskNotes[0]?.note.slice(0, 55)}...`
+                        : task.task.taskNotes[0]?.note}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          ))}
         </div>
       </div>
       {activeButton === "currentTasks" ? (

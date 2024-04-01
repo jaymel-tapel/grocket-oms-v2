@@ -699,6 +699,8 @@ export const useScrapeProspectEmails = () => {
         "wixpress.com",
         ".png",
         ".jpg",
+        ".jpeg",
+        "sentry.io",
         ".webp",
         ".gif",
         ".svg",

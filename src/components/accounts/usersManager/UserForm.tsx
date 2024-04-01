@@ -87,6 +87,10 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
     }
   };
 
+  const handleCancel = () => {
+    navigate({ to: '/accounts/users_manager' })
+  }
+
   return (
     <form
       className="bg-white w-full max-w-[40rem]"
@@ -110,9 +114,8 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
             </label>
             <div className="w-full mt-2">
               <div
-                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${
-                  errors.name && "border-red-500"
-                }`}
+                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${errors.name && "border-red-500"
+                  }`}
               >
                 <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
                   <UserIcon className="h-4 w-4" />
@@ -143,9 +146,8 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                 type="text"
                 id="userContactNumber"
                 {...register("phone")}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.phone && "border-red-500"
-                }`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.phone && "border-red-500"
+                  }`}
               />
               {errors.phone && (
                 <p className="text-xs italic text-red-500 mt-2">
@@ -164,9 +166,8 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
             </label>
             <div className="w-full mt-2">
               <div
-                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${
-                  errors.email && "border-red-500"
-                }`}
+                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${errors.email && "border-red-500"
+                  }`}
               >
                 <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
                   <EnvelopeIcon className="h-4 w-4" />
@@ -198,9 +199,8 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                 type="text"
                 id="userUrl"
                 {...register("contact_url")}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                  errors.contact_url && "border-red-500"
-                }`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.contact_url && "border-red-500"
+                  }`}
               />
               {errors.contact_url && (
                 <p className="text-xs italic text-red-500 mt-2">
@@ -235,9 +235,8 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                   id="role"
                   autoComplete="off"
                   {...register("role")}
-                  className={`capitalize block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
-                    errors.role && "border-red-500"
-                  }`}
+                  className={`capitalize block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.role && "border-red-500"
+                    }`}
                 >
                   <option disabled>Select Role</option>
                   {ROLES?.map((role, index) => {
@@ -304,7 +303,7 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
       )}
 
       <div className="p-8 flex justify-end gap-4">
-        <Button type="button" variant="noBorder">
+        <Button type="button" variant="noBorder" onClick={() => handleCancel()}>
           Cancel
         </Button>
         <Button
