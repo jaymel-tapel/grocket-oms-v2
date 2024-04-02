@@ -24,9 +24,10 @@ export type BrandFormSchema = z.infer<typeof brandFormSchema>;
 type FormProps = {
   brands?: Brands;
   brandId: number;
+  getFiles: () => File[];
 };
 
-const BrandsForm: React.FC<FormProps> = ({ brands, brandId }) => {
+const BrandsForm: React.FC<FormProps> = ({ brands, brandId, getFiles }) => {
   const navigate = useNavigate();
   const {
     register,
@@ -43,9 +44,26 @@ const BrandsForm: React.FC<FormProps> = ({ brands, brandId }) => {
     useUpdateBrands();
 
   const onSubmit: SubmitHandler<BrandFormSchema> = async (data) => {
+    const generateFormData = () => {
+      const formData = new FormData();
+
+      formData.append("name", data.name);
+      formData.append("code", data.code);
+      formData.append("currency", data.currency);
+      formData.append("address", data.address);
+
+      const files = getFiles();
+
+      if (files.length > 0) {
+        formData.append("logo", files[0]);
+      }
+
+      return formData;
+    };
+
     const response = brandId
       ? await updateBrand({ id: brandId, payload: data })
-      : await createBrand(data);
+      : await createBrand(generateFormData());
 
     if (response.status === 200 || response.status === 201) {
       navigate({ to: "/brands/brands_manager" });
