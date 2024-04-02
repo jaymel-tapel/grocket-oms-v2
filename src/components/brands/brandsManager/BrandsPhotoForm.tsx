@@ -77,6 +77,19 @@ const BrandsPhotoForm: React.FC<FormProps> = forwardRef(({ brands }, ref) => {
     }
   };
 
+  const handleDelete = () => {
+    if (!brands) return;
+    if (!window.confirm("Delete this logo?")) return;
+
+    const formData = new FormData();
+    formData.append("image_delete", "true");
+
+    updateLogo({
+      id: brands.id,
+      payload: formData,
+    });
+  };
+
   const handleCancel = () => {
     navigate({ to: "/brands/brands_manager" });
   };
@@ -111,13 +124,16 @@ const BrandsPhotoForm: React.FC<FormProps> = forwardRef(({ brands }, ref) => {
           )}
           <div className="flex flex-col gap-0.5">
             <span>Upload your Logo</span>
-            <Button
-              variant={"noBorder"}
-              className="p-0 h-fit self-start text-red-500 text-xs"
-              type="button"
-            >
-              Delete
-            </Button>
+            {brands && (
+              <Button
+                variant={"noBorder"}
+                className="p-0 h-fit self-start text-red-500 text-xs"
+                type="button"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            )}
           </div>
         </div>
 
