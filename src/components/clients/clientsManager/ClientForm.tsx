@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../tools/buttons/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ClientFormInformation from "./ClientFormInformation";
 import ClientFormCompanies from "./ClientFormCompanies";
 import {
@@ -20,8 +20,10 @@ import {
 } from "../../../services/queries/sellerQueries";
 import toast from "react-hot-toast";
 import AutoComplete from "../../tools/autoComplete/AutoComplete";
+import { debounce } from "lodash";
+import ClientOrderHistory from "./ClientOrderHistory";
 
-const VIEWS = ["Client Information", "Companies"] as const;
+const VIEWS = ["Client Information", "Companies", "Order History"] as const;
 type View = (typeof VIEWS)[number];
 
 const clientFormSchema = z.object({
@@ -52,9 +54,22 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const user = getUserInfo() as UserLocalInfo;
   const [selectedBrand] = useAtom(brandAtom);
   const [seller, setSeller] = useState<Seller | undefined>(undefined);
-  const [emailDraft, setEmailDraft] = useState("");
+  const [sellerKeyword, setSellerKeyword] = useState("");
+  const [sellerDraft, setSellerDraft] = useState("");
 
-  const { data: sellers } = useGetAllSellers();
+  const { data: sellers } = useGetAllSellers({
+    keyword: sellerKeyword,
+  });
+
+  useEffect(() => {
+    const debounceSeller = debounce(() => {
+      setSellerKeyword(sellerDraft);
+    }, 500);
+
+    debounceSeller();
+    return () => debounceSeller.cancel();
+  }, [sellerDraft]);
+
   const { mutateAsync: createClient } = useCreateClient();
   const { mutateAsync: updateClient } = useUpdateClient();
 
@@ -66,14 +81,14 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     resolver: zodResolver(clientFormSchema),
     values: client
       ? {
-        name: client.name,
-        email: client.email,
-        industryId: client.clientInfo.industryId,
-        sourceId: client.clientInfo.sourceId,
-        default_unit_cost: client.clientInfo.default_unit_cost,
-        phone: client.clientInfo.phone,
-        thirdPartyId: client.clientInfo.thirdPartyId,
-      }
+          name: client.name,
+          email: client.email,
+          industryId: client.clientInfo.industryId,
+          sourceId: client.clientInfo.sourceId,
+          default_unit_cost: client.clientInfo.default_unit_cost,
+          phone: client.clientInfo.phone,
+          thirdPartyId: client.clientInfo.thirdPartyId,
+        }
       : undefined,
   });
 
@@ -84,12 +99,12 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const handleEmailSelect = (email: string) => {
     const foundSeller = sellers?.data.find((seller) => seller.email === email);
     if (!foundSeller) return;
-    setEmailDraft(email);
+    setSellerDraft(email);
     setSeller(foundSeller);
   };
 
   const handleChange = (email: string) => {
-    setEmailDraft(email);
+    setSellerDraft(email);
     const foundSeller = sellers?.data.find((seller) => seller.email === email);
     if (!foundSeller) return;
     setSeller(foundSeller);
@@ -112,9 +127,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
     const response = client?.id
       ? await updateClient({
-        id: client.id,
-        payload: { ...data, brandId: selectedBrand.id, sellerId },
-      })
+          id: client.id,
+          payload: { ...data, brandId: selectedBrand.id, sellerId },
+        })
       : await createClient({ ...data, brandId: selectedBrand.id, sellerId });
 
     if (response.status === 200 || response.status === 201) {
@@ -123,8 +138,17 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   };
 
   const handleCancel = () => {
-    navigate({ to: "/clients/clients_manager" })
-  }
+    navigate({ to: "/clients/clients_manager" });
+  };
+
+  //   const handleLoginToClient = () => {
+  //     if (!window.confirm(`Login using ${client?.name}'s account?`)) return;
+
+  //     const CUSTOMER_LOGIN_URL = import.meta.env.VITE_CUSTOMER_LOGIN_URL;
+  //     const data = window.btoa(client?.email ?? '');
+  //     window.open(CUSTOMER_LOGIN_URL + `/${data}`);
+  //  };
+
   return (
     <div className="bg-white shadow-sm p-8">
       <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
@@ -156,7 +180,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
               <AutoComplete
                 suggestions={sellers?.data.map((seller) => seller.email) ?? []}
                 type="email"
-                value={emailDraft}
+                value={sellerDraft}
                 handleChange={(value) => handleChange(value)}
                 handleSelect={(value) => handleEmailSelect(value)}
               />
@@ -174,11 +198,29 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           />
         )}
 
-        <div className="pt-8 flex justify-end gap-4 border-t border-t-gray-300">
-          <Button type="button" variant={"noBorder"} onClick={() => handleCancel()}>
-            Cancel
-          </Button>
-          <Button type="submit">Submit</Button>
+        {client && activeTab === "Order History" && (
+          <ClientOrderHistory clientEmail={client.email} />
+        )}
+
+        <div className="pt-8 flex justify-between gap-4 border-t border-t-gray-300">
+          <div>
+            {/* {user.role === "ADMIN" && (
+              <Button type="button" variant={"lightBlue"} onClick={handleLoginToClient}>
+                Login to Client
+              </Button>
+            )} */}
+          </div>
+
+          <div className="flex justify-end gap-4">
+            <Button
+              type="button"
+              variant={"noBorder"}
+              onClick={() => handleCancel()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Submit</Button>
+          </div>
         </div>
       </form>
     </div>
