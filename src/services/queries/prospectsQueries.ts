@@ -20,6 +20,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = API_URL + "/scraper";
 const PROSPECTS_URL = API_URL + "/prospects";
 const EMAIL_TEMPLATES_URL = API_URL + "/templates";
+const INSTANCES = Number(import.meta.env.VITE_SCRAPER_INSTANCES ?? 0);
 
 type Reviewer = {
   id: number;
@@ -297,8 +298,6 @@ export const useGetScraperEstimate = (params: {
 };
 
 export const useScrapeProspects = () => {
-  // const [currentCity, setCurrentCity] = useState("");
-
   const {
     setStep,
     cities,
@@ -334,11 +333,6 @@ export const useScrapeProspects = () => {
       );
     },
     onSuccess: (data, { index }) => {
-      // update city status
-      // const newCities = cities.filter((city) => city.checked);
-      // newCities[index] = { ...newCities[index], status: "success" };
-      // setCities(newCities);
-
       setCities((prev) =>
         prev.map((item, idx) =>
           idx === index ? { ...item, status: "success" } : item
@@ -387,10 +381,6 @@ export const useScrapeProspects = () => {
       }
     },
     onError: (_, { index }) => {
-      // const newCities = cities.filter((city) => city.checked);
-      // newCities[index] = { ...newCities[index], status: "error" };
-      // setCities(newCities);
-
       setCities((prev) =>
         prev.map((item, idx) =>
           idx === index ? { ...item, status: "error" } : item
@@ -435,35 +425,11 @@ export const useScrapeProspects = () => {
   const scrapeProspects = async () => {
     stopScrapingRef.current = false;
 
-    // for (const city of cities) {
-    //   await new Promise((resolve) => setTimeout(resolve, 500));
-    //   if (!city.checked) {
-    //     continue;
-    //   }
-
-    //   const index = cities.filter((city) => city.checked).indexOf(city);
-
-    //   if (stopScrapingRef.current) {
-    //     break;
-    //   } else {
-    //     setCurrentCity(city.name);
-
-    //     try {
-    //       await scrapeProspectsQuery.mutateAsync({
-    //         payload: { ...prospectFinder, city: city.name },
-    //         index,
-    //       });
-    //     } catch (error) {
-    //       console.error(`Error scraping prospects for ${city.name}:`, error);
-    //     }
-    //   }
-    // }
-
     // Only consider prospects without a URL
     const checkedCities = cities.filter((city) => city?.checked);
 
     // Chunk the cities array into chunks of size 4
-    const chunks = chunkArray(checkedCities, 4);
+    const chunks = chunkArray(checkedCities, INSTANCES);
 
     for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -607,7 +573,7 @@ export const useScrapeProspectWebsite = () => {
     );
 
     // Chunk the filtered prospects array into chunks of size 4
-    const chunks = chunkArray(filteredProspects, 4);
+    const chunks = chunkArray(filteredProspects, INSTANCES);
 
     for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -767,7 +733,7 @@ export const useScrapeProspectEmails = () => {
     );
 
     // Chunk the emails array into chunks of size 4
-    const chunks = chunkArray(queuedEmails, 4);
+    const chunks = chunkArray(queuedEmails, INSTANCES);
 
     for (const chunk of chunks) {
       await new Promise((resolve) => setTimeout(resolve, 500));
