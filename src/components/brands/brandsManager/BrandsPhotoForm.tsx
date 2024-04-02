@@ -1,4 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, {
+  forwardRef,
+  Ref,
+  useMemo,
+  useState,
+  useImperativeHandle,
+} from "react";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useDropzone } from "react-dropzone";
@@ -14,11 +20,16 @@ type ImageFile = File & {
   preview: string;
 };
 
-type FormProps = {
-  brands?: Brands;
+export type FilesRef = {
+  acceptedFiles: File[];
 };
 
-const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
+type FormProps = {
+  brands?: Brands;
+  ref: Ref<FilesRef>;
+};
+
+const BrandsPhotoForm: React.FC<FormProps> = forwardRef(({ brands }, ref) => {
   const navigate = useNavigate();
   const { location } = useRouterState();
   const { mutateAsync: updateLogo, isPending } = useUpdateBrandLogo();
@@ -66,9 +77,26 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
     }
   };
 
+  const handleDelete = () => {
+    if (!brands) return;
+    if (!window.confirm("Delete this logo?")) return;
+
+    const formData = new FormData();
+    formData.append("image_delete", "true");
+
+    updateLogo({
+      id: brands.id,
+      payload: formData,
+    });
+  };
+
   const handleCancel = () => {
     navigate({ to: "/brands/brands_manager" });
   };
+
+  useImperativeHandle(ref, () => ({
+    acceptedFiles,
+  }));
 
   return (
     <div className="bg-white self-start max-sm:w-full">
@@ -96,13 +124,16 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
           )}
           <div className="flex flex-col gap-0.5">
             <span>Upload your Logo</span>
-            <Button
-              variant={"noBorder"}
-              className="p-0 h-fit self-start text-red-500 text-xs"
-              type="button"
-            >
-              Delete
-            </Button>
+            {brands && (
+              <Button
+                variant={"noBorder"}
+                className="p-0 h-fit self-start text-red-500 text-xs"
+                type="button"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            )}
           </div>
         </div>
 
@@ -131,26 +162,30 @@ const BrandsPhotoForm: React.FC<FormProps> = ({ brands }) => {
         </div>
 
         <div className="flex gap-4 justify-end">
-          <Button onClick={handleCancel} type="button" variant="noBorder">
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            disabled={acceptedFiles.length === 0 || isPending}
-            onClick={handleSave}
-          >
-            {isPending ? (
-              <>
-                Saving <Spinner />
-              </>
-            ) : (
-              "Save"
-            )}
-          </Button>
+          {brands && (
+            <>
+              <Button onClick={handleCancel} type="button" variant="noBorder">
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                disabled={acceptedFiles.length === 0 || isPending}
+                onClick={handleSave}
+              >
+                {isPending ? (
+                  <>
+                    Saving <Spinner />
+                  </>
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default BrandsPhotoForm;

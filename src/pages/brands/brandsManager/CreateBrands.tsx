@@ -1,11 +1,24 @@
+import { useRef } from "react";
 import BrandsForm from "../../../components/brands/brandsManager/BrandsForm";
-import BrandsPhotoForm from "../../../components/brands/brandsManager/BrandsPhotoForm";
+import BrandsPhotoForm, {
+  FilesRef,
+} from "../../../components/brands/brandsManager/BrandsPhotoForm";
 import { useGetBrand } from "../../../services/queries/brandsQueries";
 import { brandRoute } from "../../routeTree";
 
 const CreateBrands: React.FC = () => {
   const { brandId } = brandRoute.useParams();
   const { data: brand } = useGetBrand(brandId);
+  const filesRef = useRef<FilesRef>(null);
+
+  const getFiles = () => {
+    if (filesRef.current?.acceptedFiles) {
+      return filesRef.current.acceptedFiles;
+    }
+
+    return [];
+  };
+
   return (
     <div>
       <div className="flex mt-4 justify-between mb-6">
@@ -19,8 +32,8 @@ const CreateBrands: React.FC = () => {
         </div>
       </div>
       <div className="mt-8 flex flex-col sm:flex-row gap-y-8 gap-x-12">
-        <BrandsForm brands={brand} brandId={brandId} />
-        <BrandsPhotoForm brands={brand} />
+        <BrandsForm brands={brand} brandId={brandId} getFiles={getFiles} />
+        <BrandsPhotoForm brands={brand} ref={filesRef} />
       </div>
     </div>
   );
