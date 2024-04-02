@@ -20,7 +20,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const SCRAPER_URL = API_URL + "/scraper";
 const PROSPECTS_URL = API_URL + "/prospects";
 const EMAIL_TEMPLATES_URL = API_URL + "/templates";
-const INSTANCES = Number(import.meta.env.VITE_SCRAPER_INSTANCES ?? 0);
+const INSTANCES = Number(import.meta.env.VITE_SCRAPER_INSTANCES ?? 1);
 
 type Reviewer = {
   id: number;
