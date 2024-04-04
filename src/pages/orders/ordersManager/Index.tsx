@@ -34,7 +34,7 @@ const REVIEW_STATUS = [
 const Index = () => {
   const navigate = useNavigate();
   const searchOrders = ordersManagerIndexRoute.useSearch();
-  const { data, isFetching } = useGetAllOrders(searchOrders);
+  const { data, isLoading } = useGetAllOrders(searchOrders);
 
   const keyword = searchOrders?.keyword;
   const dateFrom = searchOrders?.from;
@@ -87,7 +87,9 @@ const Index = () => {
         ? "NEW"
         : filter === "review_status"
         ? "NEU"
-        : keywordDraft;
+        : "";
+
+    setKeywordDraft("");
 
     navigate({
       search: (old) => {
@@ -237,7 +239,7 @@ const Index = () => {
         <OrdersManagerTable
           orders={orders.data}
           pagination={orders.pagination}
-          isSearching={isFetching}
+          isSearching={isLoading}
         />
       </div>
     </div>

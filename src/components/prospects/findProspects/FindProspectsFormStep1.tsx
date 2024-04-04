@@ -1,13 +1,13 @@
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import { z } from "zod";
 import {
+  City,
   FindProspectsContext,
   useFindProspectsContext,
 } from "./FindProspectsContext";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  useGetCities,
   useGetCountries,
   useGetScraperEstimate,
 } from "../../../services/queries/prospectsQueries";
@@ -17,12 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../tools/popover/Popover";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-} from "../../tools/command/Command";
-import Spinner from "../../tools/spinner/Spinner";
+import VirtualizedCitySelector from "./virtualizedCitySelector/VirtualizedCitySelector";
 
 const step1Schema = z.object({
   country: z.string(),
@@ -69,20 +64,10 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
     return "";
   }, [watchCountry, countries]);
 
-  const { data: initialCities, isFetching: isFetchingCities } =
-    useGetCities(countryCode);
-
   const { data: estimate } = useGetScraperEstimate({
     limit: watchLimit,
     no_of_cities: cities.filter((city) => city.checked).length,
   });
-
-  useEffect(() => {
-    if (initialCities) {
-      setCities(initialCities);
-    }
-    //eslint-disable-next-line
-  }, [initialCities]);
 
   const handleChange = (
     field: keyof typeof prospectFinder,
@@ -98,11 +83,11 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
     const foundCountry = countries?.find((country) => country.country === name);
     if (!foundCountry) return;
 
-    // const newCities: City[] = foundCountry.cities.map((city) => {
-    //   return { name: city, checked: true, status: "queued" };
-    // });
+    const newCities: City[] = foundCountry.cities.map((city) => {
+      return { name: city, checked: false, status: "queued" };
+    });
 
-    // setCities(newCities);
+    setCities(newCities);
   };
 
   const handleCheck = (cityName: string) => {
@@ -118,23 +103,25 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
 
   const handleCheckAll = () => {
     if (cities.every((city) => city.checked === true)) {
-      const newCities = cities.map((city) => {
-        return { ...city, checked: false };
-      });
-      setCities(newCities);
+      setCities((prev) =>
+        prev.map((item) => {
+          return { ...item, checked: false };
+        })
+      );
     } else {
-      console.log("else");
-      const newCities = cities.map((city) => {
-        return { ...city, checked: true };
-      });
-      setCities(newCities);
+      setCities((prev) =>
+        prev.map((item) => {
+          return { ...item, checked: true };
+        })
+      );
     }
   };
 
   const cityLabel = useMemo(() => {
-    if (isFetchingCities) {
-      return <Spinner className="m-1" />;
-    } else if (watchCountry.length > 0 && cities.length === 0) {
+    // if (isFetchingCities) {
+    //   return <Spinner className="m-1" />;
+    // }
+    if (watchCountry.length > 0 && cities.length === 0) {
       return "No cities found";
     } else if (watchCountry.length > 0 && cities) {
       // const isAllChecked = cities?.every((city) => city.checked === true);
@@ -147,7 +134,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
     }
 
     return "--";
-  }, [watchCountry, cities, isFetchingCities]);
+  }, [watchCountry, cities]);
 
   const onSubmit: SubmitHandler<Step1Schema> = (data) => {
     setProspectFinder({ ...data, countryCode });
@@ -270,8 +257,7 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
               </button>
             </PopoverTrigger>
             <PopoverContent className="p-0 popover-content-max-width">
-              <Command>
-                {/* <CommandInput placeholder="Search cities..." /> */}
+              {/* <Command>
                 <CommandGroup className="max-h-[200px] overflow-y-auto">
                   <CommandItem
                     className="cursor-pointer"
@@ -312,7 +298,14 @@ const FindProspectsFormStep1: React.FC<FormProps> = ({ children }) => {
                     );
                   })}
                 </CommandGroup>
-              </Command>
+              </Command> */}
+              <VirtualizedCitySelector
+                options={cities}
+                onSelectOption={handleCheck}
+                onSelectAll={handleCheckAll}
+                height="180px"
+                placeholder="Search cities..."
+              />
             </PopoverContent>
           </Popover>
         </div>
