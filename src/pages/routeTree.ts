@@ -272,6 +272,11 @@ const clientsManagerRoute = createRoute({
   getParentRoute: () => clientsRoute,
   path: "clients_manager",
   validateSearch: clientsSearchSchema,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+    }),
+  ],
   // loaderDeps: ({ search }) => ({
   //   searchClients: search.searchClients,
   // }),
@@ -334,6 +339,11 @@ export const usersManagerRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "users_manager",
   validateSearch: usersSearchSchema,
+  preSearchFilters: [
+    (search) => ({
+      ...search,
+    }),
+  ],
   loaderDeps: (search) => search,
   loader: async ({ context: { queryClient }, deps }) => {
     queryClient.ensureQueryData(getAllUsersOptions(deps.search));
