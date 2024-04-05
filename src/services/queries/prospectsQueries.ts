@@ -496,7 +496,7 @@ export const useScrapeProspectWebsite = () => {
       // newProspects[index] = { ...newProspects[index], status: "pending" };
       setProspects((prev) =>
         prev.map((item, idx) =>
-          idx === index ? { ...item, status: "pending" } : item
+          idx === index ? { ...item, emails: [], status: "pending" } : item
         )
       );
     },
@@ -538,7 +538,10 @@ export const useScrapeProspectWebsite = () => {
         )
       );
 
-      const hasEmails = prospects[index]?.emails?.length > 0 ?? false;
+      const hasEmails =
+        prospects[index]?.emails && prospects[index]?.emails?.length > 0
+          ? true
+          : false;
       if (hasEmails) return;
 
       const hasUrl = data.website.length > 0 ?? false;
