@@ -10,6 +10,7 @@ import { Pagination } from "./accountsQueries";
 import { ClientFormSchema } from "../../components/clients/clientsManager/ClientForm";
 import { Company } from "./companyQueries";
 import toast from "react-hot-toast";
+import { Seller } from "./sellerQueries";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CLIENTS_URL = API_URL + "/clients";
@@ -41,6 +42,7 @@ export type Client = {
   createdAt: string;
   updatedAt: string;
   deletedAt: undefined | string;
+  seller: Seller;
 };
 
 export type Industry = {

@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
 import { ReactNode, useEffect } from "react";
 import {
+  Client,
   useGetClientBySellers,
   useGetClientIndustries,
   useGetClientOrigins,
@@ -25,9 +26,10 @@ type SelectClientSchema = z.infer<typeof selectClientSchema>;
 
 type FormProps = {
   children: ReactNode;
+  clientData: boolean;
 };
 
-const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
+const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
   const { setStep, seller, client, setClient, setCompanies } =
     useOrderForm() as OrderFormContext;
   const { data: industries } = useGetClientIndustries();
@@ -114,6 +116,37 @@ const OrderFormStep2: React.FC<FormProps> = ({ children }) => {
     }
     //eslint-disable-next-line
   }, [debouncedEmail]);
+
+  useEffect(() => {
+    if (clientData) {
+      const data = localStorage.getItem("client");
+      if (!data) return;
+
+      const client = JSON.parse(data) as Client;
+
+      setClient({
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        industry: client.clientInfo.industryId ?? 41,
+        origin: client.clientInfo.sourceId ?? 1,
+        phone: client.clientInfo.phone ?? "",
+        unit_cost: client.clientInfo.default_unit_cost ?? 10,
+        third_party_id: client.clientInfo.thirdPartyId ?? "",
+      });
+
+      setCompanies(client.companies);
+
+      setValue("name", client.name);
+      setValue("email", client.email);
+      setValue("industry", client.clientInfo.industryId ?? 41);
+      setValue("origin", client.clientInfo.sourceId ?? 1);
+      setValue("phone", client.clientInfo.phone ?? "");
+      setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
+      setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
+    }
+    //eslint-disable-next-line
+  }, [clientData]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="">

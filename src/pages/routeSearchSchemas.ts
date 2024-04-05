@@ -33,6 +33,16 @@ export const ordersSearchSchema = z.object({
   showDeleted: z.boolean().optional(),
 }).parse;
 
+export const newOrderSearchSchema = z.object({
+  // sellerId: z.coerce.number().optional(),
+  // sellerName: z.string().optional(),
+  // sellerEmail: z.string().optional(),
+  // clientId: z.coerce.number().optional(),
+  // clientName: z.string().optional(),
+  // clientEmail: z.string().optional(),
+  clientData: z.boolean().optional().catch(false),
+}).parse;
+
 export const clientsSearchSchema = z.object({
   keyword: z.string().optional(),
   from: z.string().optional(),

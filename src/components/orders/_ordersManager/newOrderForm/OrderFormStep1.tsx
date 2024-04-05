@@ -7,6 +7,7 @@ import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 import { UserLocalInfo, getUserInfo } from "../../../../utils/utils";
 import { debounce } from "lodash";
+import { Client } from "../../../../services/queries/clientsQueries";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -17,9 +18,10 @@ type SelectSellerSchema = z.infer<typeof selectSellerSchema>;
 
 type FormProps = {
   children: ReactNode;
+  clientData: boolean;
 };
 
-const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
+const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
   const [keyword, setKeyword] = useState("");
   const [sellerDraft, setSellerDraft] = useState("");
@@ -102,9 +104,23 @@ const OrderFormStep1: React.FC<FormProps> = ({ children }) => {
         name: user.name,
         email: user.email,
       });
+    } else if (clientData) {
+      const data = localStorage.getItem("client");
+      if (!data) return;
+
+      const client = JSON.parse(data) as Client;
+      setValue("email", client.seller.email ?? "");
+      setValue("name", client.seller.name);
+      setSellerDraft(client.seller.email);
+
+      setSeller({
+        id: client.seller.id,
+        name: client.seller.name,
+        email: client.seller.email,
+      });
     }
     //eslint-disable-next-line
-  }, [user]);
+  }, [user, clientData]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

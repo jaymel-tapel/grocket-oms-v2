@@ -73,7 +73,7 @@ export const useCreateBrands = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: BrandFormSchema) => {
+    mutationFn: async (payload: FormData) => {
       return await axios.post(BRANDS_URL, payload, { headers: getHeaders() });
     },
     onSettled: () => {

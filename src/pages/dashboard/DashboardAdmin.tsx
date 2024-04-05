@@ -70,8 +70,8 @@ const DashboardAdmin: React.FC = () => {
     ];
 
     const labels = [
-      { label: "Received Amount", value: graphData.receivedAmount },
-      { label: "Unpaid Amount", value: graphData.unpaidAmount },
+      { label: "Received Amount", value: graphData.receivedAmount.toFixed(2) },
+      { label: "Unpaid Amount", value: graphData.unpaidAmount.toFixed(2) },
     ];
 
     const colors = ["#3C50E0", "#C7D2E2"];

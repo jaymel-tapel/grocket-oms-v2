@@ -257,7 +257,7 @@ export default function SidebarNavigation() {
                                     ? {
                                         userId: user.id,
                                       }
-                                    : undefined
+                                    : true
                                 }
                                 onClick={
                                   item.name === "Sign out"
