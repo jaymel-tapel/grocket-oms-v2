@@ -24,6 +24,8 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
     setStep(3);
   };
 
+  console.log(cities);
+
   const scrapeProgress = useMemo(() => {
     const selectedCities = cities.filter((item) => item.checked);
 
