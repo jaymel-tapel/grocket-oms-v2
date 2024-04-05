@@ -88,12 +88,12 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
 
         <div className="flex flex-col items-center">
           <div className="relative flex justify-center">
-            {scrapeProgress.pending && (
-              <div className="absolute w-[25%] text-center z-10 flex flex-col gap-2 items-center h-full justify-center">
-                <span>Searching</span>
+            <div className="absolute w-[25%] text-center z-10 flex flex-col gap-2 items-center h-full justify-center">
+              <span>Searching</span>
+              {scrapeProgress.pending && (
                 <span className="font-bold">{`${scrapeProgress.pending}`}</span>
-              </div>
-            )}
+              )}
+            </div>
 
             <div className="w-[350px]">
               <svg className=" -rotate-90 transform" viewBox="0 0 70 70">
