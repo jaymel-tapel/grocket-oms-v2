@@ -389,7 +389,7 @@ export const useScrapeProspects = () => {
 
       if (index + 1 === cities.filter((city) => city.checked).length) {
         if (prospects.length === 0) {
-          setHasWebsites(true);
+          // setHasWebsites(true);
           return;
         }
 
