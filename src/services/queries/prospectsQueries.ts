@@ -354,7 +354,10 @@ export const useScrapeProspects = () => {
       });
 
       // set initial emails if done scraping all cities
-      if (index + 1 === cities.filter((city) => city.checked).length) {
+      const city = cities[index];
+      const checkedCities = cities.filter((city) => city.checked);
+
+      if (checkedCities.indexOf(city) + 1 === checkedCities.length) {
         // check if last index
         setHasWebsites(false);
         const newEmails: ProspectsEmails[] = prospects.map((prospect) => {
@@ -387,9 +390,12 @@ export const useScrapeProspects = () => {
         )
       );
 
-      if (index + 1 === cities.filter((city) => city.checked).length) {
+      const city = cities[index];
+      const checkedCities = cities.filter((city) => city.checked);
+
+      if (checkedCities.indexOf(city) + 1 === checkedCities.length) {
         if (prospects.length === 0) {
-          // setHasWebsites(true);
+          setHasWebsites(true);
           return;
         }
 
@@ -437,7 +443,7 @@ export const useScrapeProspects = () => {
       // Use Promise.all to process up to 10 requests in parallel
       await Promise.all(
         chunk.map(async (city) => {
-          const index = checkedCities.indexOf(city);
+          const index = cities.indexOf(city);
 
           try {
             await scrapeProspectsQuery.mutateAsync({
