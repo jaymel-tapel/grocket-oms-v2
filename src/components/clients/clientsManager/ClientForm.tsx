@@ -110,6 +110,20 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     setSeller(foundSeller);
   };
 
+  const handleCreateTask = () => {
+    navigate({ to: "/tasks/new", search: { clientEmail: client?.email } });
+  };
+
+  const handleNewOrder = () => {
+    const clientData = JSON.stringify(client);
+    localStorage.setItem("client", clientData);
+
+    navigate({
+      to: "/orders/orders_manager/new",
+      search: { clientData: true },
+    });
+  };
+
   const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
     if (!selectedBrand) return;
 
@@ -148,6 +162,13 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   //     const data = window.btoa(client?.email ?? '');
   //     window.open(CUSTOMER_LOGIN_URL + `/${data}`);
   //  };
+
+  useEffect(() => {
+    if (client) {
+      setSeller(client.seller);
+      setSellerDraft(client.seller.email);
+    }
+  }, [client]);
 
   return (
     <div className="bg-white shadow-sm p-8">
@@ -201,6 +222,19 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         {client && activeTab === "Order History" && (
           <ClientOrderHistory clientEmail={client.email} />
         )}
+
+        <div className="flex gap-4 pb-8">
+          <Button type="button" variant={"green"} onClick={handleCreateTask}>
+            New Task
+          </Button>
+          <Button type="button" variant={"lightBlue"} onClick={handleNewOrder}>
+            New Order
+          </Button>
+          <Button type="button">Login to Client</Button>
+          <Button type="button" variant={"black"}>
+            Reset Password
+          </Button>
+        </div>
 
         <div className="pt-8 flex justify-between gap-4 border-t border-t-gray-300">
           <div>

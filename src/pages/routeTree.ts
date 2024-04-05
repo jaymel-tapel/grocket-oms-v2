@@ -19,6 +19,7 @@ import { getClientOption } from "../services/queries/clientsQueries";
 import { getBrandOption } from "../services/queries/brandsQueries";
 import {
   clientsSearchSchema,
+  newOrderSearchSchema,
   ordersSearchSchema,
   taskDashboardSchema,
   taskSearchParams,
@@ -216,12 +217,13 @@ export const ordersManagerIndexRoute = createRoute({
   component: lazyRouteComponent(() => import("./orders/ordersManager/Index")),
 });
 
-const newOrderRoute = createRoute({
+export const newOrderRoute = createRoute({
   getParentRoute: () => ordersManagerRoute,
   path: "new",
   component: lazyRouteComponent(
     () => import("./orders/ordersManager/NewOrderPage")
   ),
+  validateSearch: newOrderSearchSchema,
 });
 
 export const orderRoute = createRoute({
