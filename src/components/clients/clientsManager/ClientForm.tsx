@@ -155,13 +155,18 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     navigate({ to: "/clients/clients_manager" });
   };
 
-  //   const handleLoginToClient = () => {
-  //     if (!window.confirm(`Login using ${client?.name}'s account?`)) return;
+  const handleLoginToClient = () => {
+    if (!window.confirm(`Login using ${client?.name}'s account?`)) return;
 
-  //     const CUSTOMER_LOGIN_URL = import.meta.env.VITE_CUSTOMER_LOGIN_URL;
-  //     const data = window.btoa(client?.email ?? '');
-  //     window.open(CUSTOMER_LOGIN_URL + `/${data}`);
-  //  };
+    const CUSTOMER_LOGIN_URL = import.meta.env.VITE_CUSTOMER_LOGIN_URL;
+    const TOKEN = import.meta.env.VITE_CUSTOMER_AUTH_TOKEN;
+
+    const encodedEmail = window.btoa(client?.email ?? "");
+    const encodedToken = window.btoa(TOKEN);
+    window.open(
+      CUSTOMER_LOGIN_URL + `/?email=${encodedEmail}&token=${encodedToken}`
+    );
+  };
 
   useEffect(() => {
     if (client) {
@@ -230,7 +235,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           <Button type="button" variant={"lightBlue"} onClick={handleNewOrder}>
             New Order
           </Button>
-          <Button type="button">Login to Client</Button>
+          <Button type="button" onClick={handleLoginToClient}>
+            Login to Client
+          </Button>
           <Button type="button" variant={"black"}>
             Reset Password
           </Button>
