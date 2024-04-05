@@ -12,9 +12,11 @@ import { Button } from "../../../tools/buttons/Button";
 import Spinner from "../../../tools/spinner/Spinner";
 import { useMemo } from "react";
 import { isEmpty } from "../../../../utils/utils";
+import { newOrderRoute } from "../../../../pages/routeTree";
 
 const NewOrderForm = () => {
   const { step } = useOrderForm();
+  const newOrderParams = newOrderRoute.useSearch();
 
   const stepLabel = useMemo(() => {
     switch (step) {
@@ -44,12 +46,12 @@ const NewOrderForm = () => {
       <div className="mt-12 mb-8 border-t border-t-gray-300" />
       <div>
         {step === 1 && (
-          <OrderFormStep1>
+          <OrderFormStep1 clientData={newOrderParams.clientData ?? false}>
             <FormNavigation />
           </OrderFormStep1>
         )}
         {step === 2 && (
-          <OrderFormStep2>
+          <OrderFormStep2 clientData={newOrderParams.clientData ?? false}>
             <FormNavigation />
           </OrderFormStep2>
         )}
