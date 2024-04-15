@@ -14,7 +14,7 @@ export const adminNav = [
     icon: Squares2X2Icon,
     children: [
       { name: "My Dashboard", to: "/dashboard" },
-      // { name: "My Inbox", to: "/inbox" },
+      { name: "My Inbox", to: "/inbox" },
     ],
   },
   {
@@ -77,7 +77,7 @@ export const accountantSellerNav = [
     icon: Squares2X2Icon,
     children: [
       { name: "My Dashboard", to: "/dashboard" },
-      // { name: "My Inbox", to: "/inbox" },
+      { name: "My Inbox", to: "/inbox" },
       { name: "My Tasks", to: "/tasks" },
     ],
   },

@@ -24,8 +24,6 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
     setStep(3);
   };
 
-  console.log(cities);
-
   const scrapeProgress = useMemo(() => {
     const selectedCities = cities.filter((item) => item.checked);
 
@@ -55,7 +53,13 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
   }, [cities]);
 
   useEffect(() => {
-    scrapeProspects();
+    const fetchData = async () => {
+      // Wait for 200 milliseconds
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      scrapeProspects();
+    };
+
+    fetchData();
     //eslint-disable-next-line
   }, []);
 
