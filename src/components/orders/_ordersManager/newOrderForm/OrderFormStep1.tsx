@@ -1,13 +1,16 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { OrderFormContext, useOrderForm } from "./NewOrderFormContext";
+import {
+  OrderFormContext,
+  useOrderForm,
+} from "../../../../context/NewOrderFormContext";
 import { ReactNode, useEffect, useState } from "react";
 import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
-import { UserLocalInfo, getUserInfo } from "../../../../utils/utils";
 import { debounce } from "lodash";
 import { Client } from "../../../../services/queries/clientsQueries";
+import { useUserAuthContext } from "../../../../context/UserAuthContext";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -26,7 +29,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   const [keyword, setKeyword] = useState("");
   const [sellerDraft, setSellerDraft] = useState("");
 
-  const user = getUserInfo() as UserLocalInfo;
+  const { user } = useUserAuthContext();
 
   const {
     register,
@@ -94,6 +97,8 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   }, [sellerDraft]);
 
   useEffect(() => {
+    if (!user) return;
+
     if (user.role === "SELLER") {
       setValue("email", user.email ?? "");
       setValue("name", user.name);
@@ -139,7 +144,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
             value={sellerDraft}
             handleChange={(value) => handleChange("email", value)}
             handleSelect={(value) => handleEmailSelect(value)}
-            disabled={user.role === "SELLER"}
+            disabled={user?.role === "SELLER"}
           />
           {errors.email && (
             <p className="text-xs italic text-red-500 mt-2">
@@ -165,7 +170,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
               className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                 errors.name && "border-red-500"
               }`}
-              disabled={user.role === "SELLER"}
+              disabled={user?.role === "SELLER"}
             />
             {errors.name && (
               <p className="text-xs italic text-red-500 mt-2">

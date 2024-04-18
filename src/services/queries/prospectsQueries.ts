@@ -550,7 +550,7 @@ export const useScrapeProspectWebsite = () => {
           : false;
       if (hasEmails) return;
 
-      const hasUrl = data.website.length > 0 ?? false;
+      const hasUrl = data?.website?.length > 0 ?? false;
       // const newEmails = [...prospectsEmails];
       // newEmails[index] = {
       //   ...newEmails[index],

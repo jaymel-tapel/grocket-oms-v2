@@ -1,8 +1,5 @@
 import React, { ReactNode, createContext, useContext, useState } from "react";
-import {
-  Company,
-  PendingReview,
-} from "../../../../services/queries/companyQueries";
+import { Company, PendingReview } from "../services/queries/companyQueries";
 
 // If you’re familiar with the context API before Hooks,
 // useContext(OrderFormContext) is equivalent to static
@@ -86,6 +83,7 @@ export const OrderFormContext = createContext<OrderFormContext>({
   setConfirmation: () => {},
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useOrderForm = () => useContext(OrderFormContext);
 
 type ProviderProps = {

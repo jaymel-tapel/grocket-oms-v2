@@ -6,14 +6,20 @@ import { queryClient } from "./services/queries";
 
 import { RouterProvider } from "@tanstack/react-router";
 import { router } from "./pages/routeTree";
+import { UserAuthContextProvider } from "./context/UserAuthContext";
+import { SocketContextProvider } from "./context/SocketContext";
 
 function App() {
   return (
     <ErrorBoundary>
       <Toaster position="bottom-right" reverseOrder={false} />
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <UserAuthContextProvider>
+        <SocketContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </SocketContextProvider>
+      </UserAuthContextProvider>
     </ErrorBoundary>
   );
 }

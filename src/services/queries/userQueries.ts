@@ -4,6 +4,7 @@ import { getHeaders, setAuthorization } from "../../utils/utils";
 import toast from "react-hot-toast";
 import { User } from "./accountsQueries";
 import { UserFormSchema } from "../../components/accounts/usersManager/UserForm";
+import { useUserAuthContext } from "../../context/UserAuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const loginUrl = API_URL + "/auth/login";
@@ -93,6 +94,8 @@ type SellerGraphResponse = {
 };
 
 export const useLogin = () => {
+  const { setUser } = useUserAuthContext();
+
   return useMutation({
     mutationFn: (payload: loginDetails) => {
       return axios.post(loginUrl, payload);
@@ -100,6 +103,7 @@ export const useLogin = () => {
     onSuccess: ({ data }) => {
       setAuthorization(data.access_token);
       localStorage.setItem("user", JSON.stringify(data));
+      setUser(data);
     },
   });
 };
