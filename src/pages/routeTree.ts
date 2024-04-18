@@ -139,6 +139,27 @@ const inboxRoute = createRoute({
   component: lazyRouteComponent(() => import("./dashboard/Inbox")),
 });
 
+const selectChatRoute = createRoute({
+  getParentRoute: () => inboxRoute,
+  path: "/",
+  component: lazyRouteComponent(
+    () => import("../components/dashboard/inbox/SelectChat")
+  ),
+});
+
+export const chatRoute = createRoute({
+  getParentRoute: () => inboxRoute,
+  path: "$chatId",
+  parseParams: ({ chatId }) => ({ chatId: Number(chatId) }),
+  stringifyParams: ({ chatId }) => ({ chatId: `${chatId}` }),
+  // loader: async ({ context: { queryClient }, params: { chatId } }) => {
+  //   queryClient.ensureQueryData(getOrderOption(chatId));
+  // },
+  component: lazyRouteComponent(
+    () => import("../components/dashboard/inbox/Chat")
+  ),
+});
+
 const tasksRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "tasks",
@@ -526,7 +547,7 @@ const routeTree = rootRoute.addChildren([
     dashboardRoute,
     adminDashboardRoute,
     sellerDashboardRoute,
-    inboxRoute,
+    inboxRoute.addChildren([selectChatRoute, chatRoute]),
     tasksRoute.addChildren([tasksIndexRoute, taskRoute, newTaskRoute]),
 
     ordersRoute.addChildren([

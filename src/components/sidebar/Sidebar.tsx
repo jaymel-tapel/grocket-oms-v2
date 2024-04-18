@@ -5,11 +5,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  UserLocalInfo,
-  cleanAuthorization,
-  getUserInfo,
-} from "../../utils/utils";
+import { cleanAuthorization } from "../../utils/utils";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import {
   brandAtom,
@@ -18,6 +14,7 @@ import {
 import DropdownText from "../tools/dropdowntext/DropdownText";
 import { useAtom } from "jotai/react";
 import { accountantSellerNav, adminNav } from "./NavigationData";
+import { useUserAuthContext } from "../../context/UserAuthContext";
 
 const handleLogout = () => {
   cleanAuthorization();
@@ -41,7 +38,7 @@ export default function SidebarNavigation() {
 
   const { data: brands } = useGetAllBrand();
   const [selectedBrand, setSelectedBrand] = useAtom(brandAtom);
-  const user = getUserInfo() as UserLocalInfo;
+  const { user } = useUserAuthContext();
 
   const brandList = useMemo(() => {
     if (brands) {
@@ -255,7 +252,7 @@ export default function SidebarNavigation() {
                                 params={
                                   item.name === "Your profile"
                                     ? {
-                                        userId: user.id,
+                                        userId: user?.id ?? 1,
                                       }
                                     : true
                                 }
