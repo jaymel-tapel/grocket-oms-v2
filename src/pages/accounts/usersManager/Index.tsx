@@ -9,19 +9,16 @@ import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import { UsersFiltersType, usersFilters } from "../../routeFilters";
 import { debounce } from "lodash";
 import UsersManagerTable from "../../../components/accounts/usersManager/UsersManagerTable";
-import {
-  UserLocalInfo,
-  getActiveFilterLabel,
-  getUserInfo,
-} from "../../../utils/utils";
+import { getActiveFilterLabel } from "../../../utils/utils";
 import { Dialog, DialogTrigger } from "../../../components/tools/dialog/Dialog";
 import TransferOrderForm from "../../../components/accounts/usersManager/TransferOrderForm";
+import { useUserAuthContext } from "../../../context/UserAuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
   const searchUsers = usersManagerIndexRoute.useSearch();
   const { data } = useGetAllUsers(searchUsers);
-  const user = getUserInfo() as UserLocalInfo;
+  const { user } = useUserAuthContext();
 
   const keyword = searchUsers?.keyword;
   const dateFrom = searchUsers?.from;

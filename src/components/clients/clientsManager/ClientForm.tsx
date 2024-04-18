@@ -13,7 +13,6 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
-import { UserLocalInfo, getUserInfo } from "../../../utils/utils";
 import {
   Seller,
   useGetAllSellers,
@@ -22,6 +21,7 @@ import toast from "react-hot-toast";
 import AutoComplete from "../../tools/autoComplete/AutoComplete";
 import { debounce } from "lodash";
 import ClientOrderHistory from "./ClientOrderHistory";
+import { useUserAuthContext } from "../../../context/UserAuthContext";
 
 const VIEWS = ["Client Information", "Companies", "Order History"] as const;
 type View = (typeof VIEWS)[number];
@@ -51,7 +51,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<View>("Client Information");
 
-  const user = getUserInfo() as UserLocalInfo;
+  const { user } = useUserAuthContext();
   const [selectedBrand] = useAtom(brandAtom);
   const [seller, setSeller] = useState<Seller | undefined>(undefined);
   const [sellerKeyword, setSellerKeyword] = useState("");
@@ -125,7 +125,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   };
 
   const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
-    if (!selectedBrand) return;
+    if (!selectedBrand || !user) return;
 
     let sellerId: number;
 
@@ -194,7 +194,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         })}
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
-        {activeTab === "Client Information" && user.role !== "SELLER" && (
+        {activeTab === "Client Information" && user?.role !== "SELLER" && (
           <div className="mb-8 grid sm:grid-cols-2 gap-12">
             <div>
               <label

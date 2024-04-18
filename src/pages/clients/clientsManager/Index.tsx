@@ -12,21 +12,18 @@ import {
 } from "../../../services/queries/clientsQueries";
 import ClientsManagersTable from "../../../components/clients/clientsManager/ClientsManagerTable";
 import { ClientsFiltersType, clientsFilters } from "../../routeFilters";
-import {
-  UserLocalInfo,
-  getActiveFilterLabel,
-  getUserInfo,
-} from "../../../utils/utils";
+import { getActiveFilterLabel } from "../../../utils/utils";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
 import { Dialog, DialogTrigger } from "../../../components/tools/dialog/Dialog";
 import TransferClientsForm from "../../../components/clients/clientsManager/TransferClientsForm";
+import { useUserAuthContext } from "../../../context/UserAuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
   const searchClients = clientsManagerIndexRoute.useSearch();
   const { data } = useGetAllClients(searchClients);
-  const user = getUserInfo() as UserLocalInfo;
+  const { user } = useUserAuthContext();
 
   const keyword = searchClients?.keyword;
   const dateFrom = searchClients?.from;
