@@ -23,6 +23,7 @@ export type User = {
   contact_url: undefined | string;
   phone: undefined | string;
   status: string;
+  alternateEmails?: string[];
   createdAt: string;
   updatedAt: string;
   deletedAt: undefined | string;
