@@ -255,7 +255,10 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (arg: { id: number; payload: UserFormSchema }) => {
+    mutationFn: async (arg: {
+      id: number;
+      payload: UserFormSchema & { alternateEmails: string[] };
+    }) => {
       return await axios.patch(profileUrl + `/${arg.id}`, arg.payload, {
         headers: getHeaders(),
       });
