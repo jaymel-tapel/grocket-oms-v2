@@ -286,12 +286,12 @@ export default function SidebarNavigation() {
 
 function SidebarComponent(props) {
   const navigation = useMemo(() => {
-    if (props.user.role === "ADMIN") {
+    if (props?.user?.role === "ADMIN") {
       return adminNav;
     }
 
     return accountantSellerNav;
-  }, [props.user]);
+  }, [props?.user]);
 
   return (
     <div className="no-scrollbar flex grow flex-col overflow-y-auto bg-[#1C2434] px-6 pb-4 ring-1 ring-white/10">
