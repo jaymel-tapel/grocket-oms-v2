@@ -13,6 +13,12 @@ const API_URL = import.meta.env.VITE_API_URL;
 const USERS_URL = API_URL + "/users";
 const SELLERS_URL = API_URL + "/sellers";
 
+export type AlternateEmail = {
+  id: number;
+  email: string;
+  userId: string;
+};
+
 export type User = {
   id: number;
   name: string;
@@ -23,7 +29,7 @@ export type User = {
   contact_url: undefined | string;
   phone: undefined | string;
   status: string;
-  alternateEmails?: string[];
+  alternateEmails?: AlternateEmail[];
   createdAt: string;
   updatedAt: string;
   deletedAt: undefined | string;

@@ -5,7 +5,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../tools/buttons/Button";
@@ -45,13 +45,20 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const [alternateEmails, setAlternateEmails] = useState<string[]>(
-    user?.alternateEmails ?? []
-  );
+  const [alternateEmails, setAlternateEmails] = useState<string[]>([]);
 
   const [emailDraft, setEmailDraft] = useState("");
 
   const { location } = useRouterState();
+
+  const userAlternateEmails = useMemo(() => {
+    if (!user?.alternateEmails) {
+      return alternateEmails;
+    }
+
+    const userAltEmails = user.alternateEmails.map((item) => item.email);
+    return [...userAltEmails, ...alternateEmails];
+  }, [user?.alternateEmails, alternateEmails]);
 
   // Check whether we're on profile page or users manager page
   const isOnProfile = useMemo(() => {
@@ -62,11 +69,11 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
     return true;
   }, [location]);
 
-  useEffect(() => {
-    if (user?.alternateEmails) {
-      setAlternateEmails(user.alternateEmails);
-    }
-  }, [user?.alternateEmails]);
+  // useEffect(() => {
+  //   if (user?.alternateEmails) {
+  //     setAlternateEmails(user.alternateEmails);
+  //   }
+  // }, [user?.alternateEmails]);
 
   // API calls used for Users Manager
   const { mutateAsync: createAccount, isPending: isCreating } =
@@ -91,7 +98,10 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
     if (isOnProfile) {
       await updateProfile({
         id: userId as number,
-        payload: { ...data, alternateEmails },
+        payload: {
+          ...data,
+          alternateEmails: userAlternateEmails,
+        },
       });
     } else if (!isOnProfile) {
       const response = userId
@@ -217,7 +227,7 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
               </label>
               <div className="w-full mt-2">
                 <div className="flex flex-wrap py-1.5 pl-4 gap-2 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset">
-                  {alternateEmails?.map((email, index) => (
+                  {userAlternateEmails?.map((email, index) => (
                     <Pill
                       key={index}
                       className="self-center"
