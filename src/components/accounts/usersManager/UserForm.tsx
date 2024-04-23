@@ -5,7 +5,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../tools/buttons/Button";
@@ -17,6 +17,8 @@ import {
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import Spinner from "../../tools/spinner/Spinner";
 import { useUpdateProfile } from "../../../services/queries/userQueries";
+import Pill from "../../tools/pill/Pill";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 const ROLES = ["ADMIN", "ACCOUNTANT", "SELLER"];
 
@@ -43,7 +45,20 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+  const [alternateEmails, setAlternateEmails] = useState<string[]>([]);
+
+  const [emailDraft, setEmailDraft] = useState("");
+
   const { location } = useRouterState();
+
+  // const userAlternateEmails = useMemo(() => {
+  //   if (!user?.alternateEmails) {
+  //     return alternateEmails;
+  //   }
+
+  //   const userAltEmails = user.alternateEmails.map((item) => item.email);
+  //   return [...userAltEmails, ...alternateEmails];
+  // }, [user?.alternateEmails, alternateEmails]);
 
   // Check whether we're on profile page or users manager page
   const isOnProfile = useMemo(() => {
@@ -53,6 +68,12 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
 
     return true;
   }, [location]);
+
+  useEffect(() => {
+    if (user?.alternateEmails) {
+      setAlternateEmails(user.alternateEmails.map((item) => item.email));
+    }
+  }, [user?.alternateEmails]);
 
   // API calls used for Users Manager
   const { mutateAsync: createAccount, isPending: isCreating } =
@@ -75,7 +96,13 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
 
   const onSubmit: SubmitHandler<UserFormSchema> = async (data) => {
     if (isOnProfile) {
-      await updateProfile({ id: userId as number, payload: data });
+      await updateProfile({
+        id: userId as number,
+        payload: {
+          ...data,
+          alternateEmails,
+        },
+      });
     } else if (!isOnProfile) {
       const response = userId
         ? await updateAccount({ id: userId, payload: data })
@@ -88,8 +115,8 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
   };
 
   const handleCancel = () => {
-    navigate({ to: '/accounts/users_manager' })
-  }
+    navigate({ to: "/accounts/users_manager" });
+  };
 
   return (
     <form
@@ -114,8 +141,9 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
             </label>
             <div className="w-full mt-2">
               <div
-                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${errors.name && "border-red-500"
-                  }`}
+                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${
+                  errors.name && "border-red-500"
+                }`}
               >
                 <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
                   <UserIcon className="h-4 w-4" />
@@ -146,8 +174,9 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                 type="text"
                 id="userContactNumber"
                 {...register("phone")}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.phone && "border-red-500"
-                  }`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                  errors.phone && "border-red-500"
+                }`}
               />
               {errors.phone && (
                 <p className="text-xs italic text-red-500 mt-2">
@@ -166,8 +195,9 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
             </label>
             <div className="w-full mt-2">
               <div
-                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${errors.email && "border-red-500"
-                  }`}
+                className={`flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset ${
+                  errors.email && "border-red-500"
+                }`}
               >
                 <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
                   <EnvelopeIcon className="h-4 w-4" />
@@ -187,6 +217,56 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
             </div>
           </div>
 
+          {isOnProfile && (
+            <div className="col-span-2">
+              <label
+                htmlFor="alternateEmails"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                {"Alternate Emails"}
+              </label>
+              <div className="w-full mt-2">
+                <div className="flex flex-wrap py-1.5 pl-4 gap-2 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-1 focus-within:ring-blue-500 focus-within:ring-inset">
+                  {alternateEmails?.map((email, index) => (
+                    <Pill
+                      key={index}
+                      className="self-center"
+                      bgColor={"lightBlue"}
+                    >
+                      {email}
+                      <Cross2Icon
+                        className="size-4 cursor-pointer"
+                        onClick={() => {
+                          const newEmails = alternateEmails.filter(
+                            (_, i) => i !== index
+                          );
+                          setAlternateEmails(newEmails);
+                        }}
+                      />
+                    </Pill>
+                  ))}
+                  <input
+                    type="email"
+                    id="alternateEmails"
+                    value={emailDraft}
+                    onKeyDown={(e) => {
+                      if (e.key === " " || e.key === "Enter") {
+                        e.preventDefault();
+                        setAlternateEmails([...alternateEmails, emailDraft]);
+                        setEmailDraft("");
+                      }
+                    }}
+                    onChange={(e) => setEmailDraft(e.target.value)}
+                    className="flex-1 p-0 border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                  />
+                </div>
+                <span className="mt-2 block text-xs text-gray-400">
+                  Press enter or spacebar after typing email to add
+                </span>
+              </div>
+            </div>
+          )}
+
           <div className="col-span-2">
             <label
               htmlFor="userUrl"
@@ -199,8 +279,9 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                 type="text"
                 id="userUrl"
                 {...register("contact_url")}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.contact_url && "border-red-500"
-                  }`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                  errors.contact_url && "border-red-500"
+                }`}
               />
               {errors.contact_url && (
                 <p className="text-xs italic text-red-500 mt-2">
@@ -235,8 +316,9 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
                   id="role"
                   autoComplete="off"
                   {...register("role")}
-                  className={`capitalize block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.role && "border-red-500"
-                    }`}
+                  className={`capitalize block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                    errors.role && "border-red-500"
+                  }`}
                 >
                   <option disabled>Select Role</option>
                   {ROLES?.map((role, index) => {
