@@ -250,6 +250,19 @@ export const useTransferClients = () => {
   });
 };
 
+export const useSendPasswordToEmail = () => {
+  return useMutation({
+    mutationFn: async (payload: { password: string; clientId: number }) => {
+      return await axios.post(CLIENTS_URL + "/send-email", payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Password sent to client's email");
+    },
+  });
+};
+
 // -- PATCH / PUT requests
 
 export const useUpdateClient = () => {
@@ -264,6 +277,22 @@ export const useUpdateClient = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },
+  });
+};
+
+export const useGeneratePassword = () => {
+  return useMutation({
+    mutationFn: async (clientId: number) => {
+      const response = await axios.put(
+        CLIENTS_URL + `/generate-password/${clientId}`,
+        null,
+        {
+          headers: getHeaders(),
+        }
+      );
+      return response.data as { password_text: string };
+    },
+    gcTime: Infinity,
   });
 };
 

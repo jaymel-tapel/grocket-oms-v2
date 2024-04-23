@@ -8,6 +8,8 @@ import ClientFormCompanies from "./ClientFormCompanies";
 import {
   Client,
   useCreateClient,
+  useGeneratePassword,
+  useSendPasswordToEmail,
   useUpdateClient,
 } from "../../../services/queries/clientsQueries";
 import { useNavigate } from "@tanstack/react-router";
@@ -22,6 +24,16 @@ import AutoComplete from "../../tools/autoComplete/AutoComplete";
 import { debounce } from "lodash";
 import ClientOrderHistory from "./ClientOrderHistory";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../tools/dialog/Dialog";
+import Spinner from "../../tools/spinner/Spinner";
 
 const VIEWS = ["Client Information", "Companies", "Order History"] as const;
 type View = (typeof VIEWS)[number];
@@ -50,7 +62,7 @@ type FormProps = {
 const ClientForm: React.FC<FormProps> = ({ client }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<View>("Client Information");
-
+  const [open, setOpen] = useState(false);
   const { user } = useUserAuthContext();
   const [selectedBrand] = useAtom(brandAtom);
   const [seller, setSeller] = useState<Seller | undefined>(undefined);
@@ -228,20 +240,31 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           <ClientOrderHistory clientEmail={client.email} />
         )}
 
-        <div className="flex gap-4 pb-8">
-          <Button type="button" variant={"green"} onClick={handleCreateTask}>
-            New Task
-          </Button>
-          <Button type="button" variant={"lightBlue"} onClick={handleNewOrder}>
-            New Order
-          </Button>
-          <Button type="button" onClick={handleLoginToClient}>
-            Login to Client
-          </Button>
-          <Button type="button" variant={"black"}>
-            Reset Password
-          </Button>
-        </div>
+        {client && (
+          <div className="flex gap-4 pb-8">
+            <Button type="button" variant={"green"} onClick={handleCreateTask}>
+              New Task
+            </Button>
+            <Button
+              type="button"
+              variant={"lightBlue"}
+              onClick={handleNewOrder}
+            >
+              New Order
+            </Button>
+            <Button type="button" onClick={handleLoginToClient}>
+              Login to Client
+            </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button type="button" variant={"black"}>
+                  Reset Password
+                </Button>
+              </DialogTrigger>
+              <GeneratePasswordDialog clientId={client.id} setOpen={setOpen} />
+            </Dialog>
+          </div>
+        )}
 
         <div className="pt-8 flex justify-between gap-4 border-t border-t-gray-300">
           <div>
@@ -265,6 +288,85 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         </div>
       </form>
     </div>
+  );
+};
+
+type DialogProps = {
+  clientId: number;
+  setOpen: (bool: boolean) => void;
+};
+
+const GeneratePasswordDialog: React.FC<DialogProps> = ({
+  clientId,
+  setOpen,
+}) => {
+  const {
+    mutateAsync: generatePassword,
+    isPending: isGenerating,
+    isSuccess,
+    data,
+  } = useGeneratePassword();
+
+  const { mutateAsync: sendPasswordToEmail, isPending: isSending } =
+    useSendPasswordToEmail();
+
+  const handleSendEmail = async () => {
+    if (!data) return;
+
+    const response = await sendPasswordToEmail({
+      clientId,
+      password: data.password_text,
+    });
+
+    if (response.status === 200) {
+      setOpen(false);
+    }
+  };
+
+  return (
+    <DialogContent className="sm:max-w-[450px]">
+      <DialogHeader className="gap-2">
+        <DialogTitle className="pb-2 text-center font-bold text-[1.25rem] relative before:absolute before:bottom-[0] before:ml-[25%] before:w-[50%] before:flex before:m-0-auto before:content-[''] before:border-b before:border-2 before:border-grBlue-dark">
+          Generate new password for this client?
+        </DialogTitle>
+        <DialogDescription className="text-center">
+          {data && (
+            <>
+              <span className="block">Temporary password:</span>
+              <span className="text-2xl">{data.password_text}</span>
+            </>
+          )}
+          {isGenerating && <Spinner className="h-10 w-10 mx-auto" />}
+        </DialogDescription>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
+            Close
+          </Button>
+          {!isSuccess ? (
+            <Button
+              type="button"
+              disabled={isGenerating}
+              onClick={() => generatePassword(clientId)}
+            >
+              {isGenerating && <Spinner />}Generate
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="green"
+              disabled={isSending}
+              onClick={handleSendEmail}
+            >
+              {isSending && <Spinner />}Send to Email
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogHeader>
+    </DialogContent>
   );
 };
 
