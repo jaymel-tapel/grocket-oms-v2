@@ -157,7 +157,7 @@ const Order: React.FC = () => {
           {activeTab === "Companies" && (
             <OrderInformationCompanies
               control={control}
-              company={"company" in order ? order.company : undefined}
+              company={order && "company" in order ? order.company : undefined}
               companies={order?.client.companies ?? []}
               errors={errors}
               handleSetCompanyValues={handleSetCompanyValues}
