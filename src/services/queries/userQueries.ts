@@ -249,6 +249,23 @@ export const useUpdateProfilePhoto = () => {
   });
 };
 
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (payload: {
+      old_password: string;
+      new_password: string;
+      confirm_password: string;
+    }) => {
+      return axios.post(profileUrl + "/change-password", payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Password has been changed.");
+    },
+  });
+};
+
 // PATCH / PUT
 
 export const useUpdateProfile = () => {
