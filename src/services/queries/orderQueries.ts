@@ -264,6 +264,23 @@ export const useUpdateOrder = () => {
   });
 };
 
+export const useUpdateReviewStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["create-order"],
+    mutationFn: async (arg: { reviewId: number; payload: ReviewPayload }) => {
+      return axios.patch(REVIEWS_URL + `/${arg.reviewId}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: (_, { payload }) => {
+      toast.success("Review status updated!");
+      queryClient.invalidateQueries({ queryKey: ["orders", payload.orderId] });
+    },
+  });
+};
+
 // DELETE
 
 export const useDeleteOrder = () => {

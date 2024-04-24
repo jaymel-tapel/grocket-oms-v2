@@ -92,7 +92,17 @@ const OrderInformationReviews: React.FC<Props> = ({
   return (
     <div className="border-b border-grGray-dark">
       <div className="mt-4">
-        <OrderReviewsTable reviews={reviews} isNewOrder={false} />
+        <OrderReviewsTable
+          orderId={orderId}
+          reviews={reviews.sort((a, b) => {
+            // Handle undefined 'id'
+            if (a.id === undefined) return 1; // Assuming undefined ids should come last
+            if (b.id === undefined) return -1; // Assuming undefined ids should come last
+
+            return a.id - b.id; // Ascending order
+          })}
+          isNewOrder={false}
+        />
       </div>
 
       <div className="mt-8 p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">

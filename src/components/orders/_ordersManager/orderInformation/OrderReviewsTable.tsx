@@ -9,7 +9,18 @@ import { Button } from "../../../tools/buttons/Button";
 import { PendingReview } from "../../../../services/queries/companyQueries";
 import Spinner from "../../../tools/spinner/Spinner";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { useDeleteOrderReview } from "../../../../services/queries/orderQueries";
+import {
+  useDeleteOrderReview,
+  useUpdateReviewStatus,
+} from "../../../../services/queries/orderQueries";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../tools/popover/Popover";
+import Pill from "../../../tools/pill/Pill";
+import { ChevronDown } from "lucide-react";
 
 const COLUMNS = ["ID", "NAME", "REVIEW STATUS", "ORIGIN", "ACTION"];
 
@@ -17,6 +28,15 @@ const emailTemplates = [
   { name: "Grocket Template 1", _id: "123" },
   { name: "Grocket Template 2", _id: "124" },
 ];
+
+const REVIEW_STATUS = [
+  { label: "NEU", payload: "NEU", color: "default" },
+  { label: "BEAUFTRAGT", payload: "BEAUFTRAGT", color: "yellow" },
+  { label: "WEITERLEITUNG", payload: "WEITERLEITUNG", color: "orange" },
+  { label: "GESCHEITERT", payload: "GESCHEITERT", color: "lightBlue" },
+  { label: "WIDERSPRUCH", payload: "WIDERSPRUCH", color: "green" },
+  { label: "GELOSCHT", payload: "GELOSCHT", color: "red" },
+] as const;
 
 type Checkbox = {
   id?: number;
@@ -27,17 +47,21 @@ type Props = {
   reviews: PendingReview[];
   isNewOrder?: boolean;
   handleDeleteLocal?: (index: number) => void;
+  orderId?: number;
 };
 
 const OrderReviewsTable: React.FC<Props> = ({
   isNewOrder = true,
   reviews,
+  orderId,
   handleDeleteLocal,
 }) => {
   const [identifier, setIdentifier] = useState<number | null>(null);
   const [checkBoxes, setCheckBoxes] = useState<Checkbox[]>([]);
 
   const { mutateAsync: deleteReview, isPending } = useDeleteOrderReview();
+  const { mutateAsync: updateStatus, isPending: isUpdating } =
+    useUpdateReviewStatus();
 
   const isOneReviewChecked = useMemo(() => {
     return checkBoxes.some((checkbox) => checkbox.checked);
@@ -70,6 +94,26 @@ const OrderReviewsTable: React.FC<Props> = ({
           : checkbox
       )
     );
+  };
+
+  const handleReviewStatusChange = async (
+    newStatus: string,
+    review: PendingReview
+  ) => {
+    if (!orderId || !review.id) return;
+
+    setIdentifier(review.id);
+
+    await updateStatus({
+      reviewId: review.id,
+      payload: {
+        name: review.name,
+        status: newStatus,
+        orderId,
+      },
+    });
+
+    setIdentifier(null);
   };
 
   const handleDeleteClick = async (id: number | undefined, index: number) => {
@@ -154,7 +198,52 @@ const OrderReviewsTable: React.FC<Props> = ({
                   </>
                 )}
                 <TableBodyCell>{review.name}</TableBodyCell>
-                <TableBodyCell>{review.status}</TableBodyCell>
+                <TableBodyCell>
+                  {!review.id ? (
+                    <span>{review.status}</span>
+                  ) : isUpdating && identifier === review.id ? (
+                    <span className="flex items-center gap-2">
+                      <Spinner />
+                      {review.status}
+                    </span>
+                  ) : (
+                    <Popover>
+                      <PopoverAnchor asChild>
+                        <PopoverTrigger asChild>
+                          <span className="cursor-pointer flex items-center gap-2">
+                            {review.status}
+                            <ChevronDown className="h-4 w-4" />
+                          </span>
+                        </PopoverTrigger>
+                      </PopoverAnchor>
+                      <PopoverContent className="max-w-80" align="start">
+                        <div className="flex flex-wrap gap-4">
+                          {REVIEW_STATUS.map((status, statusIndex) => {
+                            const isActiveStatus =
+                              status.payload === review.status;
+                            return (
+                              <Pill
+                                key={statusIndex}
+                                bgColor={status.color}
+                                variant={isActiveStatus ? "default" : "outline"}
+                                className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReviewStatusChange(
+                                    status.payload,
+                                    review
+                                  );
+                                }}
+                              >
+                                {status.label}
+                              </Pill>
+                            );
+                          })}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </TableBodyCell>
                 <TableBodyCell>
                   {review?.google_review_id ? "Selected" : "Manual"}
                 </TableBodyCell>
