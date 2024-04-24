@@ -145,7 +145,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
         <div>
           <div className="py-4 grid grid-cols-3 gap-x-12 gap-y-4">
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="client_name"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -174,7 +174,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </div>
             </div>
 
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="client_email"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -208,7 +208,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </div>
             </div>
 
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="phone"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -237,7 +237,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </div>
             </div>
 
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="sourceId"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -276,7 +276,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </div>
             </div>
 
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="industryId"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -315,7 +315,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </div>
             </div>
 
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="unit_cost"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -344,7 +344,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </div>
             </div>
 
-            <div>
+            <div className="col-span-3 lg:col-span-1">
               <label
                 htmlFor="thirdPartyId"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -372,6 +372,21 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                   </p>
                 )}
               </div>
+            </div>
+
+            <div className="col-span-3">
+              <span className="text-sm font-medium">Remarks</span>
+              <Controller
+                name="remarks"
+                control={control}
+                render={({ field }) => (
+                  <textarea
+                    rows={3}
+                    className="mt-1 block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm sm:leading-6"
+                    {...field}
+                  />
+                )}
+              />
             </div>
           </div>
         </div>

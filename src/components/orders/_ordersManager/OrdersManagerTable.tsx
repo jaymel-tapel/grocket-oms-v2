@@ -172,7 +172,9 @@ const OrdersManagerTable: React.FC<TableProps> = ({
                   <TableBodyCell className="capitalize">
                     {order.createdBy.toLowerCase()}
                   </TableBodyCell>
-                  <TableBodyCell>{order.company.name}</TableBodyCell>
+                  <TableBodyCell>
+                    {"company" in order ? order.company.name : ""}
+                  </TableBodyCell>
                   <TableBodyCell>{order.total_price.toFixed(2)}</TableBodyCell>
                   <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
                   <TableBodyCell>

@@ -68,6 +68,22 @@ const Index = () => {
     navigate({ to: "/orders/orders_manager/new" });
   };
 
+  const handleResetFilters = () => {
+    navigate({
+      // to: "/orders/orders_manager/",
+      search: {
+        showDeleted: false,
+        page: 1,
+        perPage: 10,
+        code: selectedBrand?.code,
+      },
+      params: true,
+      replace: true,
+    });
+
+    setKeywordDraft("");
+  };
+
   const handleDateChange = (field: "from" | "to", value: string) => {
     navigate({
       search: (old) => {
@@ -202,6 +218,14 @@ const Index = () => {
               filterOptions={ordersFilters}
               handleChange={handleFilterChange}
             />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleResetFilters}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              Reset
+            </Button>
           </div>
           <div className="flex gap-4">
             <input

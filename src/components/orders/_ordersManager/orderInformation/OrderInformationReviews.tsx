@@ -11,8 +11,6 @@ import OrderReviewsTable from "./OrderReviewsTable";
 import { useAddOrderReview } from "../../../../services/queries/orderQueries";
 import Spinner from "../../../tools/spinner/Spinner";
 import { orderRoute } from "../../../../pages/routeTree";
-import { Control, Controller } from "react-hook-form";
-import { OrderInformationSchema } from "../../../../pages/orders/ordersManager/Order";
 
 const ADD_REVIEW_METHODS = [
   "Select From Reviews",
@@ -23,14 +21,9 @@ type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
 type Props = {
   company: Company;
   reviews: PendingReview[];
-  control: Control<OrderInformationSchema>;
 };
 
-const OrderInformationReviews: React.FC<Props> = ({
-  company,
-  reviews,
-  control,
-}) => {
+const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
   const { orderId } = orderRoute.useParams();
 
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
@@ -208,21 +201,6 @@ const OrderInformationReviews: React.FC<Props> = ({
             </div>
           )}
         </div>
-      </div>
-
-      <div className="">
-        <span className="text-sm font-medium">Remarks</span>
-        <Controller
-          name="remarks"
-          control={control}
-          render={({ field }) => (
-            <textarea
-              rows={3}
-              className="mt-1 block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm sm:leading-6"
-              {...field}
-            />
-          )}
-        />
       </div>
     </div>
   );
