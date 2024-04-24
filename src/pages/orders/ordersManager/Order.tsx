@@ -166,7 +166,6 @@ const Order: React.FC = () => {
 
           {activeTab === "Reviews" && order && (
             <OrderInformationReviews
-              control={control}
               reviews={order.orderReviews}
               company={order.company}
             />
