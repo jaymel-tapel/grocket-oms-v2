@@ -175,7 +175,9 @@ const OrdersManagerTable: React.FC<TableProps> = ({
                   <TableBodyCell>
                     {"company" in order ? order.company.name : ""}
                   </TableBodyCell>
-                  <TableBodyCell>{order.total_price.toFixed(2)}</TableBodyCell>
+                  <TableBodyCell>
+                    {(order?.total_price ?? 0).toFixed(2)}
+                  </TableBodyCell>
                   <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
                   <TableBodyCell>
                     {isUpdatingOrder ? (
