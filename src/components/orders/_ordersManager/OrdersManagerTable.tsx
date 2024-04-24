@@ -26,7 +26,8 @@ import Spinner from "../../tools/spinner/Spinner";
 const COLUMNS = [
   "DATE",
   "ORDER ID",
-  "CLIENT",
+  "CREATED BY",
+  "COMPANY NAME",
   "TOTAL",
   "REVIEWS",
   "PAYMENT STATUS",
@@ -168,8 +169,11 @@ const OrdersManagerTable: React.FC<TableProps> = ({
                     {dayjs(order.createdAt).format("MM-DD-YYYY")}
                   </TableBodyCell>
                   <TableBodyCell>{order.id}</TableBodyCell>
-                  <TableBodyCell>{order.client.name}</TableBodyCell>
-                  <TableBodyCell>{order.total_price}</TableBodyCell>
+                  <TableBodyCell className="capitalize">
+                    {order.createdBy.toLowerCase()}
+                  </TableBodyCell>
+                  <TableBodyCell>{order.company.name}</TableBodyCell>
+                  <TableBodyCell>{order.total_price.toFixed(2)}</TableBodyCell>
                   <TableBodyCell>{order.orderReviewCount}</TableBodyCell>
                   <TableBodyCell>
                     {isUpdatingOrder ? (
