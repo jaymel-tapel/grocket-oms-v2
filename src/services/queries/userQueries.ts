@@ -256,7 +256,7 @@ export const useChangePassword = () => {
       new_password: string;
       confirm_password: string;
     }) => {
-      return axios.post(profileUrl + "/change-password", payload, {
+      return axios.patch(profileUrl + "/change-password", payload, {
         headers: getHeaders(),
       });
     },
