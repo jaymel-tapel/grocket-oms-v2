@@ -179,10 +179,7 @@ const OrderReviewsTable: React.FC<Props> = ({
 
       {isOneReviewChecked && (
         <div className="my-8 flex justify-between">
-          <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium">Remarks</span>
-            <input type="text" className="border rounded-sm w-[20rem]" />
-          </div>
+          <div />
           <div className="flex items-center justify-between">
             <div>
               <label

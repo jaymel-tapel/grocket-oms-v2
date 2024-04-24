@@ -34,6 +34,7 @@ const orderInformationSchema = z.object({
   unit_cost: z.coerce.number().min(1).catch(10),
   company_name: z.string(),
   company_url: z.string(),
+  remarks: z.string().optional().catch(""),
 });
 
 export type OrderInformationSchema = z.infer<typeof orderInformationSchema>;
@@ -68,6 +69,7 @@ const Order: React.FC = () => {
       unit_cost: order.unit_cost,
       phone: order.client.clientInfo.phone ?? "",
       thirdPartyId: order.client.clientInfo.thirdPartyId,
+      remarks: order.remarks ?? "",
     },
   });
 
@@ -164,6 +166,7 @@ const Order: React.FC = () => {
 
           {activeTab === "Reviews" && order && (
             <OrderInformationReviews
+              control={control}
               reviews={order.orderReviews}
               company={order.company}
             />
