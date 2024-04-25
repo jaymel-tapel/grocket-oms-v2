@@ -1,6 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 
-const ChatList = () => {
+type Props = {
+  ref: (node?: Element | null | undefined) => void;
+};
+const ChatList = ({ ref }: Props) => {
   const navigate = useNavigate();
 
   const handleSelectChat = (chatId: number) => {
