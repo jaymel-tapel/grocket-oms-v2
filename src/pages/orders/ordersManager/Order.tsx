@@ -130,8 +130,8 @@ const Order: React.FC = () => {
         Back
       </span>
 
-      <div className="mt-10 p-10 pt-6 bg-white shadow-md">
-        <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
+      <div className="mt-10 p-4 sm:p-10 pt-6 bg-white shadow-md">
+        <div className="lg:p-3 flex overflow-x-auto gap-3 lg:border border-grGray-dark shrink-0">
           {VIEWS.map((view, index) => {
             const isActive = activeTab === view;
 
