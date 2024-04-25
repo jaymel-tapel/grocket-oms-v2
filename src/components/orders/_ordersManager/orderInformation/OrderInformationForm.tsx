@@ -74,17 +74,23 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
   return (
     <div className="border-b border-grGray-dark">
-      <div className="py-8 flex justify-between border-b border-grGray-dark">
-        <div className="flex w-full gap-2 items-center">
+      <div className="py-8 flex flex-col gap-y-4 lg:flex-row justify-between border-b border-grGray-dark">
+        <div className="order-2 lg:order-1 flex w-full gap-2 items-center">
           <UserCircleIcon
-            className="h-20 w-20 text-gray-300"
+            className="hidden lg:block h-20 w-20 text-gray-300"
             aria-hidden="true"
           />
           <div className="text-sm w-full flex flex-col">
-            <span className="font-medium">Seller Information</span>
+            <span className="font-medium">Seller Name</span>
             <span>{order?.seller.name}</span>
             <div>
-              <div className="w-full max-w-[300px] mt-2">
+              <div className="w-full lg:max-w-[300px] mt-2">
+                <label
+                  htmlFor="seller_email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Seller Email
+                </label>
                 <Controller
                   name="seller_email"
                   control={control}
@@ -114,17 +120,17 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
             </div>
           </div>
         </div>
-        <div>
-          <span className="text-sm">
+        <div className="order-1 lg:order-2">
+          <span className="text-sm whitespace-nowrap">
             {dayjs(order?.createdAt).local().format("MM-DD-YYYY")}
           </span>
         </div>
       </div>
 
       <div className="py-4">
-        <div className="flex justify-between">
+        <div className="flex flex-col gap-y-4 md:flex-row justify-between">
           <span className="font-medium">Client Information</span>
-          <div className="flex items-center gap-12">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-y-8 gap-x-12">
             {order?.invoice_image ? (
               <a
                 href={order.invoice_image}
