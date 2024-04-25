@@ -17,6 +17,7 @@ import {
 } from "../../../../services/queries/clientsQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 import Spinner from "../../../tools/spinner/Spinner";
+import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 
 dayjs.extend(utc);
 
@@ -24,7 +25,8 @@ type OrderInformationFormProps = {
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   order?: Order;
-  debouncedEmail?: string;
+  debouncedClientEmail?: string;
+  debouncedSellerEmail?: string;
   sellerId?: number;
 };
 
@@ -32,7 +34,8 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   control,
   errors,
   order,
-  debouncedEmail,
+  debouncedClientEmail,
+  debouncedSellerEmail,
   sellerId,
 }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -45,7 +48,11 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
   const { data: clients } = useGetClientBySellers({
     sellerId,
-    keyword: debouncedEmail ?? "",
+    keyword: debouncedClientEmail ?? "",
+  });
+
+  const { data: sellers } = useGetAllSellers({
+    keyword: debouncedSellerEmail ?? "",
   });
 
   const { mutateAsync: uploadInvoice } = useUploadOrderInvoice();
@@ -68,14 +75,43 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   return (
     <div className="border-b border-grGray-dark">
       <div className="py-8 flex justify-between border-b border-grGray-dark">
-        <div className="flex gap-2 items-center">
+        <div className="flex w-full gap-2 items-center">
           <UserCircleIcon
             className="h-20 w-20 text-gray-300"
             aria-hidden="true"
           />
-          <div className="text-sm flex flex-col">
+          <div className="text-sm w-full flex flex-col">
+            <span className="font-medium">Seller Information</span>
             <span>{order?.seller.name}</span>
-            <span>SELLER</span>
+            <div>
+              <div className="w-full max-w-[300px] mt-2">
+                <Controller
+                  name="seller_email"
+                  control={control}
+                  render={({ field: { onChange, ...fieldProps } }) => (
+                    // <input
+                    //   type="text"
+                    //   className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                    //     errors.client_email && "border-red-500"
+                    //   }`}
+                    //   {...field}
+                    // />
+                    <AutoComplete
+                      suggestions={
+                        sellers?.data.map((seller) => seller.email) ?? []
+                      }
+                      {...fieldProps}
+                      handleChange={(value) => onChange(value)}
+                    />
+                  )}
+                />
+                {errors.client_email && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.client_email?.message}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         <div>
