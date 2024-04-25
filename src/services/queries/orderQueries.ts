@@ -45,6 +45,12 @@ export type Order = {
 type OrdersResponse = {
   data: Order[];
   meta: Pagination;
+  order_revenue_summary: {
+    total: number;
+    unpaid_invoices: number;
+    paid_commission: number;
+    current_commission: number;
+  };
 };
 
 export type OrdersParams = {

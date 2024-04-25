@@ -57,7 +57,11 @@ const Index = () => {
         },
       };
 
-    return { data: data.data, pagination: data.meta };
+    return {
+      data: data.data,
+      pagination: data.meta,
+      revenue_summary: data.order_revenue_summary,
+    };
   }, [data]);
 
   const activeFilterLabel = useMemo(() => {
@@ -265,6 +269,28 @@ const Index = () => {
           pagination={orders.pagination}
           isSearching={isLoading}
         />
+      </div>
+
+      <div className="py-8 flex flex-col lg:flex-row gap-4 justify-between text-gray-500">
+        <div className="flex items-end gap-2">
+          <span className="font-medium">TOTAL:</span>
+          <span className="font-bold text-2xl">
+            €{orders?.revenue_summary?.total?.toLocaleString() ?? 0}
+          </span>
+        </div>
+        <div className="flex items-end gap-2">
+          <span className="font-medium">COMMISSIONS:</span>
+          <span className="font-bold text-2xl">
+            €
+            {orders?.revenue_summary?.current_commission?.toLocaleString() ?? 0}
+          </span>
+        </div>
+        <div className="flex items-end gap-2">
+          <span className="font-medium">TOTAL:</span>
+          <span className="font-bold text-2xl">
+            €{orders?.revenue_summary?.paid_commission?.toLocaleString() ?? 0}
+          </span>
+        </div>
       </div>
     </div>
   );
