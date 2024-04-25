@@ -74,7 +74,9 @@ const Order: React.FC = () => {
   });
 
   const clientEmail = watch("client_email");
-  const debouncedEmail = useDebounce(clientEmail, 500);
+  const debouncedClientEmail = useDebounce(clientEmail, 500);
+  const sellerEmail = watch("seller_email");
+  const debouncedSellerEmail = useDebounce(sellerEmail, 500);
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
     setValue("company_name", company.name);
@@ -150,7 +152,8 @@ const Order: React.FC = () => {
               control={control}
               errors={errors}
               order={order}
-              debouncedEmail={debouncedEmail}
+              debouncedClientEmail={debouncedClientEmail}
+              debouncedSellerEmail={debouncedSellerEmail}
             />
           )}
 
