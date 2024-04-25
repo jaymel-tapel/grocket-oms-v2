@@ -17,6 +17,7 @@ import {
 } from "../../../../services/queries/clientsQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 import Spinner from "../../../tools/spinner/Spinner";
+import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 
 dayjs.extend(utc);
 
@@ -24,7 +25,8 @@ type OrderInformationFormProps = {
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   order?: Order;
-  debouncedEmail?: string;
+  debouncedClientEmail?: string;
+  debouncedSellerEmail?: string;
   sellerId?: number;
 };
 
@@ -32,7 +34,8 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   control,
   errors,
   order,
-  debouncedEmail,
+  debouncedClientEmail,
+  debouncedSellerEmail,
   sellerId,
 }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -45,7 +48,11 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
   const { data: clients } = useGetClientBySellers({
     sellerId,
-    keyword: debouncedEmail ?? "",
+    keyword: debouncedClientEmail ?? "",
+  });
+
+  const { data: sellers } = useGetAllSellers({
+    keyword: debouncedSellerEmail ?? "",
   });
 
   const { mutateAsync: uploadInvoice } = useUploadOrderInvoice();
@@ -67,28 +74,63 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
   return (
     <div className="border-b border-grGray-dark">
-      <div className="py-8 flex justify-between border-b border-grGray-dark">
-        <div className="flex gap-2 items-center">
+      <div className="py-8 flex flex-col gap-y-4 lg:flex-row justify-between border-b border-grGray-dark">
+        <div className="order-2 lg:order-1 flex w-full gap-2 items-center">
           <UserCircleIcon
-            className="h-20 w-20 text-gray-300"
+            className="hidden lg:block h-20 w-20 text-gray-300"
             aria-hidden="true"
           />
-          <div className="text-sm flex flex-col">
+          <div className="text-sm w-full flex flex-col">
+            <span className="font-medium">Seller Name</span>
             <span>{order?.seller.name}</span>
-            <span>SELLER</span>
+            <div>
+              <div className="w-full lg:max-w-[300px] mt-2">
+                <label
+                  htmlFor="seller_email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Seller Email
+                </label>
+                <Controller
+                  name="seller_email"
+                  control={control}
+                  render={({ field: { onChange, ...fieldProps } }) => (
+                    // <input
+                    //   type="text"
+                    //   className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                    //     errors.client_email && "border-red-500"
+                    //   }`}
+                    //   {...field}
+                    // />
+                    <AutoComplete
+                      suggestions={
+                        sellers?.data.map((seller) => seller.email) ?? []
+                      }
+                      {...fieldProps}
+                      handleChange={(value) => onChange(value)}
+                    />
+                  )}
+                />
+                {errors.client_email && (
+                  <p className="text-xs italic text-red-500 mt-2">
+                    {errors.client_email?.message}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-        <div>
-          <span className="text-sm">
+        <div className="order-1 lg:order-2">
+          <span className="text-sm whitespace-nowrap">
             {dayjs(order?.createdAt).local().format("MM-DD-YYYY")}
           </span>
         </div>
       </div>
 
       <div className="py-4">
-        <div className="flex justify-between">
+        <div className="flex flex-col gap-y-4 md:flex-row justify-between">
           <span className="font-medium">Client Information</span>
-          <div className="flex items-center gap-12">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-y-8 gap-x-12">
             {order?.invoice_image ? (
               <a
                 href={order.invoice_image}

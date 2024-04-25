@@ -61,7 +61,11 @@ const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
               <TableRow key={index}>
                 <TableBodyCell>{company.id}</TableBodyCell>
                 <TableBodyCell>{company.name}</TableBodyCell>
-                <TableBodyCell>{company.url}</TableBodyCell>
+                <TableBodyCell className="text-grBlue-dark">
+                  <a href={company.url} target="_blank" rel="noopener">
+                    {company.url}
+                  </a>
+                </TableBodyCell>
                 <TableBodyCell>
                   {identifier === company.id && isPending ? (
                     <Spinner />

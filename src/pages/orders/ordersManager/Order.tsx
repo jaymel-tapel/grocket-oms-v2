@@ -74,7 +74,9 @@ const Order: React.FC = () => {
   });
 
   const clientEmail = watch("client_email");
-  const debouncedEmail = useDebounce(clientEmail, 500);
+  const debouncedClientEmail = useDebounce(clientEmail, 500);
+  const sellerEmail = watch("seller_email");
+  const debouncedSellerEmail = useDebounce(sellerEmail, 500);
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
     setValue("company_name", company.name);
@@ -128,8 +130,8 @@ const Order: React.FC = () => {
         Back
       </span>
 
-      <div className="mt-10 p-10 pt-6 bg-white shadow-md">
-        <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
+      <div className="mt-10 p-4 sm:p-10 pt-6 bg-white shadow-md">
+        <div className="lg:p-3 flex overflow-x-auto gap-3 lg:border border-grGray-dark shrink-0">
           {VIEWS.map((view, index) => {
             const isActive = activeTab === view;
 
@@ -150,7 +152,8 @@ const Order: React.FC = () => {
               control={control}
               errors={errors}
               order={order}
-              debouncedEmail={debouncedEmail}
+              debouncedClientEmail={debouncedClientEmail}
+              debouncedSellerEmail={debouncedSellerEmail}
             />
           )}
 
