@@ -1,7 +1,22 @@
 import { useNavigate } from "@tanstack/react-router";
+import { Ref, useImperativeHandle } from "react";
+import { useInView } from "react-intersection-observer";
 
-const ChatList = () => {
+export type ChatListRef = {
+  inView: boolean;
+};
+
+type Props = {
+  parentRef: Ref<ChatListRef>;
+};
+
+const ChatList = ({ parentRef }: Props) => {
   const navigate = useNavigate();
+  const { ref, inView } = useInView();
+
+  useImperativeHandle(parentRef, () => ({
+    inView,
+  }));
 
   const handleSelectChat = (chatId: number) => {
     navigate({ to: "/inbox/$chatId", params: { chatId } });
@@ -28,6 +43,8 @@ const ChatList = () => {
           </p>
         </div>
       </div>
+
+      <div ref={ref} />
     </div>
   );
 };
