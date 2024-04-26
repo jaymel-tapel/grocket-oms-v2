@@ -104,7 +104,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
     <div className="border-b border-grGray-dark">
       <div className="py-4">
         <div className="grid grid-cols-2 gap-x-12 gap-y-4">
-          <div>
+          <div className="max-sm:col-span-2">
             <label
               htmlFor="company"
               className="block text-sm font-medium leading-6 text-gray-900"
@@ -140,7 +140,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
             </div>
           </div>
 
-          <div>
+          <div className="max-sm:col-span-2">
             <label
               htmlFor="company_url"
               className="block text-sm font-medium leading-6 text-gray-900"
