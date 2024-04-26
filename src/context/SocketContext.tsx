@@ -30,6 +30,8 @@ export const SocketContextProvider = ({ children }) => {
   useEffect(() => {
     if (user) {
       const socket = io(import.meta.env.VITE_WEBSOCKET_URL, {
+        // autoConnect: false,
+        transports: ["websocket"],
         extraHeaders: {
           userId: user.email,
         },
@@ -38,6 +40,7 @@ export const SocketContextProvider = ({ children }) => {
       setSocket(socket);
 
       socket.on("getOnlineUsers", (users: string[]) => {
+        console.log(users);
         setOnlineUsers(users);
       });
 
