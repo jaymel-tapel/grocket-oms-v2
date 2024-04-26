@@ -1,20 +1,21 @@
 import { Outlet } from "@tanstack/react-router";
-import { useInView } from "react-intersection-observer";
 import { SmallMagnifyingIcon } from "../../tools/svg/DashboardInboxLogos";
-import ChatList from "./ChatList";
-import { useEffect } from "react";
+import ChatList, { ChatListRef } from "./ChatList";
+import { useEffect, useRef } from "react";
 import { useGetAllConversations } from "../../../services/queries/chatQueries";
 
 const DashboardInbox: React.FC = () => {
-  const { ref, inView } = useInView();
   const { data, fetchNextPage } = useGetAllConversations();
+  const chatListRef = useRef<ChatListRef>(null);
+
+  console.log(data);
 
   useEffect(() => {
-    if (inView) {
+    if (chatListRef.current?.inView) {
       fetchNextPage();
     }
     //eslint-disable-next-line
-  }, [inView]);
+  }, [chatListRef]);
 
   return (
     <div className="h-[calc(100vh-186px)] overflow-hidden sm:h-[calc(100vh-128px)]">
@@ -39,7 +40,7 @@ const DashboardInbox: React.FC = () => {
                 {SmallMagnifyingIcon}
               </button>
             </form>
-            <ChatList ref={ref} />
+            <ChatList parentRef={chatListRef} />
           </div>
         </div>
         <Outlet />
