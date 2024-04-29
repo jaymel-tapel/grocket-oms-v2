@@ -189,7 +189,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
   return (
     <div className="bg-white shadow-sm p-8">
-      <div className="p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
+      <div className="lg:p-3 flex flex-col sm:flex-row gap-3 lg:border border-grGray-dark shrink-0">
         {VIEWS.map((view, index) => {
           const isActive = activeTab === view;
           if (!client?.id && index === 1) return;
@@ -241,7 +241,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         )}
 
         {client && (
-          <div className="flex gap-4 pb-8">
+          <div className="flex flex-col lg:flex-row gap-4 pb-8">
             <Button type="button" variant={"green"} onClick={handleCreateTask}>
               New Task
             </Button>

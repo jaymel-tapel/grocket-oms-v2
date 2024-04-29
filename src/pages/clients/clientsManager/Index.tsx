@@ -139,7 +139,7 @@ const Index = () => {
           </span>
         </div>
 
-        <div className="flex gap-4 max-sm:justify-end">
+        <div className="flex gap-4 flex-col sm:flex-row max-sm:justify-end">
           {user?.role === "ADMIN" && (
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
