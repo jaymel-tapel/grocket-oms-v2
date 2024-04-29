@@ -118,27 +118,32 @@ const DashboardAdmin: React.FC = () => {
 
   return (
     <LoggedSection>
-      <div className="flex justify-end mb-4">
+      <div className="flex sm:justify-end sm:mb-6">
         <div className="flex gap-4 items-center">
-          <input
-            type="date"
-            id="startRange"
-            value={startRange}
-            onChange={(e) =>
-              setStartRange(dayjs(e.target.value).format("YYYY-MM-DD"))
-            }
-            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-          />
-          <span>-</span>
-          <input
-            type="date"
-            id="endRange"
-            value={endRange}
-            onChange={(e) =>
-              setEndRange(dayjs(e.target.value).format("YYYY-MM-DD"))
-            }
-            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-          />
+          <div className="flex flex-col">
+            <span className="text-sm ml-1">Start Date:</span>
+            <input
+              type="date"
+              id="startRange"
+              value={startRange}
+              onChange={(e) =>
+                setStartRange(dayjs(e.target.value).format("YYYY-MM-DD"))
+              }
+              className="block w-full max-w-[10rem] sm:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm ml-1">End Date:</span>
+            <input
+              type="date"
+              id="endRange"
+              value={endRange}
+              onChange={(e) =>
+                setEndRange(dayjs(e.target.value).format("YYYY-MM-DD"))
+              }
+              className="block w-full max-w-[10rem] sm:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            />
+          </div>
         </div>
       </div>
 
@@ -146,8 +151,8 @@ const DashboardAdmin: React.FC = () => {
         <StatsCards stats={dashboardStats} />
       </div>
 
-      <div className="flex w-full max-sm:grid max-sm:grid-cols-1 gap-7">
-        <div className="w-3/4 max-sm:w-full">
+      <div className="flex w-full max-xl:grid max-xl:grid-cols-1 gap-7">
+        <div className="w-3/4 max-xl:w-full">
           <BarLineChart
             chartColors={barChart.colors}
             chartData={barChart.data}
@@ -159,7 +164,7 @@ const DashboardAdmin: React.FC = () => {
             tickAmount={barChart.data[0]?.data?.length > 15 ? 10 : undefined}
           />
         </div>
-        <div className="w-6/12 max-sm:w-full ">
+        <div className="w-6/12 max-xl:w-full ">
           <DonutChart chartData={donutChart} label="Orders Overview" />
         </div>
       </div>
