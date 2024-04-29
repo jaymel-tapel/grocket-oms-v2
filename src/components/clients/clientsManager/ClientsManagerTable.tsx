@@ -24,7 +24,7 @@ const COLUMNS = [
   // "ORDERS",
   // "TOTAL AMOUNT",
   "DATE REGISTERED",
-  "ACTIONS",
+  // "ACTIONS",
 ];
 
 const itemsPerPage = 10;

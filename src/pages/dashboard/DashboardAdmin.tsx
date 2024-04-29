@@ -37,7 +37,7 @@ const DashboardAdmin: React.FC = () => {
       },
       {
         label: "New Clients",
-        value: statsData.newclientCount ?? 0,
+        value: statsData.newClientsCount ?? 0,
       },
       {
         label: "Paid Invoice",
