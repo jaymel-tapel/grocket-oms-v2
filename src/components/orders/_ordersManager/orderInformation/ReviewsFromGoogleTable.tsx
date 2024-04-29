@@ -77,7 +77,9 @@ const ReviewsFromGoogleTable: React.FC<TableProps> = ({
               <TableBodyCell className="min-w-[8rem]">
                 <StarsIcons stars={review.rating} showLabels={false} />
               </TableBodyCell>
-              <TableBodyCell>{review.description}</TableBodyCell>
+              <TableBodyCell className="max-w-[500px] truncate">
+                {review.description}
+              </TableBodyCell>
               <TableBodyCell className="text-grBlue-dark font-medium whitespace-nowrap">
                 <Button
                   variant={"noBorder"}
