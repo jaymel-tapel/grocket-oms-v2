@@ -59,6 +59,7 @@ const Order: React.FC = () => {
     handleSubmit,
     setValue,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<OrderInformationSchema>({
     resolver: zodResolver(orderInformationSchema),
@@ -101,6 +102,14 @@ const Order: React.FC = () => {
     }
   };
 
+  const manualSubmit = async () => {
+    const isValid = await trigger();
+
+    if (isValid) {
+      handleSubmit(onSubmit)();
+    }
+  };
+
   const handleSellerEmailSelect = (email: string) => {
     const seller = sellers?.data.find((seller) => seller.email === email);
     if (!seller) return;
@@ -122,6 +131,8 @@ const Order: React.FC = () => {
     setNewCompanyId(client.companies[0].id);
     setValue("company_name", client.companies[0].name);
     setValue("company_url", client.companies[0].url);
+
+    manualSubmit();
   };
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
@@ -181,7 +192,7 @@ const Order: React.FC = () => {
       </span>
 
       <div className="mt-10 p-4 sm:p-10 pt-6 bg-white shadow-md">
-        <div className="lg:p-3 flex overflow-x-auto gap-3 lg:border border-grGray-dark shrink-0">
+        <div className="lg:p-3 flex flex-col sm:flex-row gap-3 lg:border border-grGray-dark shrink-0">
           {VIEWS.map((view, index) => {
             const isActive = activeTab === view;
 
@@ -190,6 +201,7 @@ const Order: React.FC = () => {
                 key={index}
                 variant={isActive ? "default" : "inactive"}
                 onClick={() => handleTabClick(view)}
+                className=""
               >
                 {view}
               </Button>

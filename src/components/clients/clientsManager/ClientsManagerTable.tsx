@@ -6,7 +6,7 @@ import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { Pagination } from "../../../services/queries/accountsQueries";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -24,7 +24,7 @@ const COLUMNS = [
   // "ORDERS",
   // "TOTAL AMOUNT",
   "DATE REGISTERED",
-  "ACTIONS",
+  // "ACTIONS",
 ];
 
 const itemsPerPage = 10;
@@ -101,6 +101,13 @@ const ClientsManagersTable: React.FC<TableProps> = ({
     setSelectedClients(newClients);
   };
 
+  const handleRowClick = (clientId: number) => {
+    navigate({
+      to: "/clients/clients_manager/$clientId",
+      params: { clientId },
+    });
+  };
+
   useEffect(() => {
     navigate({
       search: (search) => {
@@ -150,7 +157,11 @@ const ClientsManagersTable: React.FC<TableProps> = ({
           )}
           {clients.map((client, index) => {
             return (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                onClick={() => handleRowClick(client.id)}
+                className="cursor-pointer"
+              >
                 {isAdmin && (
                   <TableBodyCell>
                     <input
@@ -159,7 +170,10 @@ const ClientsManagersTable: React.FC<TableProps> = ({
                       name={`client-${client.id}`}
                       type="checkbox"
                       checked={isChecked(client.id)}
-                      onChange={() => handleCheck(client)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCheck(client);
+                      }}
                       className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
                     />
                   </TableBodyCell>
@@ -173,21 +187,8 @@ const ClientsManagersTable: React.FC<TableProps> = ({
                 <TableBodyCell className="text-center">
                   {client.name}
                 </TableBodyCell>
-                {/* <TableBodyCell className="text-center capitalize">
-                1 
-              </TableBodyCell>
-              <TableBodyCell className="text-center">$149</TableBodyCell> */}
                 <TableBodyCell className="text-center">
                   {dayjs(client?.createdAt).local().format("MM-DD-YYYY")}
-                </TableBodyCell>
-                <TableBodyCell className="text-center">
-                  <Link
-                    to="/clients/clients_manager/$clientId"
-                    params={{ clientId: client.id }}
-                    className="text-blue-500"
-                  >
-                    View
-                  </Link>
                 </TableBodyCell>
               </TableRow>
             );

@@ -65,8 +65,8 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="mb-8 text-sm grid grid-cols-3">
-        <div className="flex flex-col gap-8">
+      <div className="mb-8 text-sm grid grid-cols-3 gap-y-4">
+        <div className="flex flex-col gap-8 col-span-3 xl:col-span-1">
           <div className="flex flex-col">
             <span className="font-bold">Country:</span>
             <span>{prospectFinder.country}</span>
@@ -92,7 +92,7 @@ const FindProspectsFormStep2: React.FC<FormProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center col-span-3 xl:col-span-1">
           <div className="relative flex justify-center">
             <div className="absolute w-[25%] text-center z-10 flex flex-col gap-2 items-center h-full justify-center">
               <span>Searching</span>
