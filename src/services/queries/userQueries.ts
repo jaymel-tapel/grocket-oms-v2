@@ -37,7 +37,7 @@ type AdminStatsResponse = {
     pr1Percent: number;
     pr2Percent: number;
   };
-  newclientCount: number;
+  newClientsCount: number;
   revenue: number;
   clientsOverview: Array<{
     name: string;

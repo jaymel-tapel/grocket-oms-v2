@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useUserAuthContext } from "./UserAuthContext";
-import { Socket } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 
 // const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,22 +29,24 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      console.log("websocket trigger");
-      // const socket = io(API_URL, {
-      //   query: {
-      //     userId: user.id,
-      //   },
-      // });
+      const socket = io(import.meta.env.VITE_WEBSOCKET_URL, {
+        // autoConnect: false,
+        transports: ["websocket"],
+        extraHeaders: {
+          userId: user.email,
+        },
+      });
 
-      // setSocket(socket);
+      setSocket(socket);
 
-      // socket.on("getOnlineUsers", (users: string[]) => {
-      //   setOnlineUsers(users);
-      // });
+      socket.on("getOnlineUsers", (users: string[]) => {
+        console.log(users);
+        setOnlineUsers(users);
+      });
 
-      // return () => {
-      //   socket.close();
-      // };
+      return () => {
+        socket.close();
+      };
     } else {
       if (socket) {
         socket.close();

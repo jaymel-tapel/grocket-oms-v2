@@ -6,13 +6,13 @@ import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
 import { Pagination, User } from "../../../services/queries/accountsQueries";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import TablePagination, {
   PaginationNavs,
 } from "../../tools/table/TablePagination";
 
-const COLUMNS = ["ID", "EMAIL", "NAME", "ROLE", "ACTION"];
+const COLUMNS = ["ID", "EMAIL", "NAME", "ROLE"];
 const itemsPerPage = 10;
 
 type TableProps = {
@@ -45,6 +45,13 @@ const UsersManagerTable: React.FC<TableProps> = ({ users, pagination }) => {
     } else if (value === "last") {
       setCurrentPage(lastPage);
     }
+  };
+
+  const handleRowClick = (userId: number) => {
+    navigate({
+      to: "/accounts/users_manager/$userId",
+      params: { userId },
+    });
   };
 
   useEffect(() => {
@@ -82,7 +89,11 @@ const UsersManagerTable: React.FC<TableProps> = ({ users, pagination }) => {
             </TableRow>
           )}
           {users.map((user, index) => (
-            <TableRow key={index}>
+            <TableRow
+              key={index}
+              onClick={() => handleRowClick(user.id)}
+              className="cursor-pointer"
+            >
               <TableBodyCell className="text-center">{user.id}</TableBodyCell>
               <TableBodyCell className="text-center">
                 {user.email}
@@ -90,15 +101,6 @@ const UsersManagerTable: React.FC<TableProps> = ({ users, pagination }) => {
               <TableBodyCell className="text-center">{user.name}</TableBodyCell>
               <TableBodyCell className="text-center capitalize">
                 {user.role.toLocaleLowerCase()}
-              </TableBodyCell>
-              <TableBodyCell className="text-center">
-                <Link
-                  to="/accounts/users_manager/$userId"
-                  params={{ userId: user.id }}
-                  className="text-blue-500"
-                >
-                  View
-                </Link>
               </TableBodyCell>
             </TableRow>
           ))}

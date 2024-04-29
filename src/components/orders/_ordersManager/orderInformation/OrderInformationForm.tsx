@@ -11,13 +11,13 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
-  useGetClientBySellers,
+  Client,
   useGetClientIndustries,
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 import Spinner from "../../../tools/spinner/Spinner";
-import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
+import { Seller } from "../../../../services/queries/sellerQueries";
 
 dayjs.extend(utc);
 
@@ -25,18 +25,27 @@ type OrderInformationFormProps = {
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   order?: Order;
-  debouncedClientEmail?: string;
-  debouncedSellerEmail?: string;
+  sellers: Seller[];
+  clients: Client[];
+  clientEmail: string;
+  sellerEmail: string;
   sellerId?: number;
+  handleEmailChange: (arg: { isSeller: boolean; value: string }) => void;
+  handleSellerEmailSelect: (email: string) => void;
+  handleClientEmailSelect: (email: string) => void;
 };
 
 const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   control,
   errors,
   order,
-  debouncedClientEmail,
-  debouncedSellerEmail,
-  sellerId,
+  sellers,
+  clients,
+  clientEmail,
+  sellerEmail,
+  handleEmailChange,
+  handleSellerEmailSelect,
+  handleClientEmailSelect,
 }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
 
@@ -45,15 +54,6 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   const { refetch: downloadInvoicePDF, isFetching } = useGenerateInvoicePDF(
     order?.id
   );
-
-  const { data: clients } = useGetClientBySellers({
-    sellerId,
-    keyword: debouncedClientEmail ?? "",
-  });
-
-  const { data: sellers } = useGetAllSellers({
-    keyword: debouncedSellerEmail ?? "",
-  });
 
   const { mutateAsync: uploadInvoice } = useUploadOrderInvoice();
 
@@ -91,29 +91,18 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 >
                   Seller Email
                 </label>
-                <Controller
-                  name="seller_email"
-                  control={control}
-                  render={({ field: { onChange, ...fieldProps } }) => (
-                    // <input
-                    //   type="text"
-                    //   className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
-                    //     errors.client_email && "border-red-500"
-                    //   }`}
-                    //   {...field}
-                    // />
-                    <AutoComplete
-                      suggestions={
-                        sellers?.data.map((seller) => seller.email) ?? []
-                      }
-                      {...fieldProps}
-                      handleChange={(value) => onChange(value)}
-                    />
-                  )}
+                <AutoComplete
+                  suggestions={sellers?.map((seller) => seller.email) ?? []}
+                  type="email"
+                  value={sellerEmail}
+                  handleChange={(value) =>
+                    handleEmailChange({ isSeller: true, value })
+                  }
+                  handleSelect={(value) => handleSellerEmailSelect(value)}
                 />
-                {errors.client_email && (
+                {errors.seller_email && (
                   <p className="text-xs italic text-red-500 mt-2">
-                    {errors.client_email?.message}
+                    {errors.seller_email?.message}
                   </p>
                 )}
               </div>
@@ -122,7 +111,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
         </div>
         <div className="order-1 lg:order-2">
           <span className="text-sm whitespace-nowrap">
-            {dayjs(order?.createdAt).local().format("MM-DD-YYYY")}
+            Order date: {dayjs(order?.createdAt).local().format("MM-DD-YYYY")}
           </span>
         </div>
       </div>
@@ -224,23 +213,14 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 Client Email
               </label>
               <div className="w-full mt-2">
-                <Controller
-                  name="client_email"
-                  control={control}
-                  render={({ field: { onChange, ...fieldProps } }) => (
-                    // <input
-                    //   type="text"
-                    //   className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
-                    //     errors.client_email && "border-red-500"
-                    //   }`}
-                    //   {...field}
-                    // />
-                    <AutoComplete
-                      suggestions={clients?.map((client) => client.email) ?? []}
-                      {...fieldProps}
-                      handleChange={(value) => onChange(value)}
-                    />
-                  )}
+                <AutoComplete
+                  suggestions={clients?.map((client) => client.email) ?? []}
+                  type="email"
+                  value={clientEmail}
+                  handleChange={(value) =>
+                    handleEmailChange({ isSeller: false, value })
+                  }
+                  handleSelect={(value) => handleClientEmailSelect(value)}
                 />
                 {errors.client_email && (
                   <p className="text-xs italic text-red-500 mt-2">
