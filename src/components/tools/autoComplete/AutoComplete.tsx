@@ -107,7 +107,11 @@ const AutoComplete: React.FC<Props> = (props) => {
               className = "p-2";
             }
             return (
-              <li className={className} key={suggestion} onClick={onClick}>
+              <li
+                className={className}
+                key={`${suggestion}-${index}`}
+                onClick={onClick}
+              >
                 {suggestion}
               </li>
             );

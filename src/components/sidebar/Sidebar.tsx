@@ -300,7 +300,7 @@ function SidebarComponent(props) {
         <div className="flex justify-center gap-4 py-8">
           <p className="text-4xl text-white font-bold">OMS</p>
           <p className="capitalize border-none bg-[#41B2E9] font-medium text-sm text-white rounded-md self-center py-1.5 px-3">
-            {props.user.role.toLowerCase() ?? "Seller"}
+            {props?.user?.role?.toLowerCase() ?? "Seller"}
           </p>
         </div>
       </div>

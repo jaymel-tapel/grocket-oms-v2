@@ -33,7 +33,7 @@ type FormProps = {
 };
 
 const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
-  const { setStep, seller, client, setClient, setCompanies } =
+  const { setStep, client, setClient, setCompanies } =
     useOrderForm() as OrderFormContext;
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
@@ -53,7 +53,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
   const debouncedEmail = useDebounce(clientEmail, 500);
 
   const { data: clients } = useGetClientBySellers({
-    sellerId: seller.id,
+    // sellerId: seller.id,
+    keyword: debouncedEmail ?? "",
   });
 
   const handleChange = (field: keyof typeof client, value: string | number) => {

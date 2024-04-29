@@ -144,7 +144,7 @@ export const useGetClientBySellers = (params: {
   keyword?: string;
 }) => {
   return useQuery({
-    enabled: params.sellerId ? true : false,
+    // enabled: params.sellerId ? true : false,
     queryKey: ["clients-by-seller", params.keyword],
     queryFn: async (): Promise<Client[]> => {
       const response = await axios.get(CLIENTS_URL + "/search", {

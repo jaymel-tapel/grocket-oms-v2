@@ -17,6 +17,9 @@ import { orderRoute } from "../../routeTree";
 import Spinner from "../../../components/tools/spinner/Spinner";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
+import { useGetClientBySellers } from "../../../services/queries/clientsQueries";
+import { useGetAllSellers } from "../../../services/queries/sellerQueries";
+import { Company } from "../../../services/queries/companyQueries";
 
 const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
 type View = (typeof VIEWS)[number];
@@ -48,6 +51,9 @@ const Order: React.FC = () => {
   const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
   const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder();
 
+  const [newCompanyId, setNewCompanyId] = useState<number | null>(null);
+  const [newCompanies, setNewCompanies] = useState<Company[] | null>(null);
+
   const {
     control,
     handleSubmit,
@@ -77,6 +83,46 @@ const Order: React.FC = () => {
   const debouncedClientEmail = useDebounce(clientEmail, 500);
   const sellerEmail = watch("seller_email");
   const debouncedSellerEmail = useDebounce(sellerEmail, 500);
+
+  const { data: sellers } = useGetAllSellers({
+    keyword: debouncedSellerEmail ?? "",
+  });
+
+  const { data: clients } = useGetClientBySellers({
+    // sellerId: seller.id,
+    keyword: debouncedClientEmail ?? "",
+  });
+
+  const handleEmailChange = (arg: { isSeller: boolean; value: string }) => {
+    if (arg.isSeller) {
+      setValue("seller_email", arg.value);
+    } else {
+      setValue("client_email", arg.value);
+    }
+  };
+
+  const handleSellerEmailSelect = (email: string) => {
+    const seller = sellers?.data.find((seller) => seller.email === email);
+    if (!seller) return;
+  };
+
+  const handleClientEmailSelect = (email: string) => {
+    const client = clients?.find((client) => client.email === email);
+    if (!client) return;
+
+    setValue("client_name", client.name);
+    setValue("client_email", client.email);
+    setValue("industryId", client.clientInfo.industryId ?? 41);
+    setValue("sourceId", client.clientInfo.sourceId ?? 1);
+    setValue("phone", client.clientInfo.phone ?? "");
+    setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
+    setValue("thirdPartyId", client.clientInfo.thirdPartyId ?? "");
+
+    setNewCompanies(client.companies);
+    setNewCompanyId(client.companies[0].id);
+    setValue("company_name", client.companies[0].name);
+    setValue("company_url", client.companies[0].url);
+  };
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
     setValue("company_name", company.name);
@@ -112,7 +158,11 @@ const Order: React.FC = () => {
     if (!order) return;
 
     const response = await updateOrder({
-      payload: { ...data, companyId: order.companyId, brandId: order.brandId },
+      payload: {
+        ...data,
+        companyId: newCompanyId ? newCompanyId : order.companyId,
+        brandId: order.brandId,
+      },
       orderId,
     });
 
@@ -152,16 +202,29 @@ const Order: React.FC = () => {
               control={control}
               errors={errors}
               order={order}
-              debouncedClientEmail={debouncedClientEmail}
-              debouncedSellerEmail={debouncedSellerEmail}
+              sellers={sellers?.data ?? []}
+              clients={clients ?? []}
+              clientEmail={clientEmail}
+              sellerEmail={sellerEmail}
+              handleSellerEmailSelect={handleSellerEmailSelect}
+              handleClientEmailSelect={handleClientEmailSelect}
+              handleEmailChange={handleEmailChange}
             />
           )}
 
           {activeTab === "Companies" && (
             <OrderInformationCompanies
               control={control}
-              company={order && "company" in order ? order.company : undefined}
-              companies={order?.client.companies ?? []}
+              company={
+                newCompanies
+                  ? newCompanies[0]
+                  : order && "company" in order
+                  ? order.company
+                  : undefined
+              }
+              companies={
+                newCompanies ? newCompanies : order?.client.companies ?? []
+              }
               errors={errors}
               handleSetCompanyValues={handleSetCompanyValues}
             />
