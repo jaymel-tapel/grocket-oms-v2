@@ -181,7 +181,7 @@ const Order: React.FC = () => {
       </span>
 
       <div className="mt-10 p-4 sm:p-10 pt-6 bg-white shadow-md">
-        <div className="lg:p-3 flex overflow-x-auto gap-3 lg:border border-grGray-dark shrink-0">
+        <div className="lg:p-3 flex flex-col sm:flex-row gap-3 lg:border border-grGray-dark shrink-0">
           {VIEWS.map((view, index) => {
             const isActive = activeTab === view;
 
@@ -190,6 +190,7 @@ const Order: React.FC = () => {
                 key={index}
                 variant={isActive ? "default" : "inactive"}
                 onClick={() => handleTabClick(view)}
+                className=""
               >
                 {view}
               </Button>

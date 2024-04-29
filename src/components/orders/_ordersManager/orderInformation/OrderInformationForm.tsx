@@ -111,7 +111,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
         </div>
         <div className="order-1 lg:order-2">
           <span className="text-sm whitespace-nowrap">
-            {dayjs(order?.createdAt).local().format("MM-DD-YYYY")}
+            Order date: {dayjs(order?.createdAt).local().format("MM-DD-YYYY")}
           </span>
         </div>
       </div>
