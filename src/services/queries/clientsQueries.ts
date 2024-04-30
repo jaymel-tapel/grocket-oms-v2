@@ -212,24 +212,29 @@ export const useCreateClient = () => {
 };
 
 type NewCompanyPayload = {
-  clientId: number;
-  name: string;
-  url: string;
+  payload: {
+    clientId: number;
+    name: string;
+    url: string;
+  };
+  keyword: string;
 };
 
 export const useAddClientCompany = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: NewCompanyPayload) => {
-      return await axios.post(COMPANIES_URL, payload, {
+    mutationFn: async (arg: NewCompanyPayload) => {
+      return await axios.post(COMPANIES_URL, arg.payload, {
         headers: getHeaders(),
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, { keyword }) => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      queryClient.invalidateQueries({ queryKey: ["clients-by-seller"] });
+      queryClient.invalidateQueries({
+        queryKey: ["clients-by-seller", keyword],
+      });
     },
   });
 };
@@ -302,16 +307,18 @@ export const useDeleteClientCompany = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (companyId: number) => {
-      return await axios.delete(COMPANIES_URL + `/${companyId}`, {
+    mutationFn: async (arg: { companyId: number; keyword: string }) => {
+      return await axios.delete(COMPANIES_URL + `/${arg.companyId}`, {
         headers: getHeaders(),
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, { keyword }) => {
       toast.success("Company deleted!");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      queryClient.invalidateQueries({ queryKey: ["clients-by-seller"] });
+      queryClient.invalidateQueries({
+        queryKey: ["clients-by-seller", keyword],
+      });
     },
   });
 };
