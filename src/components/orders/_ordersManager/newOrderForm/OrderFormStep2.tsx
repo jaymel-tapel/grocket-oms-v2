@@ -65,47 +65,41 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
   };
 
   const handleEmailSelect = (email: string) => {
-    const client = clients?.find((client) => client.email === email);
-    if (!client) return;
+    const foundClient = clients?.find((client) => client.email === email);
+    if (!foundClient) return;
 
     setClient({
-      id: client.id,
-      name: client.name,
-      email: client.email,
-      industry: client.clientInfo.industryId ?? 41,
-      origin: client.clientInfo.sourceId ?? 1,
-      phone: client.clientInfo.phone ?? "",
-      unit_cost: client.clientInfo.default_unit_cost ?? 10,
-      third_party_id: client.clientInfo.thirdPartyId ?? "",
+      id: foundClient.id,
+      name: foundClient.name,
+      email: foundClient.email,
+      industry: foundClient.clientInfo.industryId ?? 41,
+      origin: foundClient.clientInfo.sourceId ?? 1,
+      phone: foundClient.clientInfo.phone ?? "",
+      unit_cost: foundClient.clientInfo.default_unit_cost ?? 10,
+      third_party_id: foundClient.clientInfo.thirdPartyId ?? "",
     });
 
-    setCompanies(client.companies);
+    setCompanies(foundClient.companies);
 
-    setValue("name", client.name);
-    setValue("email", client.email);
-    setValue("industry", client.clientInfo.industryId ?? 41);
-    setValue("origin", client.clientInfo.sourceId ?? 1);
-    setValue("phone", client.clientInfo.phone ?? "");
-    setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
-    setValue("third_party_id", client.clientInfo.thirdPartyId ?? "");
+    setValue("name", foundClient.name);
+    setValue("email", foundClient.email);
+    setValue("industry", foundClient.clientInfo.industryId ?? 41);
+    setValue("origin", foundClient.clientInfo.sourceId ?? 1);
+    setValue("phone", foundClient.clientInfo.phone ?? "");
+    setValue("unit_cost", foundClient.clientInfo.default_unit_cost ?? 10);
+    setValue("third_party_id", foundClient.clientInfo.thirdPartyId ?? "");
   };
 
   const onSubmit: SubmitHandler<SelectClientSchema> = () => {
-    const client = clients?.find((client) => client.email === clientEmail);
+    const foundClient = clients?.find((client) => client.email === clientEmail);
 
-    if (client) {
+    if (foundClient) {
       setClient({
         id: client.id,
-        name: client.name,
-        email: client.email,
-        industry: client.clientInfo.industryId ?? 41,
-        origin: client.clientInfo.sourceId ?? 1,
-        phone: client.clientInfo.phone ?? "",
-        unit_cost: client.clientInfo.default_unit_cost ?? 10,
-        third_party_id: client.clientInfo.thirdPartyId ?? "",
+        ...client,
       });
 
-      setCompanies(client.companies);
+      setCompanies(foundClient.companies);
     }
 
     setStep(3);
