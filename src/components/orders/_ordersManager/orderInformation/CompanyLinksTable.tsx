@@ -20,26 +20,31 @@ type CompanyLinksTableProps = {
     valid_url?: boolean;
   }[];
   handleDeleteLocal?: (index: number) => void;
+  keyword: string;
 };
 
 const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
   companies,
   handleDeleteLocal,
+  keyword,
 }) => {
   const [identifier, setIdentifier] = useState<number | null>(null);
 
   const { mutateAsync: deleteCompany, isPending } = useDeleteClientCompany();
 
-  const handleDeleteClick = async (id: number | undefined, index: number) => {
+  const handleDeleteClick = async (
+    companyId: number | undefined,
+    index: number
+  ) => {
     if (!window.confirm("Delete this company from client?")) return;
 
-    if (id === undefined) {
+    if (companyId === undefined) {
       if (!handleDeleteLocal) return;
 
       handleDeleteLocal(index);
     } else {
-      setIdentifier(id);
-      await deleteCompany(id);
+      setIdentifier(companyId);
+      await deleteCompany({ companyId, keyword });
     }
 
     setIdentifier(null);

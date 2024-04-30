@@ -31,18 +31,11 @@ type FormProps = {
 };
 
 const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
-  const {
-    seller,
-    client,
-    setStep,
-    company,
-    setCompany,
-    companies,
-    setCompanies,
-  } = useOrderForm() as OrderFormContext;
+  const { client, setStep, company, setCompany, companies, setCompanies } =
+    useOrderForm() as OrderFormContext;
 
   const { data: clients } = useGetClientBySellers({
-    sellerId: seller.id,
+    keyword: client.email ?? "",
   });
 
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
@@ -136,9 +129,12 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
 
   const addCompanyToClient = async () => {
     await addCompany({
-      clientId: client.id as number,
-      name: newCompany.name,
-      url: newCompany.url,
+      payload: {
+        clientId: client.id as number,
+        name: newCompany.name,
+        url: newCompany.url,
+      },
+      keyword: client.email,
     });
   };
 
@@ -236,6 +232,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
         <CompanyLinksTable
           companies={companyLinks}
           handleDeleteLocal={handleDeleteLocal}
+          keyword={client.email}
         />
       </div>
 

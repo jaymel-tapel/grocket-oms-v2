@@ -54,7 +54,7 @@ const ClientReports: React.FC = () => {
         // percentage: { label: "Since last week", value: -1.5 },
       },
       {
-        value: reportData?.clientsLoggedIn ?? 0,
+        value: reportData?.clients_logged_in ?? 0,
         label: "Clients Logged In",
         // percentage: { label: "Since last week", value: 0.5 },
       },
