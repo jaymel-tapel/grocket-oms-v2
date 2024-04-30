@@ -85,7 +85,7 @@ type ClientReportParams = {
 type ClientReportResponse = {
   total_clients: number;
   new_clients: number;
-  clientsLoggedIn: number;
+  clients_logged_in: number;
   newClientsResult: {
     date: string;
     count: number;
