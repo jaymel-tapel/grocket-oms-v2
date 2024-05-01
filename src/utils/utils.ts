@@ -12,6 +12,8 @@ export const setAuthorization = (access_token: string) => {
 export const cleanAuthorization = () => {
   localStorage.removeItem(LOCAL_STORAGE_KEY);
   localStorage.removeItem("user");
+  localStorage.removeItem("brand");
+  localStorage.removeItem("client");
 };
 
 export const isAuth = () => {

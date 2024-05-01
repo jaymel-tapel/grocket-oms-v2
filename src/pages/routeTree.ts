@@ -29,6 +29,7 @@ import {
   getEmailTemplateOptions,
   getProspectDetailsOption,
 } from "../services/queries/prospectsQueries";
+import toast from "react-hot-toast";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
@@ -39,10 +40,13 @@ const rootRoute = createRootRouteWithContext<{
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  beforeLoad: async ({ context: { queryClient } }) => {
+  beforeLoad: async ({ search, context: { queryClient } }) => {
     if (isAuth()) {
       throw redirect({ to: "/dashboard" });
     } else {
+      if ("login" in search && search.login === "expired") {
+        toast.error("Login has expired");
+      }
       queryClient.clear();
     }
   },

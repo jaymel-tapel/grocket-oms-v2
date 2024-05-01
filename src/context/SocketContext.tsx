@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useUserAuthContext } from "./UserAuthContext";
 import { Socket, io } from "socket.io-client";
+import { getHeaders } from "../utils/utils";
 
 // const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,11 +30,16 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
+      const { Authorization } = getHeaders();
+
       const socket = io(import.meta.env.VITE_WEBSOCKET_URL, {
         // autoConnect: false,
         transports: ["websocket"],
+        query: {
+          type: "user",
+        },
         extraHeaders: {
-          userId: user.email,
+          authorization: Authorization,
         },
       });
 
@@ -45,10 +51,12 @@ export const SocketContextProvider = ({ children }) => {
       });
 
       return () => {
-        socket.close();
+        if (socket.connected) {
+          socket.close();
+        }
       };
     } else {
-      if (socket) {
+      if (socket?.connected) {
         socket.close();
         setSocket(null);
       }

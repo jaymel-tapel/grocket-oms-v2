@@ -1,48 +1,20 @@
 import { useEffect, useRef } from "react";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
-
-const messages = [
-  {
-    id: 1,
-    updatedAt: "01:55",
-    content: "I want to make an appointment tomorrow from 2:00 to 5:00pm?",
-    senderId: 1,
-    sender: {
-      name: "Andrei Thomas",
-    },
-  },
-  {
-    id: 2,
-    updatedAt: "01:55",
-    content: "Hello, Thomas! I will check the schedule and inform you",
-    senderId: 2,
-    sender: {
-      name: "Test",
-    },
-  },
-  {
-    id: 3,
-    updatedAt: "01:55",
-    content: "Ok, Thanks for your reply.",
-    senderId: 1,
-    sender: {
-      name: "Andrei Thomas",
-    },
-  },
-  {
-    id: 4,
-    updatedAt: "01:55",
-    content: "You are welcome!",
-    senderId: 2,
-    sender: {
-      name: "Test",
-    },
-  },
-];
+import useGetMessages from "./hooks/useGetMessages";
+import { useInView } from "react-intersection-observer";
 
 const Chat = () => {
+  const { messages, fetchNextPage } = useGetMessages();
+  const { ref, inView } = useInView();
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+    //eslint-disable-next-line
+  }, [inView]);
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView();
@@ -66,6 +38,7 @@ const Chat = () => {
         </div>
       </div>
       <div className="no-scrollbar max-h-full space-y-3.5 overflow-auto px-6 py-7.5">
+        <div ref={ref} />
         {messages.map((message) => (
           <Message message={message} key={message.id} />
         ))}
