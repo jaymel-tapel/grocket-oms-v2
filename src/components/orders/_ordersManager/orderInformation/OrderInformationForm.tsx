@@ -22,6 +22,7 @@ import { Seller } from "../../../../services/queries/sellerQueries";
 dayjs.extend(utc);
 
 type OrderInformationFormProps = {
+  role: string;
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   order?: Order;
@@ -29,13 +30,14 @@ type OrderInformationFormProps = {
   clients: Client[];
   clientEmail: string;
   sellerEmail: string;
-  sellerId?: number;
+  sellerEmails: string[];
   handleEmailChange: (arg: { isSeller: boolean; value: string }) => void;
   handleSellerEmailSelect: (email: string) => void;
   handleClientEmailSelect: (email: string) => void;
 };
 
 const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
+  role,
   control,
   errors,
   order,
@@ -43,6 +45,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   clients,
   clientEmail,
   sellerEmail,
+  sellerEmails,
   handleEmailChange,
   handleSellerEmailSelect,
   handleClientEmailSelect,
@@ -91,15 +94,36 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 >
                   Seller Email
                 </label>
-                <AutoComplete
-                  suggestions={sellers?.map((seller) => seller.email) ?? []}
-                  type="email"
-                  value={sellerEmail}
-                  handleChange={(value) =>
-                    handleEmailChange({ isSeller: true, value })
-                  }
-                  handleSelect={(value) => handleSellerEmailSelect(value)}
-                />
+
+                {role === "ADMIN" && (
+                  <AutoComplete
+                    suggestions={sellers?.map((seller) => seller.email) ?? []}
+                    type="email"
+                    value={sellerEmail}
+                    handleChange={(value) =>
+                      handleEmailChange({ isSeller: true, value })
+                    }
+                    handleSelect={(value) => handleSellerEmailSelect(value)}
+                  />
+                )}
+
+                {role === "SELLER" && (
+                  <select
+                    id="sellerEmails"
+                    autoComplete="off"
+                    value={sellerEmail}
+                    onChange={(e) => handleSellerEmailSelect(e.target.value)}
+                    className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                  >
+                    {sellerEmails.map((email, index) => {
+                      return (
+                        <option value={email} key={index}>
+                          {email}
+                        </option>
+                      );
+                    })}
+                  </select>
+                )}
                 {errors.seller_email && (
                   <p className="text-xs italic text-red-500 mt-2">
                     {errors.seller_email?.message}

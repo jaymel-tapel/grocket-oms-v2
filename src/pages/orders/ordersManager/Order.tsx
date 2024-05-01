@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "../../../components/tools/buttons/Button";
 import OrderInformationForm from "../../../components/orders/_ordersManager/orderInformation/OrderInformationForm";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -20,6 +20,7 @@ import { useUserAuthContext } from "../../../context/UserAuthContext";
 import { useGetClientBySellers } from "../../../services/queries/clientsQueries";
 import { useGetAllSellers } from "../../../services/queries/sellerQueries";
 import { Company } from "../../../services/queries/companyQueries";
+import { useGetUserProfile } from "../../../services/queries/userQueries";
 
 const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
 type View = (typeof VIEWS)[number];
@@ -71,7 +72,7 @@ const Order: React.FC = () => {
       company_url: order.company.url,
       industryId: order.client.clientInfo.industryId,
       seller_name: order.seller.name,
-      seller_email: order.seller.email,
+      seller_email: order.seller_email ?? order.seller.email,
       sourceId: order.client.clientInfo.sourceId,
       unit_cost: order.unit_cost,
       phone: order.client.clientInfo.phone ?? "",
@@ -94,6 +95,17 @@ const Order: React.FC = () => {
     keyword: debouncedClientEmail ?? "",
   });
 
+  const { data: userProfile } = useGetUserProfile();
+
+  const sellerEmails = useMemo(() => {
+    if (!userProfile?.alternateEmails) return [];
+
+    return [
+      userProfile.email,
+      ...userProfile.alternateEmails.map((item) => item.email),
+    ];
+  }, [userProfile]);
+
   const handleEmailChange = (arg: { isSeller: boolean; value: string }) => {
     if (arg.isSeller) {
       setValue("seller_email", arg.value);
@@ -111,8 +123,16 @@ const Order: React.FC = () => {
   };
 
   const handleSellerEmailSelect = (email: string) => {
-    const seller = sellers?.data.find((seller) => seller.email === email);
-    if (!seller) return;
+    if (user?.role === "SELLER") {
+      setValue("seller_email", email);
+    } else {
+      const seller = sellers?.data.find((seller) => seller.email === email);
+      if (!seller) return;
+
+      setValue("seller_email", seller.email);
+      setValue("seller_name", seller.name);
+      setValue("seller_id", seller.id);
+    }
   };
 
   const handleClientEmailSelect = (email: string) => {
@@ -211,6 +231,7 @@ const Order: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           {activeTab === "Order Information" && (
             <OrderInformationForm
+              role={user?.role ?? "SELLER"}
               control={control}
               errors={errors}
               order={order}
@@ -218,6 +239,7 @@ const Order: React.FC = () => {
               clients={clients ?? []}
               clientEmail={clientEmail}
               sellerEmail={sellerEmail}
+              sellerEmails={sellerEmails}
               handleSellerEmailSelect={handleSellerEmailSelect}
               handleClientEmailSelect={handleClientEmailSelect}
               handleEmailChange={handleEmailChange}
