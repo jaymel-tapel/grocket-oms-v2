@@ -35,7 +35,7 @@ const orderInformationSchema = z.object({
   thirdPartyId: z.string().optional().nullable(),
   sourceId: z.coerce.number().min(1).catch(1),
   industryId: z.coerce.number().min(1).catch(41),
-  unit_cost: z.coerce.number().min(1).catch(10),
+  unit_cost: z.coerce.number().catch(0),
   company_name: z.string(),
   company_url: z.string(),
   remarks: z.string().optional().catch(""),
