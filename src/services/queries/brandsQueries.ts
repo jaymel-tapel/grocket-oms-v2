@@ -48,6 +48,7 @@ export const getAllBrandsOptions = () => {
   return {
     queryKey: ["brands"],
     queryFn: () => getAllBrands(),
+    refetchOnWindowFocus: true,
   };
 };
 
