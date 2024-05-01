@@ -28,8 +28,11 @@ const getAllConversations = async (
 export const useGetAllConversations = () => {
   return useInfiniteQuery({
     queryKey: ["conversations"],
-    queryFn: ({ pageParam }) =>
-      getAllConversations({ first: 10, after: pageParam }),
+    queryFn: ({ pageParam }) => {
+      const params =
+        pageParam === 0 ? { first: 10 } : { first: 10, after: pageParam };
+      return getAllConversations(params);
+    },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.pageInfo.endCursor,
   });
@@ -52,8 +55,11 @@ export const useGetMessagesQuery = (conversationId?: number) => {
   return useInfiniteQuery({
     enabled: conversationId ? true : false,
     queryKey: ["messages", conversationId],
-    queryFn: ({ pageParam }) =>
-      getMessages({ conversationId, first: 10, after: pageParam }),
+    queryFn: ({ pageParam }) => {
+      const params =
+        pageParam === 0 ? { first: 10 } : { first: 10, after: pageParam };
+      return getMessages({ ...params, conversationId });
+    },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.pageInfo.endCursor,
   });

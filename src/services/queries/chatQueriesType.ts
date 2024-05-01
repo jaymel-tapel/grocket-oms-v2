@@ -16,8 +16,8 @@ type Participant = {
   updatedAt: string;
   deletedAt: string;
   conversationId: number;
-  userId: number;
-  clientId: number;
+  userId?: number;
+  clientId?: number;
   user: User;
   client: Client;
 };
