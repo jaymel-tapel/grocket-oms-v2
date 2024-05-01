@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useChatContext } from "../context/ChatContext";
 import { useGetMessagesQuery } from "../../../../services/queries/chatQueries";
+import { chatRoute } from "../../../../pages/routeTree";
 
 const useGetMessages = () => {
-  const { selectedConversation, messages, setMessages } = useChatContext();
-  const { data, isFetching, fetchNextPage } = useGetMessagesQuery(
-    selectedConversation?.id
-  );
+  const { messages, setMessages } = useChatContext();
+  const { chatId } = chatRoute.useParams();
+  const { data, isFetching, fetchNextPage } = useGetMessagesQuery(chatId);
 
   useEffect(() => {
     if (!data || data?.pages[0].edges.length === 0) {
