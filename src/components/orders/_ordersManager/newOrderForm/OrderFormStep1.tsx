@@ -5,12 +5,13 @@ import {
   OrderFormContext,
   useOrderForm,
 } from "../../../../context/NewOrderFormContext";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 import { debounce } from "lodash";
 import { Client } from "../../../../services/queries/clientsQueries";
 import { useUserAuthContext } from "../../../../context/UserAuthContext";
+import { useGetUserProfile } from "../../../../services/queries/userQueries";
 
 const selectSellerSchema = z.object({
   name: z.string(),
@@ -30,6 +31,16 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   const [sellerDraft, setSellerDraft] = useState("");
 
   const { user } = useUserAuthContext();
+  const { data: userProfile } = useGetUserProfile();
+
+  const sellerEmails = useMemo(() => {
+    if (!userProfile?.alternateEmails) return [user?.email];
+
+    return [
+      userProfile.email,
+      ...userProfile.alternateEmails.map((item) => item.email),
+    ];
+  }, [userProfile, user]);
 
   const {
     register,
@@ -131,28 +142,52 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <span className="font-bold text-sm">Seller Information</span>
       <div className="mb-8 grid grid-cols-2 gap-x-12 gap-y-4">
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label
             htmlFor="sellerEmail"
             className="mb-2 block text-sm font-medium leading-6 text-gray-900"
           >
             Email
           </label>
-          <AutoComplete
-            suggestions={sellers?.data.map((seller) => seller.email) ?? []}
-            type="email"
-            value={sellerDraft}
-            handleChange={(value) => handleChange("email", value)}
-            handleSelect={(value) => handleEmailSelect(value)}
-            // disabled={user?.role === "SELLER"}
-          />
+          {user?.role === "ADMIN" && (
+            <AutoComplete
+              suggestions={sellers?.data.map((seller) => seller.email) ?? []}
+              type="email"
+              value={sellerDraft}
+              handleChange={(value) => handleChange("email", value)}
+              handleSelect={(value) => handleEmailSelect(value)}
+              // disabled={user?.role === "SELLER"}
+            />
+          )}
+
+          {user?.role === "SELLER" && (
+            <select
+              id="sellerEmails"
+              autoComplete="off"
+              defaultValue={seller.email}
+              {...register("email", {
+                onChange: (e) => handleChange("email", e.target.value),
+              })}
+              className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+                errors.email && "border-red-500"
+              }`}
+            >
+              {sellerEmails.map((email, index) => {
+                return (
+                  <option value={email} key={index}>
+                    {email}
+                  </option>
+                );
+              })}
+            </select>
+          )}
           {errors.email && (
             <p className="text-xs italic text-red-500 mt-2">
               {errors.email?.message}
             </p>
           )}
         </div>
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label
             htmlFor="sellerName"
             className="block text-sm font-medium leading-6 text-gray-900"
