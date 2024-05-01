@@ -144,7 +144,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
             value={sellerDraft}
             handleChange={(value) => handleChange("email", value)}
             handleSelect={(value) => handleEmailSelect(value)}
-            disabled={user?.role === "SELLER"}
+            // disabled={user?.role === "SELLER"}
           />
           {errors.email && (
             <p className="text-xs italic text-red-500 mt-2">
