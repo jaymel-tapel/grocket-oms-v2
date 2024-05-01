@@ -14,11 +14,11 @@ function App() {
     <ErrorBoundary>
       <Toaster position="bottom-right" reverseOrder={false} />
       <UserAuthContextProvider>
-        <SocketContextProvider>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <SocketContextProvider>
             <RouterProvider router={router} />
-          </QueryClientProvider>
-        </SocketContextProvider>
+          </SocketContextProvider>
+        </QueryClientProvider>
       </UserAuthContextProvider>
     </ErrorBoundary>
   );

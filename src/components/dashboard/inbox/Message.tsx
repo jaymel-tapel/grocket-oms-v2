@@ -1,21 +1,14 @@
 import React from "react";
+import { Message as MessageType } from "../../../services/queries/chatQueriesType";
 
 type Props = {
-  message: {
-    id: number;
-    updatedAt: string;
-    content: string;
-    senderId: number;
-    sender: {
-      name: string;
-    };
-  };
+  message: MessageType;
 };
 
 const Message: React.FC<Props> = ({ message }) => {
   const isFromMe = message.senderId === 2;
 
-  const senderName = isFromMe ? "Me" : message.sender.name;
+  const senderName = isFromMe ? "Me" : "You";
   const messageContainerStyle = isFromMe
     ? "ml-auto rounded-br-none bg-chatBlue"
     : "rounded-tl-none bg-chatGray";
