@@ -17,6 +17,7 @@ type NewCompanyError = {
 };
 
 type Props = {
+  clientEmail?: string;
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   companies: Company[];
@@ -28,6 +29,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
   company,
   companies,
   handleSetCompanyValues,
+  clientEmail,
   errors,
 }) => {
   const [showNewCompanyErrors, setShowErrors] = useState(false);
@@ -87,9 +89,12 @@ const OrderInformationCompanies: React.FC<Props> = ({
     }
 
     addCompany({
-      clientId: company.clientId,
-      name: newCompany.name,
-      url: newCompany.url,
+      payload: {
+        clientId: company.clientId,
+        name: newCompany.name,
+        url: newCompany.url,
+      },
+      keyword: clientEmail ?? "",
     });
   };
 
@@ -195,7 +200,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
 
       <div className="flex flex-col gap-4">
         <span className="font-medium">Client Links</span>
-        <CompanyLinksTable companies={companies} />
+        <CompanyLinksTable companies={companies} keyword={clientEmail ?? ""} />
       </div>
 
       <div className="my-8">

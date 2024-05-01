@@ -12,10 +12,15 @@ type NewCompanyError = {
 
 type FormProps = {
   clientId: number | undefined;
+  clientEmail?: string;
   companies: Company[];
 };
 
-const ClientFormCompanies: React.FC<FormProps> = ({ companies, clientId }) => {
+const ClientFormCompanies: React.FC<FormProps> = ({
+  companies,
+  clientId,
+  clientEmail,
+}) => {
   const [formState, setFormState] = useState({ name: "", url: "" });
   const [showNewCompanyErrors, setShowErrors] = useState(false);
 
@@ -68,8 +73,11 @@ const ClientFormCompanies: React.FC<FormProps> = ({ companies, clientId }) => {
     }
 
     const response = await addCompany({
-      ...formState,
-      clientId,
+      payload: {
+        ...formState,
+        clientId,
+      },
+      keyword: clientEmail ?? "",
     });
 
     if (response.status === 201) {
@@ -154,7 +162,10 @@ const ClientFormCompanies: React.FC<FormProps> = ({ companies, clientId }) => {
 
       <div className="my-8">
         <span className="font-medium text-sm block mb-4">Company Links</span>
-        <CompanyLinksTable companies={companyLinks} />
+        <CompanyLinksTable
+          companies={companyLinks}
+          keyword={clientEmail ?? ""}
+        />
       </div>
     </div>
   );

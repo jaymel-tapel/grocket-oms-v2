@@ -233,6 +233,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           <ClientFormCompanies
             companies={client.companies ?? []}
             clientId={client.id}
+            clientEmail={client.email}
           />
         )}
 
