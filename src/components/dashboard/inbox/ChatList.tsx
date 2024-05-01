@@ -1,7 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Ref, useImperativeHandle } from "react";
+import { Ref, useEffect, useImperativeHandle } from "react";
 import { useInView } from "react-intersection-observer";
 import { ConversationNode } from "../../../services/queries/chatQueriesType";
+import { useChatContext } from "./context/ChatContext";
 
 export type ChatListRef = {
   inView: boolean;
@@ -10,19 +11,31 @@ export type ChatListRef = {
 type Props = {
   parentRef: Ref<ChatListRef>;
   conversations: ConversationNode[];
+  chatId?: number;
 };
 
-const ChatList = ({ parentRef, conversations }: Props) => {
+const ChatList = ({ parentRef, conversations, chatId }: Props) => {
   const navigate = useNavigate();
   const { ref, inView } = useInView();
+  const { selectedConversation, setSelectedConversation } = useChatContext();
 
   useImperativeHandle(parentRef, () => ({
     inView,
   }));
 
-  const handleSelectChat = (chatId: number) => {
-    navigate({ to: "/inbox/$chatId", params: { chatId } });
+  const handleSelectChat = (chat: ConversationNode) => {
+    setSelectedConversation(chat);
+    navigate({ to: "/inbox/$chatId", params: { chatId: chat.id } });
   };
+
+  useEffect(() => {
+    if (chatId && !selectedConversation) {
+      const foundChat = conversations.find((chat) => chat.id === chatId);
+      if (!foundChat) return;
+
+      setSelectedConversation(foundChat);
+    }
+  }, [conversations, selectedConversation, setSelectedConversation, chatId]);
 
   return (
     <div className="max-h-full space-y-2.5 overflow-auto">
@@ -36,7 +49,7 @@ const ChatList = ({ parentRef, conversations }: Props) => {
         return (
           <div
             key={item.id}
-            onClick={() => handleSelectChat(item.id)}
+            onClick={() => handleSelectChat(item)}
             className="flex cursor-pointer items-center rounded p-2 hover:bg-[#f7f9fc]"
           >
             <div className="relative mr-3.5 h-11 w-auto aspect-square">

@@ -4,8 +4,10 @@ import ChatList, { ChatListRef } from "./ChatList";
 import { useEffect, useMemo, useRef } from "react";
 import { useGetAllConversations } from "../../../services/queries/chatQueries";
 import { ChatContextProvider } from "./context/ChatContext";
+import { chatRoute } from "../../../pages/routeTree";
 
 const DashboardInbox: React.FC = () => {
+  const { chatId } = chatRoute.useParams();
   const { data, fetchNextPage } = useGetAllConversations();
   const chatListRef = useRef<ChatListRef>(null);
 
@@ -20,8 +22,6 @@ const DashboardInbox: React.FC = () => {
 
     return _conversations;
   }, [data]);
-
-  console.log(conversations);
 
   useEffect(() => {
     if (chatListRef.current?.inView) {
@@ -54,7 +54,11 @@ const DashboardInbox: React.FC = () => {
                   {SmallMagnifyingIcon}
                 </button>
               </div> */}
-              <ChatList parentRef={chatListRef} conversations={conversations} />
+              <ChatList
+                chatId={chatId}
+                parentRef={chatListRef}
+                conversations={conversations}
+              />
             </div>
           </div>
           <Outlet />

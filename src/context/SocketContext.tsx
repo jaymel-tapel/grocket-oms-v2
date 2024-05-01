@@ -43,7 +43,9 @@ export const SocketContextProvider = ({ children }) => {
         },
       });
 
-      setSocket(socket);
+      socket.on("error", function (error) {
+        console.error("Socket connection error:", error);
+      });
 
       socket.on("getOnlineUsers", (users: string[]) => {
         console.log(users);
