@@ -20,6 +20,7 @@ export type Order = {
   id: number;
   client: Client;
   seller: User;
+  seller_email: string;
   sellerId: number;
   clientId: number;
   brandId: number;
