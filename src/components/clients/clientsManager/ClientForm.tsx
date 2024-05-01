@@ -49,7 +49,7 @@ const clientFormSchema = z.object({
   industryId: z.coerce.number().catch(41),
   thirdPartyId: z.string().optional().nullable(),
   sentOffer: z.boolean().optional(),
-  default_unit_cost: z.coerce.number().optional().catch(10),
+  default_unit_cost: z.coerce.number().optional().catch(0),
   phone: z.string().optional().nullable(),
 });
 
