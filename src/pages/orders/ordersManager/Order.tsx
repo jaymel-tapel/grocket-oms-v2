@@ -226,6 +226,7 @@ const Order: React.FC = () => {
 
           {activeTab === "Companies" && (
             <OrderInformationCompanies
+              clientEmail={clientEmail}
               control={control}
               company={
                 newCompanies
