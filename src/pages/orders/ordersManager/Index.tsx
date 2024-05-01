@@ -93,7 +93,7 @@ const Index = () => {
       search: (old) => {
         return {
           ...old,
-          [field]: value,
+          [field]: value === "Invalid Date" ? undefined : value,
         };
       },
       params: true,
