@@ -13,8 +13,8 @@ import Spinner from "../../../tools/spinner/Spinner";
 import { orderRoute } from "../../../../pages/routeTree";
 
 const ADD_REVIEW_METHODS = [
-  "Select From Reviews",
   "Manually Add Review",
+  "Select From Reviews",
 ] as const;
 
 type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
@@ -27,7 +27,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
   const { orderId } = orderRoute.useParams();
 
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
-    "Select From Reviews"
+    "Manually Add Review"
   );
   const [name, setName] = useState("");
   const [noOfReviews, setNoOfReviews] = useState(10);
