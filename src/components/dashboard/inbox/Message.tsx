@@ -1,13 +1,16 @@
 import React from "react";
 import { Message as MessageType } from "../../../services/queries/chatQueriesType";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 type Props = {
   message: MessageType;
+  isFromMe: boolean;
 };
 
-const Message: React.FC<Props> = ({ message }) => {
-  const isFromMe = message.senderId === 2;
-
+const Message: React.FC<Props> = ({ message, isFromMe }) => {
   const senderName = isFromMe ? "Me" : "You";
   const messageContainerStyle = isFromMe
     ? "ml-auto rounded-br-none bg-chatBlue"
@@ -26,7 +29,7 @@ const Message: React.FC<Props> = ({ message }) => {
       >
         <p className={messageStyle}>{message.content}</p>
       </div>
-      <p className="text-xs">{message.updatedAt}</p>
+      <p className="text-xs">{dayjs(message.updatedAt).fromNow()}</p>
     </div>
   );
 };
