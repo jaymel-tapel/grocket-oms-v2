@@ -10,8 +10,8 @@ import {
 import toast from "react-hot-toast";
 
 const ADD_REVIEW_METHODS = [
-  "Select From Reviews",
   "Manually Add Review",
+  "Select From Reviews",
 ] as const;
 
 type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
@@ -23,7 +23,7 @@ type FormProps = {
 const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
   const { setStep, reviews, setReviews, company } = useOrderForm();
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
-    "Select From Reviews"
+    "Manually Add Review"
   );
 
   const [name, setName] = useState("");
