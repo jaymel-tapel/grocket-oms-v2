@@ -30,17 +30,21 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
+      return;
       const { Authorization } = getHeaders();
 
       const socket = io(import.meta.env.VITE_WEBSOCKET_URL, {
         // autoConnect: false,
         transports: ["websocket"],
+        auth: {
+          token: Authorization,
+        },
         query: {
           type: "user",
         },
-        extraHeaders: {
-          authorization: Authorization,
-        },
+        // extraHeaders: {
+        //   authorization: Authorization,
+        // },
       });
 
       socket.on("error", function (error) {
