@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Client } from "./clientsQueries";
 import { getHeaders } from "../../utils/utils";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 const SCRAPER_URL = "https://google-review-rating-scraper.onrender.com/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export type Company = {
   id: number;
@@ -50,45 +51,32 @@ export type GoogleReview = {
 //   });
 // };
 
+// type Ratings = {
+//   company: string;
+//   address: string;
+//   rating: string;
+//   totalReviews: number;
+//   ratingCount: number[];
+// };
+
 type Ratings = {
-  company: string;
-  address: string;
   rating: string;
-  totalReviews: number;
-  ratingCount: number[];
+  reviews: number;
+  stars: number[];
 };
 
-export const useGetCompanyRatings = () => {
-  const [ratings, setRatings] = useState<Ratings>();
+export const useGetCompanyRatings = (companyId?: number) => {
+  return useQuery({
+    enabled: companyId ? true : false,
+    queryKey: ["ratings", companyId],
+    queryFn: async (): Promise<Ratings> => {
+      const response = await axios.get(API_URL + `/ratings/${companyId}`, {
+        headers: getHeaders(),
+      });
 
-  const { mutateAsync: getGoogleRatings, isPending: isFetchingRatings } =
-    useMutation({
-      mutationFn: (payload: { url: string }) => {
-        return axios.post(SCRAPER_URL + "/v2/fetch-review-stats", payload, {
-          headers: getHeaders(),
-        });
-      },
-      onSuccess: ({ data }) => {
-        const company = {
-          company: data?.placeInfo?.title,
-          address: data?.placeInfo?.address,
-          rating: data?.placeInfo?.rating,
-          totalReviews: data?.placeInfo?.reviews,
-          ratingCount: data.reviews,
-        };
-
-        setRatings(company);
-      },
-      onError: () => {
-        setRatings(undefined);
-      },
-    });
-
-  return {
-    ratings,
-    getGoogleRatings,
-    isFetchingRatings,
-  };
+      return response.data;
+    },
+  });
 };
 
 export const useGetCompanyReviews = () => {

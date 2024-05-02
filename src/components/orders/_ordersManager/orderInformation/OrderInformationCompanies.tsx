@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import StarsIcons from "../../../tools/stars/StarIcons";
 import { Control, FieldErrors } from "react-hook-form";
 import { OrderInformationSchema } from "../../../../pages/orders/ordersManager/Order";
@@ -38,8 +38,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
     url: "",
   });
 
-  const { ratings, getGoogleRatings, isFetchingRatings } =
-    useGetCompanyRatings();
+  const { data, isFetching } = useGetCompanyRatings(company?.id);
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
     useAddClientCompany();
 
@@ -97,13 +96,6 @@ const OrderInformationCompanies: React.FC<Props> = ({
       keyword: clientEmail ?? "",
     });
   };
-
-  useEffect(() => {
-    if (company) {
-      getGoogleRatings({ url: company.url });
-    }
-    //eslint-disable-next-line
-  }, [company]);
 
   return (
     <div className="border-b border-grGray-dark">
@@ -164,32 +156,32 @@ const OrderInformationCompanies: React.FC<Props> = ({
           </div>
         </div>
 
-        {isFetchingRatings && (
+        {isFetching && (
           <div className="my-8 flex gap-4 items-center justify-center">
             <Spinner className="h-6 w-6" />
             <span>Fetching company statistics...</span>
           </div>
         )}
-        {ratings && !isFetchingRatings && (
+        {data && !isFetching && (
           <div className="my-8 flex gap-4 lg:gap-8 flex-col lg:flex-row">
             <div className="grid grid-cols-1 lg:w-60">
-              <span>{ratings.address}</span>
+              <span className="hidden lg:block"></span>
               <div className="flex gap-4">
                 <span className="font-medium">Current Rating:</span>
-                {ratings.rating}
+                {data.rating}
               </div>
               <div className="flex gap-4">
                 <span className="font-medium">No. of Reviews:</span>
-                {ratings.totalReviews}
+                {data.reviews}
               </div>
             </div>
 
             <div>
-              {ratings.ratingCount.map((review, index) => (
+              {data.stars.map((review, index) => (
                 <StarsIcons
                   key={index}
                   showLabels={true}
-                  stars={ratings.ratingCount.length - index}
+                  stars={data.stars.length - index}
                   value={review}
                 />
               ))}
