@@ -37,9 +37,7 @@ type SellersParams = {
 
 // GET
 
-const getAllSellers = async (
-  params?: SellersParams
-): Promise<SellersResponse> => {
+const getSellers = async (params?: SellersParams): Promise<SellersResponse> => {
   const response = await axios.get(SELLERS_URL, {
     params,
     headers: getHeaders(),
@@ -47,15 +45,27 @@ const getAllSellers = async (
   return response.data;
 };
 
-export const getAllSellersOptions = (search?: SellersParams) => {
+export const getSellersOptions = (search?: SellersParams) => {
   return {
     queryKey: ["sellers", search],
-    queryFn: () => getAllSellers(search),
+    queryFn: () => getSellers(search),
   };
 };
 
-export const useGetAllSellers = (search?: SellersParams) => {
-  return useQuery(getAllSellersOptions(search));
+export const useGetSellers = (search?: SellersParams) => {
+  return useQuery(getSellersOptions(search));
+};
+
+export const useGetAllSellers = () => {
+  return useQuery({
+    queryKey: ["sellers"],
+    queryFn: async (): Promise<Seller[]> => {
+      const response = await axios.get(SELLERS_URL + "/all", {
+        headers: getHeaders(),
+      });
+      return response.data;
+    },
+  });
 };
 
 // POST

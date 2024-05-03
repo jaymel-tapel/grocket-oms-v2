@@ -97,7 +97,9 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
 
                 {(role === "ADMIN" || role === "ACCOUNTANT") && (
                   <AutoComplete
-                    suggestions={sellers?.map((seller) => seller.email) ?? []}
+                    suggestions={
+                      sellers?.map((seller) => seller.email ?? "") ?? []
+                    }
                     type="email"
                     value={sellerEmail}
                     handleChange={(value) =>
@@ -238,7 +240,9 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               </label>
               <div className="w-full mt-2">
                 <AutoComplete
-                  suggestions={clients?.map((client) => client.email) ?? []}
+                  suggestions={
+                    clients?.map((client) => client.email ?? "") ?? []
+                  }
                   type="email"
                   value={clientEmail}
                   handleChange={(value) =>

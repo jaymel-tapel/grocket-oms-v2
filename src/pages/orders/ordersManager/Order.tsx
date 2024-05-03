@@ -15,7 +15,6 @@ import {
 } from "../../../services/queries/orderQueries";
 import { orderRoute } from "../../routeTree";
 import Spinner from "../../../components/tools/spinner/Spinner";
-import { useDebounce } from "../../../hooks/useDebounce";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
 import { useGetClientBySellers } from "../../../services/queries/clientsQueries";
 import { useGetAllSellers } from "../../../services/queries/sellerQueries";
@@ -82,17 +81,12 @@ const Order: React.FC = () => {
   });
 
   const clientEmail = watch("client_email");
-  const debouncedClientEmail = useDebounce(clientEmail, 500);
   const sellerEmail = watch("seller_email");
-  const debouncedSellerEmail = useDebounce(sellerEmail, 500);
 
-  const { data: sellers } = useGetAllSellers({
-    keyword: debouncedSellerEmail ?? "",
-  });
-
+  const { data: sellers } = useGetAllSellers();
   const { data: clients } = useGetClientBySellers({
     // sellerId: seller.id,
-    keyword: debouncedClientEmail ?? "",
+    // keyword: debouncedClientEmail ?? "",
   });
 
   const { data: userProfile } = useGetUserProfile();
@@ -126,7 +120,7 @@ const Order: React.FC = () => {
     if (user?.role === "SELLER") {
       setValue("seller_email", email);
     } else {
-      const seller = sellers?.data.find((seller) => seller.email === email);
+      const seller = sellers?.find((seller) => seller.email === email);
       if (!seller) return;
 
       setValue("seller_email", seller.email);
@@ -235,7 +229,7 @@ const Order: React.FC = () => {
               control={control}
               errors={errors}
               order={order}
-              sellers={sellers?.data ?? []}
+              sellers={sellers ?? []}
               clients={clients ?? []}
               clientEmail={clientEmail}
               sellerEmail={sellerEmail}

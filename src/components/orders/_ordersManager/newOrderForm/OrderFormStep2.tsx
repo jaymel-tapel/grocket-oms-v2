@@ -12,7 +12,6 @@ import {
   useGetClientIndustries,
   useGetClientOrigins,
 } from "../../../../services/queries/clientsQueries";
-import { useDebounce } from "../../../../hooks/useDebounce";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
 
 const selectClientSchema = z.object({
@@ -42,20 +41,13 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     setValue,
   } = useForm<SelectClientSchema>({
     resolver: zodResolver(selectClientSchema),
     values: client,
   });
 
-  const clientEmail = watch("email");
-  const debouncedEmail = useDebounce(clientEmail, 500);
-
-  const { data: clients } = useGetClientBySellers({
-    // sellerId: seller.id,
-    keyword: debouncedEmail ?? "",
-  });
+  const { data: clients } = useGetClientBySellers({});
 
   const handleChange = (field: keyof typeof client, value: string | number) => {
     setClient((prev) => ({
@@ -90,8 +82,8 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
     setValue("third_party_id", foundClient.clientInfo.thirdPartyId ?? "");
   };
 
-  const onSubmit: SubmitHandler<SelectClientSchema> = () => {
-    const foundClient = clients?.find((client) => client.email === clientEmail);
+  const onSubmit: SubmitHandler<SelectClientSchema> = (data) => {
+    const foundClient = clients?.find((client) => client.email === data.email);
 
     if (foundClient) {
       setClient({
@@ -104,16 +96,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
 
     setStep(3);
   };
-
-  useEffect(() => {
-    if (debouncedEmail === "") {
-      setClient((prev) => ({
-        ...prev,
-        id: undefined,
-      }));
-    }
-    //eslint-disable-next-line
-  }, [debouncedEmail]);
 
   useEffect(() => {
     if (clientData) {
@@ -166,7 +148,7 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
             </label>
             <div className="w-full mt-2 relative">
               <AutoComplete
-                suggestions={clients?.map((client) => client.email) ?? []}
+                suggestions={clients?.map((client) => client.email ?? "") ?? []}
                 type="email"
                 value={client.email}
                 handleChange={(value) => handleChange("email", value)}
