@@ -21,7 +21,6 @@ import {
 } from "../../../services/queries/sellerQueries";
 import toast from "react-hot-toast";
 import AutoComplete from "../../tools/autoComplete/AutoComplete";
-import { debounce } from "lodash";
 import ClientOrderHistory from "./ClientOrderHistory";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
 import {
@@ -66,21 +65,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const { user } = useUserAuthContext();
   const [selectedBrand] = useAtom(brandAtom);
   const [seller, setSeller] = useState<Seller | undefined>(undefined);
-  const [sellerKeyword, setSellerKeyword] = useState("");
   const [sellerDraft, setSellerDraft] = useState("");
 
-  const { data: sellers } = useGetAllSellers({
-    keyword: sellerKeyword,
-  });
-
-  useEffect(() => {
-    const debounceSeller = debounce(() => {
-      setSellerKeyword(sellerDraft);
-    }, 500);
-
-    debounceSeller();
-    return () => debounceSeller.cancel();
-  }, [sellerDraft]);
+  const { data: sellers } = useGetAllSellers();
 
   const { mutateAsync: createClient } = useCreateClient();
   const { mutateAsync: updateClient } = useUpdateClient();
@@ -109,7 +96,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   };
 
   const handleEmailSelect = (email: string) => {
-    const foundSeller = sellers?.data.find((seller) => seller.email === email);
+    const foundSeller = sellers?.find((seller) => seller.email === email);
     if (!foundSeller) return;
     setSellerDraft(email);
     setSeller(foundSeller);
@@ -117,7 +104,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
   const handleChange = (email: string) => {
     setSellerDraft(email);
-    const foundSeller = sellers?.data.find((seller) => seller.email === email);
+    const foundSeller = sellers?.find((seller) => seller.email === email);
     if (!foundSeller) return;
     setSeller(foundSeller);
   };
@@ -216,7 +203,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
                 Seller Email
               </label>
               <AutoComplete
-                suggestions={sellers?.data.map((seller) => seller.email) ?? []}
+                suggestions={sellers?.map((seller) => seller.email ?? "") ?? []}
                 type="email"
                 value={sellerDraft}
                 handleChange={(value) => handleChange(value)}

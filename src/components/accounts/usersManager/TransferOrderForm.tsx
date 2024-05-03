@@ -10,7 +10,7 @@ import {
 import TransferSellersSelector from "./TransferSellersSelector";
 import {
   Seller,
-  useGetAllSellers,
+  useGetSellers,
   useTransferOrders,
 } from "../../../services/queries/sellerQueries";
 import Pill from "../../tools/pill/Pill";
@@ -29,7 +29,7 @@ const TransferOrderForm: React.FC<Props> = ({ onSuccessHandler }) => {
   const [keyword, setKeyword] = useState("");
   const [sellerDraft, setSellerDraft] = useState("");
 
-  const { data: sellers } = useGetAllSellers({
+  const { data: sellers } = useGetSellers({
     keyword,
   });
 

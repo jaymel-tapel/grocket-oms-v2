@@ -8,7 +8,6 @@ import {
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useGetAllSellers } from "../../../../services/queries/sellerQueries";
 import AutoComplete from "../../../tools/autoComplete/AutoComplete";
-import { debounce } from "lodash";
 import { Client } from "../../../../services/queries/clientsQueries";
 import { useUserAuthContext } from "../../../../context/UserAuthContext";
 import { useGetUserProfile } from "../../../../services/queries/userQueries";
@@ -27,7 +26,6 @@ type FormProps = {
 
 const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   const { setStep, seller, setSeller } = useOrderForm() as OrderFormContext;
-  const [keyword, setKeyword] = useState("");
   const [sellerDraft, setSellerDraft] = useState("");
 
   const { user } = useUserAuthContext();
@@ -52,10 +50,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
     values: seller,
   });
 
-  const { data: sellers } = useGetAllSellers({
-    keyword,
-    perPage: 10,
-  });
+  const { data: sellers } = useGetAllSellers();
 
   const handleChange = (field: keyof typeof seller, value) => {
     setSeller((prev) => ({
@@ -70,7 +65,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   };
 
   const handleEmailSelect = (email: string) => {
-    const seller = sellers?.data.find((seller) => seller.email === email);
+    const seller = sellers?.find((seller) => seller.email === email);
     if (!seller) return;
 
     setSeller({
@@ -85,7 +80,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
   };
 
   const onSubmit: SubmitHandler<SelectSellerSchema> = (data) => {
-    const seller = sellers?.data.find((seller) => seller.email === data.email);
+    const seller = sellers?.find((seller) => seller.email === data.email);
 
     if (seller) {
       setSeller({
@@ -97,15 +92,6 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
 
     setStep(2);
   };
-
-  useEffect(() => {
-    const debounceSeller = debounce(() => {
-      setKeyword(sellerDraft);
-    }, 500);
-
-    debounceSeller();
-    return () => debounceSeller.cancel();
-  }, [sellerDraft]);
 
   useEffect(() => {
     if (!user) return;
@@ -151,7 +137,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
           </label>
           {(user?.role === "ADMIN" || user?.role === "ACCOUNTANT") && (
             <AutoComplete
-              suggestions={sellers?.data.map((seller) => seller.email) ?? []}
+              suggestions={sellers?.map((seller) => seller.email ?? "") ?? []}
               type="email"
               value={sellerDraft}
               handleChange={(value) => handleChange("email", value)}
