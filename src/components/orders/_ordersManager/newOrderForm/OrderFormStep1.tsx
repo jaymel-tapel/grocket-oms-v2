@@ -149,7 +149,7 @@ const OrderFormStep1: React.FC<FormProps> = ({ children, clientData }) => {
           >
             Email
           </label>
-          {user?.role === "ADMIN" && (
+          {(user?.role === "ADMIN" || user?.role === "ACCOUNTANT") && (
             <AutoComplete
               suggestions={sellers?.data.map((seller) => seller.email) ?? []}
               type="email"

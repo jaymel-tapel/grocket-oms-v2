@@ -95,7 +95,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                   Seller Email
                 </label>
 
-                {role === "ADMIN" && (
+                {(role === "ADMIN" || role === "ACCOUNTANT") && (
                   <AutoComplete
                     suggestions={sellers?.map((seller) => seller.email) ?? []}
                     type="email"
