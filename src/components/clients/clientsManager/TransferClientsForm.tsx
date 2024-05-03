@@ -12,10 +12,7 @@ import {
   useTransferClients,
 } from "../../../services/queries/clientsQueries";
 import TransferSellersSelector from "../../accounts/usersManager/TransferSellersSelector";
-import {
-  Seller,
-  useGetAllSellers,
-} from "../../../services/queries/sellerQueries";
+import { Seller, useGetSellers } from "../../../services/queries/sellerQueries";
 import { debounce } from "lodash";
 
 type Props = {
@@ -30,7 +27,7 @@ const TransferClientsForm: React.FC<Props> = ({
   const [keyword, setKeyword] = React.useState("");
   const [sellerDraft, setSellerDraft] = React.useState("");
   const [receiverSeller, setReceiverSeller] = React.useState<Seller[]>([]);
-  const { data: sellers } = useGetAllSellers({
+  const { data: sellers } = useGetSellers({
     keyword,
   });
 

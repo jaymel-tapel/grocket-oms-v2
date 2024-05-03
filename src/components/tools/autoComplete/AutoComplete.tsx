@@ -1,5 +1,6 @@
 import React, { InputHTMLAttributes, useState } from "react";
 import { cn } from "../../../utils/utils";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   suggestions: string[];
@@ -17,20 +18,32 @@ const AutoComplete: React.FC<Props> = (props) => {
     ...inputProps
   } = props;
 
-  // const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [filteredSuggestions, setFilteredSuggestions] =
+    useState<string[]>(suggestions);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  const parentRef = React.useRef(null);
+  const virtualizer = useVirtualizer({
+    count: filteredSuggestions.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 41.6,
+    overscan: 5,
+  });
+
+  const virtualOptions = virtualizer.getVirtualItems();
+  const value = props.value as string;
+
+  React.useEffect(() => {
+    setFilteredSuggestions(
+      suggestions.filter((suggestion) =>
+        suggestion.toLowerCase().includes((value ?? "").toLowerCase() ?? [])
+      )
+    );
+  }, [suggestions, value]);
+
   const onChange = (e) => {
-    // const userInput = e.target.value;
-
-    // Filter our suggestions that don't contain the user's input
-    // const unLinked = suggestions.filter(
-    //   (suggestion) =>
-    //     suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
-    // );
-
-    // setFilteredSuggestions(unLinked);
+    setShowSuggestions(true);
     setActiveSuggestionIndex(0);
 
     if (handleChange) {
@@ -39,8 +52,6 @@ const AutoComplete: React.FC<Props> = (props) => {
   };
 
   const onClick = (e) => {
-    // setFilteredSuggestions([]);
-    setActiveSuggestionIndex(0);
     setShowSuggestions(false);
 
     if (handleSelect) {
@@ -53,11 +64,11 @@ const AutoComplete: React.FC<Props> = (props) => {
     if (e.keyCode === 13) {
       e.preventDefault();
       setShowSuggestions(false);
-      setActiveSuggestionIndex(0);
 
       if (handleSelect) {
-        handleSelect(suggestions[activeSuggestionIndex]);
+        handleSelect(filteredSuggestions[activeSuggestionIndex]);
       }
+      setActiveSuggestionIndex(0);
     }
     // User pressed the up arrow
     else if (e.keyCode === 38) {
@@ -68,7 +79,7 @@ const AutoComplete: React.FC<Props> = (props) => {
     }
     // User pressed the down arrow
     else if (e.keyCode === 40) {
-      if (activeSuggestionIndex - 1 === suggestions.length) {
+      if (activeSuggestionIndex === filteredSuggestions.length - 1) {
         return;
       }
       setActiveSuggestionIndex(activeSuggestionIndex + 1);
@@ -76,7 +87,7 @@ const AutoComplete: React.FC<Props> = (props) => {
   };
 
   return (
-    <div className="w-full relative">
+    <div ref={parentRef} className="w-full relative">
       <input
         {...inputProps}
         autoComplete="off"
@@ -97,22 +108,31 @@ const AutoComplete: React.FC<Props> = (props) => {
         )}
       />
       {showSuggestions && (
-        <ul className="absolute z-10 left-0 right-0 max-h-48 overflow-auto border border-gray-300 bg-white">
-          {suggestions.map((suggestion, index) => {
-            let className;
+        <ul
+          className="absolute z-10 left-0 right-0 max-h-48 overflow-auto border border-gray-300 bg-white"
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+          }}
+        >
+          {virtualOptions.map((virtualOption, index) => {
+            let className = "p-2 truncate";
+
             // Flag the active suggestion with a class
             if (index === activeSuggestionIndex) {
-              className = "p-2 bg-grBlue-light text-white";
-            } else {
-              className = "p-2";
+              className = "p-2 truncate bg-grBlue-light text-white";
             }
+
             return (
               <li
                 className={className}
-                key={`${suggestion}-${index}`}
+                key={`${filteredSuggestions[virtualOption.index]}-${index}`}
                 onClick={onClick}
+                style={{
+                  height: `${virtualOption.size}px`,
+                  // transform: `translateY(${virtualOption.start}px)`,
+                }}
               >
-                {suggestion}
+                {filteredSuggestions[virtualOption.index]}
               </li>
             );
           })}

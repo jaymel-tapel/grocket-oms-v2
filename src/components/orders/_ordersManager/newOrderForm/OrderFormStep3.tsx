@@ -35,7 +35,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
     useOrderForm() as OrderFormContext;
 
   const { data: clients } = useGetClientBySellers({
-    keyword: client.email ?? "",
+    // keyword: client.email ?? "",
   });
 
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
