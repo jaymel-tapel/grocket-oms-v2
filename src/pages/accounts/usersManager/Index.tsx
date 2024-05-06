@@ -4,7 +4,6 @@ import { useGetAllUsers } from "../../../services/queries/accountsQueries";
 import { useEffect, useMemo, useState } from "react";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
 import { usersManagerIndexRoute } from "../../routeTree";
-import dayjs from "dayjs";
 import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import { UsersFiltersType, usersFilters } from "../../routeFilters";
 import { debounce } from "lodash";
@@ -13,6 +12,7 @@ import { getActiveFilterLabel } from "../../../utils/utils";
 import { Dialog, DialogTrigger } from "../../../components/tools/dialog/Dialog";
 import TransferOrderForm from "../../../components/accounts/usersManager/TransferOrderForm";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
+import CustomDatePicker from "../../../components/tools/customDatePicker/CustomDatePicker";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -47,6 +47,13 @@ const Index = () => {
   const activeFilterLabel = useMemo(() => {
     return getActiveFilterLabel(filter);
   }, [filter]);
+
+  const dateValue = useMemo(() => {
+    return {
+      from: dateFrom ? new Date(dateFrom) : null,
+      to: dateTo ? new Date(dateTo) : null,
+    };
+  }, [dateFrom, dateTo]);
 
   const handleCreateAccount = () => {
     navigate({ to: "/accounts/users_manager/new" });
@@ -145,35 +152,15 @@ const Index = () => {
             />
           </div>
           <div className="flex gap-4">
-            <input
-              type="text"
-              id="dateFrom"
-              placeholder="Start Date"
-              onFocus={(e) => (e.target.type = "date")}
-              onBlur={(e) => (e.target.type = "text")}
-              defaultValue={dateFrom}
-              onChange={(e) =>
-                handleDateChange(
-                  "from",
-                  dayjs(e.target.value).format("MM-DD-YYYY")
-                )
-              }
-              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            <CustomDatePicker
+              label="Start Date:"
+              value={dateValue.from}
+              onChange={(date) => handleDateChange("from", date)}
             />
-            <input
-              type="text"
-              id="dateTo"
-              placeholder="End Date"
-              onFocus={(e) => (e.target.type = "date")}
-              onBlur={(e) => (e.target.type = "text")}
-              defaultValue={dateTo}
-              onChange={(e) =>
-                handleDateChange(
-                  "to",
-                  dayjs(e.target.value).format("MM-DD-YYYY")
-                )
-              }
-              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            <CustomDatePicker
+              label="End Date:"
+              value={dateValue.to}
+              onChange={(date) => handleDateChange("to", date)}
             />
           </div>
         </div>
