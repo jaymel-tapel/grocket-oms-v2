@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../components/tools/buttons/Button";
 import OrderInformationForm from "../../../components/orders/_ordersManager/orderInformation/OrderInformationForm";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -51,6 +51,9 @@ const Order: React.FC = () => {
   const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
   const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder();
 
+  const [selectedCompany, setSelectedCompany] = useState<Company | undefined>(
+    undefined
+  );
   const [newCompanyId, setNewCompanyId] = useState<number | null>(null);
   const [newCompanies, setNewCompanies] = useState<Company[] | null>(null);
 
@@ -65,17 +68,17 @@ const Order: React.FC = () => {
     resolver: zodResolver(orderInformationSchema),
     values: order && {
       seller_id: order.sellerId,
-      client_email: order.client.email,
-      client_name: order.client.name,
-      company_name: order.company.name,
-      company_url: order.company.url,
-      industryId: order.client.clientInfo.industryId,
+      client_email: order.client ? order.client.email : "",
+      client_name: order.client ? order.client.name : "",
+      company_name: order.company ? order.company.name : "",
+      company_url: order.company ? order.company.url : "",
+      industryId: order.client ? order.client.clientInfo.industryId : 41,
       seller_name: order.seller.name,
       seller_email: order.seller_email ?? order.seller.email,
-      sourceId: order.client.clientInfo.sourceId,
+      sourceId: order.client ? order.client.clientInfo.sourceId : 1,
       unit_cost: order.unit_cost,
-      phone: order.client.clientInfo.phone ?? "",
-      thirdPartyId: order.client.clientInfo.thirdPartyId,
+      phone: order.client ? order.client.clientInfo.phone ?? "" : "",
+      thirdPartyId: order.client ? order.client.clientInfo.thirdPartyId : "",
       remarks: order.remarks ?? "",
     },
   });
@@ -141,17 +144,25 @@ const Order: React.FC = () => {
     setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
     setValue("thirdPartyId", client.clientInfo.thirdPartyId ?? "");
 
-    setNewCompanies(client.companies);
-    setNewCompanyId(client.companies[0].id);
-    setValue("company_name", client.companies[0].name);
-    setValue("company_url", client.companies[0].url);
+    setNewCompanies(client.companies ? client.companies : null);
+    setNewCompanyId(client.companies ? client.companies[0].id : null);
+    setValue("company_name", client.companies ? client.companies[0].name : "");
+    setValue("company_url", client.companies ? client.companies[0].url : "");
 
     manualSubmit();
   };
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
+    const foundCompany = newCompanies?.find(
+      (item) => item.name === company.name
+    );
+
+    if (!foundCompany) return;
+
     setValue("company_name", company.name);
     setValue("company_url", company.url);
+    setSelectedCompany(foundCompany);
+    setNewCompanyId(foundCompany.id);
   };
 
   const handleTabClick = (view: View) => {
@@ -159,7 +170,7 @@ const Order: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate({ to: "/orders/orders_manager" });
+    navigate({ to: "/orders/orders-manager" });
   };
 
   const handleDelete = () => {
@@ -185,7 +196,11 @@ const Order: React.FC = () => {
     const response = await updateOrder({
       payload: {
         ...data,
-        companyId: newCompanyId ? newCompanyId : order.companyId,
+        companyId: newCompanyId
+          ? newCompanyId
+          : order.companyId
+          ? order.companyId
+          : order.client.companies[0].id,
         brandId: order.brandId,
       },
       orderId,
@@ -195,6 +210,18 @@ const Order: React.FC = () => {
       handleBack();
     }
   };
+
+  useEffect(() => {
+    if (order && !order.company) {
+      if (order?.client.companies.length > 0) {
+        setNewCompanies(order.client.companies);
+        setSelectedCompany(order.client.companies[0]);
+      }
+    } else if (order && order.company) {
+      setNewCompanies(order.client.companies);
+      setSelectedCompany(order.client.companies[0]);
+    }
+  }, [order]);
 
   return (
     <div>
@@ -243,13 +270,15 @@ const Order: React.FC = () => {
           {activeTab === "Companies" && (
             <OrderInformationCompanies
               clientEmail={clientEmail}
+              clientId={order?.client?.id ?? undefined}
               control={control}
               company={
-                newCompanies
-                  ? newCompanies[0]
-                  : order && "company" in order
-                  ? order.company
-                  : undefined
+                // newCompanies
+                //   ? newCompanies[0]
+                //   : order && "company" in order
+                //   ? order.company
+                //   : undefined
+                selectedCompany
               }
               companies={
                 newCompanies ? newCompanies : order?.client.companies ?? []
@@ -262,7 +291,7 @@ const Order: React.FC = () => {
           {activeTab === "Reviews" && order && (
             <OrderInformationReviews
               reviews={order.orderReviews}
-              company={order.company}
+              company={selectedCompany}
             />
           )}
 

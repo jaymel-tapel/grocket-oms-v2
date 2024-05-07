@@ -22,8 +22,8 @@ export const adminNav = [
     to: "/orders",
     icon: ClipboardDocumentCheckIcon,
     children: [
-      { name: "Orders Report", to: "/orders/orders_report" },
-      { name: "Orders Manager", to: "/orders/orders_manager" },
+      { name: "Orders Report", to: "/orders/order-report" },
+      { name: "Orders Manager", to: "/orders/orders-manager" },
       { name: "Deleted Orders", to: "/orders/deleted" },
     ],
   },
@@ -32,10 +32,10 @@ export const adminNav = [
     to: "/clients",
     icon: UserGroupIcon,
     children: [
-      { name: "Client Report", to: "/clients/clients_report" },
+      { name: "Client Report", to: "/clients/clients-report" },
       {
         name: "Clients Manager",
-        to: "/clients/clients_manager",
+        to: "/clients/clients-manager",
       },
     ],
   },
@@ -54,11 +54,11 @@ export const adminNav = [
     to: "/accounts",
     icon: KeyIcon,
     children: [
-      { name: "Seller Report", to: "/accounts/sellers_report" },
-      { name: "Users Manager", to: "/accounts/users_manager" },
+      { name: "Seller Report", to: "/accounts/sellers-report" },
+      { name: "Users Manager", to: "/accounts/users-manager" },
       {
         name: "Inactive Users",
-        to: "/accounts/inactive_users",
+        to: "/accounts/inactive-users",
       },
     ],
   },
@@ -66,7 +66,7 @@ export const adminNav = [
     name: "Brands",
     to: "/brands",
     icon: GlobeAltIcon,
-    children: [{ name: "Brands Manager", to: "/brands/brands_manager" }],
+    children: [{ name: "Brands Manager", to: "/brands/brands-manager" }],
   },
 ] as const;
 
@@ -86,8 +86,8 @@ export const accountantSellerNav = [
     to: "/orders",
     icon: ClipboardDocumentCheckIcon,
     children: [
-      { name: "Orders Report", to: "/orders/orders_report" },
-      { name: "Orders Manager", to: "/orders/orders_manager" },
+      { name: "Orders Report", to: "/orders/order-report" },
+      { name: "Orders Manager", to: "/orders/orders-manager" },
       { name: "Deleted Orders", to: "/orders/deleted" },
     ],
   },
@@ -96,10 +96,10 @@ export const accountantSellerNav = [
     to: "/clients",
     icon: UserGroupIcon,
     children: [
-      { name: "Client Report", to: "/clients/clients_report" },
+      { name: "Client Report", to: "/clients/clients-report" },
       {
         name: "Clients Manager",
-        to: "/clients/clients_manager",
+        to: "/clients/clients-manager",
       },
     ],
   },

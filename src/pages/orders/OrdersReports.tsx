@@ -12,6 +12,7 @@ import { useAtom } from "jotai/react";
 import { brandAtom } from "../../services/queries/brandsQueries";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import CustomDatePicker from "../../components/tools/customDatePicker/CustomDatePicker";
 
 dayjs.extend(utc);
 
@@ -49,6 +50,13 @@ const OrdersReports = () => {
   // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
   //   setSearchFilter(newFilter);
   // };
+
+  const dateValue = useMemo(() => {
+    return {
+      from: startRange ? new Date(startRange) : null,
+      to: endRange ? new Date(endRange) : null,
+    };
+  }, [startRange, endRange]);
 
   const orderStats = useMemo(() => {
     // temporary data
@@ -313,24 +321,15 @@ const OrdersReports = () => {
     <div>
       <div className="flex justify-end mb-4">
         <div className="flex gap-4 items-center">
-          <input
-            type="date"
-            id="startRange"
-            value={startRange}
-            onChange={(e) =>
-              setStartRange(dayjs(e.target.value).format("YYYY-MM-DD"))
-            }
-            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          <CustomDatePicker
+            label="Start Date:"
+            value={dateValue.from}
+            onChange={setStartRange}
           />
-          <span>-</span>
-          <input
-            type="date"
-            id="endRange"
-            value={endRange}
-            onChange={(e) =>
-              setEndRange(dayjs(e.target.value).format("YYYY-MM-DD"))
-            }
-            className="ml-auto block w-full max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          <CustomDatePicker
+            label="End Date:"
+            value={dateValue.to}
+            onChange={setEndRange}
           />
         </div>
       </div>

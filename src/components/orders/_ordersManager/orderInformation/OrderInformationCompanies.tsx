@@ -10,6 +10,7 @@ import Spinner from "../../../tools/spinner/Spinner";
 import CompanyLinksTable from "./CompanyLinksTable";
 import { Button } from "../../../tools/buttons/Button";
 import { useAddClientCompany } from "../../../../services/queries/clientsQueries";
+import toast from "react-hot-toast";
 
 type NewCompanyError = {
   name: { error: boolean; message: string };
@@ -18,6 +19,7 @@ type NewCompanyError = {
 
 type Props = {
   clientEmail?: string;
+  clientId?: number;
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   companies: Company[];
@@ -30,6 +32,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
   companies,
   handleSetCompanyValues,
   clientEmail,
+  clientId,
   errors,
 }) => {
   const [showNewCompanyErrors, setShowErrors] = useState(false);
@@ -37,6 +40,8 @@ const OrderInformationCompanies: React.FC<Props> = ({
     name: "",
     url: "",
   });
+
+  console.log(companies);
 
   const { data, isFetching } = useGetCompanyRatings(company?.id);
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
@@ -66,9 +71,9 @@ const OrderInformationCompanies: React.FC<Props> = ({
     }));
   };
 
-  const handleSelectCompany = (companyId: string) => {
+  const handleSelectCompany = (companyName: string) => {
     const foundCompany = companies.find(
-      (company) => company.id === Number(companyId)
+      (company) => company.name === companyName
     );
     if (!foundCompany) return;
 
@@ -76,7 +81,11 @@ const OrderInformationCompanies: React.FC<Props> = ({
   };
 
   const handleAddCompany = () => {
-    if (!company) return;
+    // if (!company) return;
+    if (!clientId) {
+      toast.error("Please select a valid Client first");
+      return;
+    }
 
     if (newCompanyErrors.name.error || newCompanyErrors.url.error) {
       setShowErrors(true);
@@ -89,13 +98,15 @@ const OrderInformationCompanies: React.FC<Props> = ({
 
     addCompany({
       payload: {
-        clientId: company.clientId,
+        clientId: clientId,
         name: newCompany.name,
         url: newCompany.url,
       },
       keyword: clientEmail ?? "",
     });
   };
+
+  console.log(company);
 
   return (
     <div className="border-b border-grGray-dark">
@@ -112,7 +123,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
               <select
                 id="company"
                 autoComplete="off"
-                value={company?.name}
+                value={company?.name ?? ""}
                 onChange={(e) => handleSelectCompany(e.target.value)}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.company_name && "border-red-500"
@@ -123,7 +134,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 </option>
                 {companies?.map((company, index) => {
                   return (
-                    <option value={company.id} key={index}>
+                    <option value={company.name} key={index}>
                       {company.name}
                     </option>
                   );
@@ -149,7 +160,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 disabled
                 type="text"
                 id="company_url"
-                value={company?.url}
+                value={company?.url ?? ""}
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
               />
             </div>

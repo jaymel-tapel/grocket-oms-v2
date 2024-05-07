@@ -49,7 +49,7 @@ const UsersManagerTable: React.FC<TableProps> = ({ users, pagination }) => {
 
   const handleRowClick = (userId: number) => {
     navigate({
-      to: "/accounts/users_manager/$userId",
+      to: "/accounts/users-manager/$userId",
       params: { userId },
     });
   };

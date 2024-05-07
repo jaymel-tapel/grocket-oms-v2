@@ -11,6 +11,7 @@ import { Pagination, User } from "./accountsQueries";
 import { Client } from "./clientsQueries";
 import { Company, PendingReview } from "./companyQueries";
 import { OrderInformationSchema } from "../../pages/orders/ordersManager/Order";
+import { getRouteApi } from "@tanstack/react-router";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const ORDERS_URL = API_URL + "/orders";
@@ -252,8 +253,21 @@ export const useUploadOrderInvoice = () => {
 
 // PATCH / PUT
 
+type UpdateStatusPayload = {
+  payment_status: string;
+  seller_name: string;
+  seller_email: string;
+  client_name: string;
+  client_email: string;
+  sourceId: number;
+  companyId: number;
+  brandId: number;
+};
+
 export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
+  const routeApi = getRouteApi("/logged/orders/orders-manager/$orderId");
+  const search = routeApi.useSearch();
 
   return useMutation({
     mutationFn: async (arg: {
@@ -266,7 +280,32 @@ export const useUpdateOrder = () => {
     },
     onSuccess: () => {
       toast.success("Order updated!");
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({
+        queryKey: ["orders", search],
+      });
+    },
+  });
+};
+
+export const useUpdatePaymentStatus = () => {
+  const queryClient = useQueryClient();
+  const routeApi = getRouteApi("/logged/orders/orders-manager/");
+  const search = routeApi.useSearch();
+
+  return useMutation({
+    mutationFn: async (arg: {
+      payload: UpdateStatusPayload;
+      orderId: number;
+    }) => {
+      return axios.patch(ORDERS_URL + `/${arg.orderId}`, arg.payload, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      toast.success("Order updated!");
+      queryClient.invalidateQueries({
+        queryKey: ["orders", search],
+      });
     },
   });
 };

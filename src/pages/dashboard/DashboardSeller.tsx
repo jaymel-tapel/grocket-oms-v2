@@ -11,6 +11,7 @@ import { brandAtom } from "../../services/queries/brandsQueries";
 import LastFiveOrdersTable from "../../components/dashboard/dashboard/LastFiveOrdersTable";
 import { sliceDate } from "../../utils/utils";
 import BarLineChart from "../../components/tools/charts/BarLineChart";
+import CustomDatePicker from "../../components/tools/customDatePicker/CustomDatePicker";
 
 dayjs.extend(utc);
 
@@ -27,25 +28,30 @@ const DashboardSeller: React.FC = () => {
     code: selectedBrand?.code,
   });
 
-  const dashboardStats = useMemo(() => {
-    if (!statsData) return [];
+  const dateValue = useMemo(() => {
+    return {
+      from: startRange ? new Date(startRange) : null,
+      to: endRange ? new Date(endRange) : null,
+    };
+  }, [startRange, endRange]);
 
+  const dashboardStats = useMemo(() => {
     return [
       {
         label: "New Orders",
-        value: statsData.newOrdersCount ?? 0,
+        value: statsData ? statsData.newOrdersCount ?? 0 : 0,
       },
       {
         label: "New Clients",
-        value: statsData.newClientsCount ?? 0,
+        value: statsData ? statsData.newClientsCount ?? 0 : 0,
       },
       {
         label: "Unpaid Commissions",
-        value: statsData.unpaidCommission.toFixed(2),
+        value: statsData ? statsData.unpaidCommission.toFixed(2) : 0,
       },
       {
         label: "Current Commissions",
-        value: statsData.currentCommission.toFixed(2),
+        value: statsData ? statsData.currentCommission.toFixed(2) : 0,
       },
     ];
   }, [statsData]);
@@ -87,30 +93,16 @@ const DashboardSeller: React.FC = () => {
     <LoggedSection>
       <div className="flex sm:justify-end sm:mb-6">
         <div className="flex gap-4 items-center">
-          <div className="flex flex-col">
-            <span className="text-sm ml-1">Start Date:</span>
-            <input
-              type="date"
-              id="startRange"
-              value={startRange}
-              onChange={(e) =>
-                setStartRange(dayjs(e.target.value).format("YYYY-MM-DD"))
-              }
-              className="block w-full max-w-[10rem] sm:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm ml-1">End Date:</span>
-            <input
-              type="date"
-              id="endRange"
-              value={endRange}
-              onChange={(e) =>
-                setEndRange(dayjs(e.target.value).format("YYYY-MM-DD"))
-              }
-              className="block w-full max-w-[10rem] sm:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-            />
-          </div>
+          <CustomDatePicker
+            label="Start Date:"
+            value={dateValue.from}
+            onChange={setStartRange}
+          />
+          <CustomDatePicker
+            label="End Date:"
+            value={dateValue.to}
+            onChange={setEndRange}
+          />
         </div>
       </div>
 
@@ -134,7 +126,7 @@ const DashboardSeller: React.FC = () => {
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Last 5 Orders</span>
           <Link
-            to={"/orders/orders_manager"}
+            to={"/orders/orders-manager"}
             search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >
@@ -148,7 +140,7 @@ const DashboardSeller: React.FC = () => {
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Clients Overview</span>
           <Link
-            to={"/clients/clients_manager"}
+            to={"/clients/clients-manager"}
             search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >

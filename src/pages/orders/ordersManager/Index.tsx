@@ -5,13 +5,14 @@ import { useGetAllOrders } from "../../../services/queries/orderQueries";
 import { useNavigate } from "@tanstack/react-router";
 import { OrdersFiltersType, ordersFilters } from "../../routeFilters";
 import OrdersManagerTable from "../../../components/orders/_ordersManager/OrdersManagerTable";
-import dayjs from "dayjs";
 import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
 import { Button } from "../../../components/tools/buttons/Button";
 import { getActiveFilterLabel } from "../../../utils/utils";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
+import "react-datepicker/dist/react-datepicker.css";
+import CustomDatePicker from "../../../components/tools/customDatePicker/CustomDatePicker";
 
 const PAYMENT_STATUS = [
   { label: "New", payload: "NEW" },
@@ -34,7 +35,7 @@ const REVIEW_STATUS = [
 const Index = () => {
   const navigate = useNavigate();
   const searchOrders = ordersManagerIndexRoute.useSearch();
-  const { data, isLoading } = useGetAllOrders(searchOrders);
+  const { data, isLoading, isFetching } = useGetAllOrders(searchOrders);
 
   const keyword = searchOrders?.keyword;
   const dateFrom = searchOrders?.from;
@@ -64,17 +65,24 @@ const Index = () => {
     };
   }, [data]);
 
+  const dateValue = useMemo(() => {
+    return {
+      from: dateFrom ? new Date(dateFrom) : null,
+      to: dateTo ? new Date(dateTo) : null,
+    };
+  }, [dateFrom, dateTo]);
+
   const activeFilterLabel = useMemo(() => {
     return getActiveFilterLabel(filter);
   }, [filter]);
 
   const handleAddOrder = () => {
-    navigate({ to: "/orders/orders_manager/new" });
+    navigate({ to: "/orders/orders-manager/new" });
   };
 
   const handleResetFilters = () => {
     navigate({
-      // to: "/orders/orders_manager/",
+      // to: "/orders/orders-manager/",
       search: {
         showDeleted: false,
         page: 1,
@@ -187,7 +195,7 @@ const Index = () => {
         </Button>
       </div>
       <div className="bg-white">
-        <div className="p-8 gap-y-4 flex justify-between max-md:flex-col">
+        <div className="p-8 gap-y-4 flex justify-between items-end max-md:flex-col">
           <div className="flex gap-4 items-center">
             {filter === "payment_status" || filter === "review_status" ? (
               <select
@@ -232,35 +240,15 @@ const Index = () => {
             </Button>
           </div>
           <div className="flex gap-4">
-            <input
-              type="text"
-              id="dateFrom"
-              placeholder="Start Date"
-              onFocus={(e) => (e.target.type = "date")}
-              onBlur={(e) => (e.target.type = "text")}
-              defaultValue={dateFrom}
-              onChange={(e) =>
-                handleDateChange(
-                  "from",
-                  dayjs(e.target.value).format("MM-DD-YYYY")
-                )
-              }
-              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            <CustomDatePicker
+              label="Start Date:"
+              value={dateValue.from}
+              onChange={(date) => handleDateChange("from", date)}
             />
-            <input
-              type="text"
-              id="dateTo"
-              placeholder="End Date"
-              onFocus={(e) => (e.target.type = "date")}
-              onBlur={(e) => (e.target.type = "text")}
-              defaultValue={dateTo}
-              onChange={(e) =>
-                handleDateChange(
-                  "to",
-                  dayjs(e.target.value).format("MM-DD-YYYY")
-                )
-              }
-              className="block w-full min-md:max-w-[12rem] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+            <CustomDatePicker
+              label="End Date:"
+              value={dateValue.to}
+              onChange={(date) => handleDateChange("to", date)}
             />
           </div>
         </div>
@@ -268,6 +256,7 @@ const Index = () => {
           orders={orders.data}
           pagination={orders.pagination}
           isSearching={isLoading}
+          isUpdatingTable={isFetching}
         />
       </div>
 

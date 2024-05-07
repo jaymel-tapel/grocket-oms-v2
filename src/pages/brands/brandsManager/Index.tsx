@@ -9,7 +9,7 @@ const Index: React.FC = () => {
   const { data, isLoading } = useGetAllBrand();
 
   const handleAdd = () => {
-    navigate({ to: "/brands/brands_manager/new" });
+    navigate({ to: "/brands/brands-manager/new" });
   };
 
   return (

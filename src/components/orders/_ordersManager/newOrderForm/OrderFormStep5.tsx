@@ -111,7 +111,7 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
     const response = await createOrder(formData);
 
     if (response.status === 201) {
-      navigate({ to: "/orders/orders_manager" });
+      navigate({ to: "/orders/orders-manager" });
     }
   };
 

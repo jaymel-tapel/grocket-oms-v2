@@ -30,11 +30,13 @@ import {
   getProspectDetailsOption,
 } from "../services/queries/prospectsQueries";
 import toast from "react-hot-toast";
+import NotFoundPage from "./NotFoundPage";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
 }>()({
   component: Root,
+  notFoundComponent: NotFoundPage,
 });
 
 const indexRoute = createRoute({
@@ -51,14 +53,11 @@ const indexRoute = createRoute({
     }
   },
   component: lazyRouteComponent(() => import("./login/Login")),
-  notFoundComponent: () => {
-    return;
-  },
 });
 
 const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "forgot_password/reset",
+  path: "forgot-password/reset",
   beforeLoad: async ({ context: { queryClient } }) => {
     if (isAuth()) {
       throw redirect({ to: "/dashboard" });
@@ -73,7 +72,7 @@ const forgotPasswordRoute = createRoute({
 
 const newPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "forgot_password/$code",
+  path: "forgot-password/$code",
   beforeLoad: async ({ context: { queryClient } }) => {
     if (isAuth()) {
       throw redirect({ to: "/dashboard" });
@@ -217,19 +216,19 @@ const ordersIndexRoute = createRoute({
   getParentRoute: () => ordersRoute,
   path: "/",
   beforeLoad: async () => {
-    throw redirect({ to: "/orders/orders_report" });
+    throw redirect({ to: "/orders/order-report" });
   },
 });
 
 const ordersReportRoute = createRoute({
   getParentRoute: () => ordersRoute,
-  path: "orders_report",
+  path: "order-report",
   component: lazyRouteComponent(() => import("./orders/OrdersReports")),
 });
 
 export const ordersManagerRoute = createRoute({
   getParentRoute: () => ordersRoute,
-  path: "orders_manager",
+  path: "orders-manager",
   validateSearch: ordersSearchSchema,
   preSearchFilters: [
     (search) => ({
@@ -291,19 +290,19 @@ const clientsIndexRoute = createRoute({
   getParentRoute: () => clientsRoute,
   path: "/",
   beforeLoad: async () => {
-    throw redirect({ to: "/clients/clients_report" });
+    throw redirect({ to: "/clients/clients-report" });
   },
 });
 
 const clientsReportRoute = createRoute({
   getParentRoute: () => clientsRoute,
-  path: "clients_report",
+  path: "clients-report",
   component: lazyRouteComponent(() => import("./clients/ClientReports")),
 });
 
 const clientsManagerRoute = createRoute({
   getParentRoute: () => clientsRoute,
-  path: "clients_manager",
+  path: "clients-manager",
   validateSearch: clientsSearchSchema,
   preSearchFilters: [
     (search) => ({
@@ -358,19 +357,19 @@ const accountsIndexRoute = createRoute({
   getParentRoute: () => accountsRoute,
   path: "/",
   beforeLoad: async () => {
-    throw redirect({ to: "/accounts/sellers_report" });
+    throw redirect({ to: "/accounts/sellers-report" });
   },
 });
 
 const sellersReport = createRoute({
   getParentRoute: () => accountsRoute,
-  path: "sellers_report",
+  path: "sellers-report",
   component: lazyRouteComponent(() => import("./accounts/SellerReports")),
 });
 
 export const usersManagerRoute = createRoute({
   getParentRoute: () => accountsRoute,
-  path: "users_manager",
+  path: "users-manager",
   validateSearch: usersSearchSchema,
   preSearchFilters: [
     (search) => ({
@@ -411,7 +410,7 @@ const newAccountRoute = createRoute({
 
 export const inactiveUsersRoute = createRoute({
   getParentRoute: () => accountsRoute,
-  path: "inactive_users",
+  path: "inactive-users",
   validateSearch: usersSearchSchema,
   preSearchFilters: [
     (search) => ({
@@ -496,7 +495,7 @@ const brandsRoute = createRoute({
 
 const brandsManagerRoute = createRoute({
   getParentRoute: () => brandsRoute,
-  path: "brands_manager",
+  path: "brands-manager",
   component: lazyRouteComponent(
     () => import("./brands/brandsManager/BrandsManager")
   ),

@@ -62,7 +62,7 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
 
   // Check whether we're on profile page or users manager page
   const isOnProfile = useMemo(() => {
-    if (location.pathname.includes("users_manager")) {
+    if (location.pathname.includes("users-manager")) {
       return false;
     }
 
@@ -109,13 +109,13 @@ const UserForm: React.FC<FormProps> = ({ userId, user }) => {
         : await createAccount(data);
 
       if (response.status === 200 || response.status === 201) {
-        navigate({ to: "/accounts/users_manager" });
+        navigate({ to: "/accounts/users-manager" });
       }
     }
   };
 
   const handleCancel = () => {
-    navigate({ to: "/accounts/users_manager" });
+    navigate({ to: "/accounts/users-manager" });
   };
 
   return (
