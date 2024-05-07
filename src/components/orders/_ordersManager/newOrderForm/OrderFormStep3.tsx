@@ -128,7 +128,7 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
   };
 
   const addCompanyToClient = async () => {
-    await addCompany({
+    const response = await addCompany({
       payload: {
         clientId: client.id as number,
         name: newCompany.name,
@@ -136,15 +136,20 @@ const OrderFormStep3: React.FC<FormProps> = ({ children }) => {
       },
       keyword: client.email,
     });
+
+    if (response.status === 201) {
+      setCompanies([...companies, response.data]);
+      setNewCompany({ name: "", url: "" });
+    }
   };
 
-  const handleAddCompany = async () => {
+  const handleAddCompany = () => {
     if (!validateNewCompany()) {
       return;
     }
 
     if (client.id) {
-      await addCompanyToClient();
+      addCompanyToClient();
     } else {
       addCompanyLocally();
     }
