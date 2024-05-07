@@ -20,7 +20,7 @@ const Root: React.FC = () => {
       return false;
     }
 
-    if (pathname.includes("forgot_password")) {
+    if (pathname.includes("forgot-password")) {
       return false;
     }
 

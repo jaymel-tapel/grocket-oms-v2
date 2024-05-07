@@ -103,7 +103,7 @@ const ClientsManagersTable: React.FC<TableProps> = ({
 
   const handleRowClick = (clientId: number) => {
     navigate({
-      to: "/clients/clients_manager/$clientId",
+      to: "/clients/clients-manager/$clientId",
       params: { clientId },
     });
   };

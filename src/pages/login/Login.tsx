@@ -126,7 +126,7 @@ const Login = () => {
             </label>
           </div>
           <Link
-            to={"/forgot_password/reset"}
+            to={"/forgot-password/reset"}
             className="font-normal text-xl leading-6 text-grBlue-dark"
           >
             Forgot Password?

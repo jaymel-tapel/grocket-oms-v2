@@ -126,7 +126,7 @@ const DashboardSeller: React.FC = () => {
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Last 5 Orders</span>
           <Link
-            to={"/orders/orders_manager"}
+            to={"/orders/orders-manager"}
             search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >
@@ -140,7 +140,7 @@ const DashboardSeller: React.FC = () => {
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Clients Overview</span>
           <Link
-            to={"/clients/clients_manager"}
+            to={"/clients/clients-manager"}
             search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >

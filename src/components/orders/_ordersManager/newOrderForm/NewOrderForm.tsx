@@ -84,7 +84,7 @@ const FormNavigation = () => {
   const navigate = useNavigate();
 
   const handleCancel = () => {
-    navigate({ to: "/orders/orders_manager" });
+    navigate({ to: "/orders/orders-manager" });
   };
 
   const handlePrevious = () => {

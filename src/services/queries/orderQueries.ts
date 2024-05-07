@@ -11,7 +11,7 @@ import { Pagination, User } from "./accountsQueries";
 import { Client } from "./clientsQueries";
 import { Company, PendingReview } from "./companyQueries";
 import { OrderInformationSchema } from "../../pages/orders/ordersManager/Order";
-import { ordersManagerIndexRoute } from "../../pages/routeTree";
+import { getRouteApi } from "@tanstack/react-router";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const ORDERS_URL = API_URL + "/orders";
@@ -266,7 +266,7 @@ type UpdateStatusPayload = {
 
 export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
-  const search = ordersManagerIndexRoute.useSearch();
+  const routeApi = getRouteApi("/logged/orders/orders-manager/$orderId");
 
   return useMutation({
     mutationFn: async (arg: {
@@ -279,14 +279,16 @@ export const useUpdateOrder = () => {
     },
     onSuccess: () => {
       toast.success("Order updated!");
-      queryClient.invalidateQueries({ queryKey: ["orders", search] });
+      queryClient.invalidateQueries({
+        queryKey: ["orders", routeApi.useSearch()],
+      });
     },
   });
 };
 
 export const useUpdatePaymentStatus = () => {
   const queryClient = useQueryClient();
-  const search = ordersManagerIndexRoute.useSearch();
+  const routeApi = getRouteApi("/logged/orders/orders-manager/$orderId");
 
   return useMutation({
     mutationFn: async (arg: {
@@ -299,7 +301,9 @@ export const useUpdatePaymentStatus = () => {
     },
     onSuccess: () => {
       toast.success("Order updated!");
-      queryClient.invalidateQueries({ queryKey: ["orders", search] });
+      queryClient.invalidateQueries({
+        queryKey: ["orders", routeApi.useSearch()],
+      });
     },
   });
 };

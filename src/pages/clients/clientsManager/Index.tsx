@@ -63,7 +63,7 @@ const Index = () => {
   }, [dateFrom, dateTo]);
 
   const handleCreateAccount = () => {
-    navigate({ to: "/clients/clients_manager/new" });
+    navigate({ to: "/clients/clients-manager/new" });
   };
 
   const handleDateChange = (field: "from" | "to", value: string) => {

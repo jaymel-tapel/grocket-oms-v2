@@ -110,7 +110,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
 
   const handleRowClick = (orderId: number) => {
     navigate({
-      to: "/orders/orders_manager/$orderId",
+      to: "/orders/orders-manager/$orderId",
       params: { orderId },
     });
   };

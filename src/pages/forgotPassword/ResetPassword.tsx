@@ -19,7 +19,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   const { mutateAsync: newPass, isPending } = useResetPassword();
-  const { code } = useParams({ from: "/forgot_password/$code" });
+  const { code } = useParams({ from: "/forgot-password/$code" });
 
   const {
     register,

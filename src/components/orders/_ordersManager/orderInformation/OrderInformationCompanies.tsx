@@ -41,8 +41,6 @@ const OrderInformationCompanies: React.FC<Props> = ({
     url: "",
   });
 
-  console.log(company);
-
   const { data, isFetching } = useGetCompanyRatings(company?.id);
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
     useAddClientCompany();

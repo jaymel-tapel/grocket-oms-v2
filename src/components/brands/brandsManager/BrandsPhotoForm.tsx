@@ -66,13 +66,13 @@ const BrandsPhotoForm: React.FC<FormProps> = forwardRef(({ brands }, ref) => {
     const formData = new FormData();
     formData.append("logo", acceptedFiles[0]);
 
-    if (location.pathname.includes("brands_manager")) {
+    if (location.pathname.includes("brands-manager")) {
       const response = await updateLogo({
         id: brands.id,
         payload: formData,
       });
       if (response.status === 200) {
-        navigate({ to: "/brands/brands_manager" });
+        navigate({ to: "/brands/brands-manager" });
       }
     }
   };
@@ -91,7 +91,7 @@ const BrandsPhotoForm: React.FC<FormProps> = forwardRef(({ brands }, ref) => {
   };
 
   const handleCancel = () => {
-    navigate({ to: "/brands/brands_manager" });
+    navigate({ to: "/brands/brands-manager" });
   };
 
   useImperativeHandle(ref, () => ({
