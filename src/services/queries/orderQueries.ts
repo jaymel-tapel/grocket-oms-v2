@@ -267,6 +267,7 @@ type UpdateStatusPayload = {
 export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
   const routeApi = getRouteApi("/logged/orders/orders-manager/$orderId");
+  const search = routeApi.useSearch();
 
   return useMutation({
     mutationFn: async (arg: {
@@ -280,7 +281,7 @@ export const useUpdateOrder = () => {
     onSuccess: () => {
       toast.success("Order updated!");
       queryClient.invalidateQueries({
-        queryKey: ["orders", routeApi.useSearch()],
+        queryKey: ["orders", search],
       });
     },
   });
@@ -288,7 +289,8 @@ export const useUpdateOrder = () => {
 
 export const useUpdatePaymentStatus = () => {
   const queryClient = useQueryClient();
-  const routeApi = getRouteApi("/logged/orders/orders-manager/$orderId");
+  const routeApi = getRouteApi("/logged/orders/orders-manager/");
+  const search = routeApi.useSearch();
 
   return useMutation({
     mutationFn: async (arg: {
@@ -302,7 +304,7 @@ export const useUpdatePaymentStatus = () => {
     onSuccess: () => {
       toast.success("Order updated!");
       queryClient.invalidateQueries({
-        queryKey: ["orders", routeApi.useSearch()],
+        queryKey: ["orders", search],
       });
     },
   });
