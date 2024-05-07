@@ -36,24 +36,22 @@ const DashboardSeller: React.FC = () => {
   }, [startRange, endRange]);
 
   const dashboardStats = useMemo(() => {
-    if (!statsData) return [];
-
     return [
       {
         label: "New Orders",
-        value: statsData.newOrdersCount ?? 0,
+        value: statsData ? statsData.newOrdersCount ?? 0 : 0,
       },
       {
         label: "New Clients",
-        value: statsData.newClientsCount ?? 0,
+        value: statsData ? statsData.newClientsCount ?? 0 : 0,
       },
       {
         label: "Unpaid Commissions",
-        value: statsData.unpaidCommission.toFixed(2),
+        value: statsData ? statsData.unpaidCommission.toFixed(2) : 0,
       },
       {
         label: "Current Commissions",
-        value: statsData.currentCommission.toFixed(2),
+        value: statsData ? statsData.currentCommission.toFixed(2) : 0,
       },
     ];
   }, [statsData]);
