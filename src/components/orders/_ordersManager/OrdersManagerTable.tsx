@@ -183,7 +183,7 @@ const OrdersManagerTable: React.FC<TableProps> = ({
                   <TableBodyCell className="capitalize">
                     {order.createdBy ? order.createdBy.toLowerCase() : ""}
                   </TableBodyCell>
-                  <TableBodyCell>
+                  <TableBodyCell className="truncate max-w-[250px]">
                     {"company" in order ? order.company.name : ""}
                   </TableBodyCell>
                   <TableBodyCell>
