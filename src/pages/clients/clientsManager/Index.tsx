@@ -207,6 +207,7 @@ const Index = () => {
           </div>
         </div>
         <ClientsManagersTable
+          page={searchClients.page}
           isAdmin={user?.role === "ADMIN" ?? false}
           clients={clients.data}
           pagination={clients.pagination}
