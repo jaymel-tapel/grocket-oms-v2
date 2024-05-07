@@ -141,11 +141,11 @@ export const useGetClient = (id: number) => {
 
 export const useGetClientBySellers = (params: {
   sellerId?: number;
-  keyword?: string;
+  // keyword?: string;
 }) => {
   return useQuery({
     // enabled: params.sellerId ? true : false,
-    queryKey: ["clients-by-seller", params.keyword],
+    queryKey: ["clients-by-seller"],
     queryFn: async (): Promise<Client[]> => {
       const response = await axios.get(CLIENTS_URL + "/search", {
         headers: getHeaders(),
@@ -229,11 +229,11 @@ export const useAddClientCompany = () => {
         headers: getHeaders(),
       });
     },
-    onSuccess: (_, { keyword }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       queryClient.invalidateQueries({
-        queryKey: ["clients-by-seller", keyword],
+        queryKey: ["clients-by-seller"],
       });
     },
   });

@@ -32,8 +32,7 @@ type FormProps = {
 };
 
 const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
-  const { setStep, client, setClient, setCompanies } =
-    useOrderForm() as OrderFormContext;
+  const { setStep, client, setClient } = useOrderForm() as OrderFormContext;
   const { data: industries } = useGetClientIndustries();
   const { data: origins } = useGetClientOrigins();
 
@@ -71,8 +70,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
       third_party_id: foundClient.clientInfo.thirdPartyId ?? "",
     });
 
-    setCompanies(foundClient.companies);
-
     setValue("name", foundClient.name);
     setValue("email", foundClient.email);
     setValue("industry", foundClient.clientInfo.industryId ?? 41);
@@ -90,8 +87,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
         id: client.id,
         ...client,
       });
-
-      setCompanies(foundClient.companies);
     }
 
     setStep(3);
@@ -114,8 +109,6 @@ const OrderFormStep2: React.FC<FormProps> = ({ children, clientData }) => {
         unit_cost: client.clientInfo.default_unit_cost ?? 10,
         third_party_id: client.clientInfo.thirdPartyId ?? "",
       });
-
-      setCompanies(client.companies);
 
       setValue("name", client.name);
       setValue("email", client.email);
