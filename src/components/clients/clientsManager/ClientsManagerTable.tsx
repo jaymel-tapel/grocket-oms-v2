@@ -35,6 +35,7 @@ type TableProps = {
   pagination: Pagination;
   selectedClients: Client[];
   setSelectedClients: React.Dispatch<React.SetStateAction<Client[]>>;
+  page?: number;
 };
 
 const ClientsManagersTable: React.FC<TableProps> = ({
@@ -43,9 +44,10 @@ const ClientsManagersTable: React.FC<TableProps> = ({
   selectedClients,
   setSelectedClients,
   isAdmin,
+  page,
 }) => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(page ?? 1);
 
   const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {

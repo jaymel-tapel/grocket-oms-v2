@@ -164,7 +164,11 @@ const Index = () => {
             />
           </div>
         </div>
-        <UsersManagerTable users={users.data} pagination={users.pagination} />
+        <UsersManagerTable
+          page={searchUsers.page}
+          users={users.data}
+          pagination={users.pagination}
+        />
       </div>
     </div>
   );

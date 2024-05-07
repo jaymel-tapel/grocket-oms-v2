@@ -253,6 +253,7 @@ const Index = () => {
           </div>
         </div>
         <OrdersManagerTable
+          page={searchOrders.page}
           orders={orders.data}
           pagination={orders.pagination}
           isSearching={isLoading}
