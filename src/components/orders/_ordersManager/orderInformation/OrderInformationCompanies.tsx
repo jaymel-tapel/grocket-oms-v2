@@ -41,7 +41,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
     url: "",
   });
 
-  console.log(company);
+  console.log(companies);
 
   const { data, isFetching } = useGetCompanyRatings(company?.id);
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
@@ -71,9 +71,9 @@ const OrderInformationCompanies: React.FC<Props> = ({
     }));
   };
 
-  const handleSelectCompany = (companyId: string) => {
+  const handleSelectCompany = (companyName: string) => {
     const foundCompany = companies.find(
-      (company) => company.id === Number(companyId)
+      (company) => company.name === companyName
     );
     if (!foundCompany) return;
 
@@ -106,6 +106,8 @@ const OrderInformationCompanies: React.FC<Props> = ({
     });
   };
 
+  console.log(company);
+
   return (
     <div className="border-b border-grGray-dark">
       <div className="py-4">
@@ -121,7 +123,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
               <select
                 id="company"
                 autoComplete="off"
-                value={company?.name}
+                value={company?.name ?? ""}
                 onChange={(e) => handleSelectCompany(e.target.value)}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.company_name && "border-red-500"
@@ -132,7 +134,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 </option>
                 {companies?.map((company, index) => {
                   return (
-                    <option value={company.id} key={index}>
+                    <option value={company.name} key={index}>
                       {company.name}
                     </option>
                   );
@@ -158,7 +160,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 disabled
                 type="text"
                 id="company_url"
-                value={company?.url}
+                value={company?.url ?? ""}
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
               />
             </div>

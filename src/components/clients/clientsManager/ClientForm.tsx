@@ -118,7 +118,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     localStorage.setItem("client", clientData);
 
     navigate({
-      to: "/orders/orders_manager/new",
+      to: "/orders/orders-manager/new",
       search: { clientData: true },
     });
   };
@@ -146,12 +146,12 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
       : await createClient({ ...data, brandId: selectedBrand.id, sellerId });
 
     if (response.status === 200 || response.status === 201) {
-      navigate({ to: "/clients/clients_manager" });
+      navigate({ to: "/clients/clients-manager" });
     }
   };
 
   const handleCancel = () => {
-    navigate({ to: "/clients/clients_manager" });
+    navigate({ to: "/clients/clients-manager" });
   };
 
   const handleLoginToClient = () => {

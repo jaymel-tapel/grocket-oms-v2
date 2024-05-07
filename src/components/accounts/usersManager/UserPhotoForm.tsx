@@ -59,14 +59,14 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
     const formData = new FormData();
     formData.append("image", acceptedFiles[0]);
 
-    if (location.pathname.includes("users_manager")) {
+    if (location.pathname.includes("users-manager")) {
       const response = await updatePhoto({
         id: user.id,
         payload: formData,
       });
 
       if (response.status === 200) {
-        navigate({ to: "/accounts/users_manager" });
+        navigate({ to: "/accounts/users-manager" });
       }
     } else if (location.pathname === "/profile") {
       await updateProfilePhoto({ id: user.id, payload: formData });
@@ -74,8 +74,8 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
   };
 
   const handleCancel = () => {
-    navigate({ to: "/accounts/users_manager" });
-  }
+    navigate({ to: "/accounts/users-manager" });
+  };
 
   return (
     <div className="bg-white self-start max-sm:w-full">
@@ -136,7 +136,11 @@ const UserPhotoForm: React.FC<FormProps> = ({ user }) => {
         </div>
 
         <div className="flex gap-4 justify-end">
-          <Button type="button" variant="noBorder" onClick={() => handleCancel()}>
+          <Button
+            type="button"
+            variant="noBorder"
+            onClick={() => handleCancel()}
+          >
             Cancel
           </Button>
           <Button

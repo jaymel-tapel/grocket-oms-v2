@@ -77,12 +77,12 @@ const Index = () => {
   }, [filter]);
 
   const handleAddOrder = () => {
-    navigate({ to: "/orders/orders_manager/new" });
+    navigate({ to: "/orders/orders-manager/new" });
   };
 
   const handleResetFilters = () => {
     navigate({
-      // to: "/orders/orders_manager/",
+      // to: "/orders/orders-manager/",
       search: {
         showDeleted: false,
         page: 1,

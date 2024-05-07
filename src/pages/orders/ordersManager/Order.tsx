@@ -51,6 +51,9 @@ const Order: React.FC = () => {
   const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
   const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder();
 
+  const [selectedCompany, setSelectedCompany] = useState<Company | undefined>(
+    undefined
+  );
   const [newCompanyId, setNewCompanyId] = useState<number | null>(null);
   const [newCompanies, setNewCompanies] = useState<Company[] | null>(null);
 
@@ -150,8 +153,16 @@ const Order: React.FC = () => {
   };
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
+    const foundCompany = newCompanies?.find(
+      (item) => item.name === company.name
+    );
+
+    if (!foundCompany) return;
+
     setValue("company_name", company.name);
     setValue("company_url", company.url);
+    setSelectedCompany(foundCompany);
+    setNewCompanyId(foundCompany.id);
   };
 
   const handleTabClick = (view: View) => {
@@ -159,7 +170,7 @@ const Order: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate({ to: "/orders/orders_manager" });
+    navigate({ to: "/orders/orders-manager" });
   };
 
   const handleDelete = () => {
@@ -204,7 +215,11 @@ const Order: React.FC = () => {
     if (order && !order.company) {
       if (order?.client.companies.length > 0) {
         setNewCompanies(order.client.companies);
+        setSelectedCompany(order.client.companies[0]);
       }
+    } else if (order && order.company) {
+      setNewCompanies(order.client.companies);
+      setSelectedCompany(order.client.companies[0]);
     }
   }, [order]);
 
@@ -258,11 +273,12 @@ const Order: React.FC = () => {
               clientId={order?.client?.id ?? undefined}
               control={control}
               company={
-                newCompanies
-                  ? newCompanies[0]
-                  : order && "company" in order
-                  ? order.company
-                  : undefined
+                // newCompanies
+                //   ? newCompanies[0]
+                //   : order && "company" in order
+                //   ? order.company
+                //   : undefined
+                selectedCompany
               }
               companies={
                 newCompanies ? newCompanies : order?.client.companies ?? []

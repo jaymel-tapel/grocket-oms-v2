@@ -66,12 +66,12 @@ const BrandsForm: React.FC<FormProps> = ({ brands, brandId, getFiles }) => {
       : await createBrand(generateFormData());
 
     if (response.status === 200 || response.status === 201) {
-      navigate({ to: "/brands/brands_manager" });
+      navigate({ to: "/brands/brands-manager" });
     }
   };
 
   const handleCancel = () => {
-    navigate({ to: "/brands/brands_manager" });
+    navigate({ to: "/brands/brands-manager" });
   };
 
   return (

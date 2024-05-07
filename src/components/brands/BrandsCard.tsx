@@ -70,7 +70,7 @@ const BrandsCard: React.FC<FormProps> = ({ brands }) => {
                 <button>
                   <div className="text-black ">
                     <Link
-                      to="/brands/brands_manager/$brandId"
+                      to="/brands/brands-manager/$brandId"
                       params={{ brandId: data.id }}
                     >
                       {PencilAlt2}

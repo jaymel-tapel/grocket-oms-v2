@@ -165,7 +165,7 @@ const DashboardAdmin: React.FC = () => {
         <div className="p-6 flex justify-between items-center">
           <span className="text-lg font-bold">Clients Overview</span>
           <Link
-            to={"/clients/clients_manager"}
+            to={"/clients/clients-manager"}
             search={{ code: undefined }}
             className="text-sm text-grBlue-dark"
           >
