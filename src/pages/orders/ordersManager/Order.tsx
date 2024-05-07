@@ -141,10 +141,10 @@ const Order: React.FC = () => {
     setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
     setValue("thirdPartyId", client.clientInfo.thirdPartyId ?? "");
 
-    setNewCompanies(client.companies);
-    setNewCompanyId(client.companies[0].id);
-    setValue("company_name", client.companies[0].name);
-    setValue("company_url", client.companies[0].url);
+    setNewCompanies(client.companies ? client.companies : null);
+    setNewCompanyId(client.companies ? client.companies[0].id : null);
+    setValue("company_name", client.companies ? client.companies[0].name : "");
+    setValue("company_url", client.companies ? client.companies[0].url : "");
 
     manualSubmit();
   };
