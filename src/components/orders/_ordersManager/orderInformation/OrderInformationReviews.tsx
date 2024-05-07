@@ -19,7 +19,7 @@ const ADD_REVIEW_METHODS = [
 
 type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
 type Props = {
-  company: Company;
+  company?: Company;
   reviews: PendingReview[];
 };
 
@@ -48,6 +48,11 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
   }, [companyReviews, reviews]);
 
   const handleGetReviews = () => {
+    if (!company) {
+      toast.error("Select valid company first");
+      return;
+    }
+
     getCompanyReviews({ url: company.url, quantity: noOfReviews });
   };
 
