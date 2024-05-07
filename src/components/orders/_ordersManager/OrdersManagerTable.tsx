@@ -53,6 +53,7 @@ type TableProps = {
   pagination: Pagination;
   isSearching: boolean;
   isUpdatingTable: boolean;
+  page?: number;
 };
 
 const OrdersManagerTable: React.FC<TableProps> = ({
@@ -60,13 +61,14 @@ const OrdersManagerTable: React.FC<TableProps> = ({
   pagination,
   isSearching,
   isUpdatingTable,
+  page,
 }) => {
   const navigate = useNavigate();
   const [newStatus, setNewStatus] = useState<PaymentStatus>({
     label: "New",
     color: "default",
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(page ?? 1);
   const [identifier, setIdentifier] = useState<number | null>(null);
   const { mutateAsync: updatePaymentStatus, isPending: isUpdating } =
     useUpdatePaymentStatus();

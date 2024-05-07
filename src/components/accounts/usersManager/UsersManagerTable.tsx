@@ -18,11 +18,16 @@ const itemsPerPage = 10;
 type TableProps = {
   users: User[];
   pagination: Pagination;
+  page?: number;
 };
 
-const UsersManagerTable: React.FC<TableProps> = ({ users, pagination }) => {
+const UsersManagerTable: React.FC<TableProps> = ({
+  users,
+  pagination,
+  page,
+}) => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(page ?? 1);
 
   const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
