@@ -138,7 +138,7 @@ export const getActiveFilterLabel = (filter: string | undefined) => {
 
 type ColorKey = "default" | "lightBlue" | "green" | "orange" | "yellow" | "red";
 
-type PaymentStatus = {
+export type PaymentStatus = {
   label: string;
   color: ColorKey;
 };

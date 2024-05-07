@@ -5,7 +5,10 @@ import TableContainer from "../../tools/table/TableContainer";
 import TableHead from "../../tools/table/TableHead";
 import TableHeadCell from "../../tools/table/TableHeadCell";
 import TableRow from "../../tools/table/TableRow";
-import { Order, useUpdateOrder } from "../../../services/queries/orderQueries";
+import {
+  Order,
+  useUpdatePaymentStatus,
+} from "../../../services/queries/orderQueries";
 import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { Pagination } from "../../../services/queries/accountsQueries";
@@ -20,7 +23,7 @@ import {
   PopoverTrigger,
 } from "../../tools/popover/Popover";
 import Pill from "../../tools/pill/Pill";
-import { getPaymentStatus } from "../../../utils/utils";
+import { PaymentStatus, getPaymentStatus } from "../../../utils/utils";
 import Spinner from "../../tools/spinner/Spinner";
 
 const COLUMNS = [
@@ -49,17 +52,24 @@ type TableProps = {
   orders: Order[];
   pagination: Pagination;
   isSearching: boolean;
+  isUpdatingTable: boolean;
 };
 
 const OrdersManagerTable: React.FC<TableProps> = ({
   orders = [],
   pagination,
   isSearching,
+  isUpdatingTable,
 }) => {
   const navigate = useNavigate();
+  const [newStatus, setNewStatus] = useState<PaymentStatus>({
+    label: "New",
+    color: "default",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [identifier, setIdentifier] = useState<number | null>(null);
-  const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
+  const { mutateAsync: updatePaymentStatus, isPending: isUpdating } =
+    useUpdatePaymentStatus();
 
   const handlePageChange = (value: number | PaginationNavs) => {
     if (typeof value === "number") {
@@ -113,23 +123,24 @@ const OrdersManagerTable: React.FC<TableProps> = ({
       payment_status,
       seller_name: order.seller.name,
       seller_email: order.seller.email,
-      seller_id: order.sellerId,
       client_name: order.client.name,
       client_email: order.client.email,
       sourceId: order.client.clientInfo.sourceId,
-      industryId: order.client.clientInfo.industryId,
       companyId: order.company.id,
-      company_name: order.company.name,
-      company_url: order.company.url,
-      unit_cost: order.unit_cost,
       brandId: order.brandId,
     };
 
+    setNewStatus(getPaymentStatus(payment_status));
     setIdentifier(order.id);
-    await updateOrder({ orderId: order.id, payload });
-
-    setIdentifier(null);
+    await updatePaymentStatus({ orderId: order.id, payload });
   };
+
+  useEffect(() => {
+    if (identifier && !isUpdatingTable) {
+      setIdentifier(null);
+    }
+    //eslint-disable-next-line
+  }, [isUpdatingTable]);
 
   return (
     <TableContainer className="bg-white">
@@ -184,6 +195,10 @@ const OrdersManagerTable: React.FC<TableProps> = ({
                       <Pill bgColor={paymentStatus.color}>
                         <Spinner />
                         {paymentStatus.label}
+                      </Pill>
+                    ) : identifier === order.id ? (
+                      <Pill bgColor={newStatus.color} className="opacity-50">
+                        {newStatus.label}
                       </Pill>
                     ) : (
                       <Popover>

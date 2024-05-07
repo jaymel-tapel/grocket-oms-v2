@@ -10,6 +10,7 @@ import Spinner from "../../../tools/spinner/Spinner";
 import CompanyLinksTable from "./CompanyLinksTable";
 import { Button } from "../../../tools/buttons/Button";
 import { useAddClientCompany } from "../../../../services/queries/clientsQueries";
+import toast from "react-hot-toast";
 
 type NewCompanyError = {
   name: { error: boolean; message: string };
@@ -18,6 +19,7 @@ type NewCompanyError = {
 
 type Props = {
   clientEmail?: string;
+  clientId?: number;
   control: Control<OrderInformationSchema>;
   errors: FieldErrors<OrderInformationSchema>;
   companies: Company[];
@@ -30,6 +32,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
   companies,
   handleSetCompanyValues,
   clientEmail,
+  clientId,
   errors,
 }) => {
   const [showNewCompanyErrors, setShowErrors] = useState(false);
@@ -37,6 +40,8 @@ const OrderInformationCompanies: React.FC<Props> = ({
     name: "",
     url: "",
   });
+
+  console.log(company);
 
   const { data, isFetching } = useGetCompanyRatings(company?.id);
   const { mutateAsync: addCompany, isPending: isAddingCompany } =
@@ -76,7 +81,11 @@ const OrderInformationCompanies: React.FC<Props> = ({
   };
 
   const handleAddCompany = () => {
-    if (!company) return;
+    // if (!company) return;
+    if (!clientId) {
+      toast.error("Please select a valid Client first");
+      return;
+    }
 
     if (newCompanyErrors.name.error || newCompanyErrors.url.error) {
       setShowErrors(true);
@@ -89,7 +98,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
 
     addCompany({
       payload: {
-        clientId: company.clientId,
+        clientId: clientId,
         name: newCompany.name,
         url: newCompany.url,
       },

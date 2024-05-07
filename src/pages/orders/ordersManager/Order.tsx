@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../components/tools/buttons/Button";
 import OrderInformationForm from "../../../components/orders/_ordersManager/orderInformation/OrderInformationForm";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -65,17 +65,17 @@ const Order: React.FC = () => {
     resolver: zodResolver(orderInformationSchema),
     values: order && {
       seller_id: order.sellerId,
-      client_email: order.client.email,
-      client_name: order.client.name,
-      company_name: order.company.name,
-      company_url: order.company.url,
-      industryId: order.client.clientInfo.industryId,
+      client_email: order.client ? order.client.email : "",
+      client_name: order.client ? order.client.name : "",
+      company_name: order.company ? order.company.name : "",
+      company_url: order.company ? order.company.url : "",
+      industryId: order.client ? order.client.clientInfo.industryId : 41,
       seller_name: order.seller.name,
       seller_email: order.seller_email ?? order.seller.email,
-      sourceId: order.client.clientInfo.sourceId,
+      sourceId: order.client ? order.client.clientInfo.sourceId : 1,
       unit_cost: order.unit_cost,
-      phone: order.client.clientInfo.phone ?? "",
-      thirdPartyId: order.client.clientInfo.thirdPartyId,
+      phone: order.client ? order.client.clientInfo.phone ?? "" : "",
+      thirdPartyId: order.client ? order.client.clientInfo.thirdPartyId : "",
       remarks: order.remarks ?? "",
     },
   });
@@ -185,7 +185,11 @@ const Order: React.FC = () => {
     const response = await updateOrder({
       payload: {
         ...data,
-        companyId: newCompanyId ? newCompanyId : order.companyId,
+        companyId: newCompanyId
+          ? newCompanyId
+          : order.companyId
+          ? order.companyId
+          : order.client.companies[0].id,
         brandId: order.brandId,
       },
       orderId,
@@ -195,6 +199,14 @@ const Order: React.FC = () => {
       handleBack();
     }
   };
+
+  useEffect(() => {
+    if (order && !order.company) {
+      if (order?.client.companies.length > 0) {
+        setNewCompanies(order.client.companies);
+      }
+    }
+  }, [order]);
 
   return (
     <div>
@@ -243,6 +255,7 @@ const Order: React.FC = () => {
           {activeTab === "Companies" && (
             <OrderInformationCompanies
               clientEmail={clientEmail}
+              clientId={order?.client?.id ?? undefined}
               control={control}
               company={
                 newCompanies
