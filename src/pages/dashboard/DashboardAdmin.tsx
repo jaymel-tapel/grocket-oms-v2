@@ -36,20 +36,18 @@ const DashboardAdmin: React.FC = () => {
   }, [startRange, endRange]);
 
   const dashboardStats = useMemo(() => {
-    if (!statsData) return [];
-
     return [
       {
         label: "New Orders",
-        value: statsData.ordersOverview.newOrdersCount ?? 0,
+        value: statsData ? statsData.ordersOverview.newOrdersCount ?? 0 : 0,
       },
       {
         label: "New Clients",
-        value: statsData.newClientsCount ?? 0,
+        value: statsData ? statsData.newClientsCount ?? 0 : 0,
       },
       {
         label: "Paid Invoice",
-        value: statsData.revenue.toFixed(2),
+        value: statsData ? statsData.revenue.toFixed(2) : 0,
       },
     ];
   }, [statsData]);
