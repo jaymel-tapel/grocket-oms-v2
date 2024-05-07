@@ -30,11 +30,13 @@ import {
   getProspectDetailsOption,
 } from "../services/queries/prospectsQueries";
 import toast from "react-hot-toast";
+import NotFoundPage from "./NotFoundPage";
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: typeof queryClient;
 }>()({
   component: Root,
+  notFoundComponent: NotFoundPage,
 });
 
 const indexRoute = createRoute({
@@ -51,9 +53,6 @@ const indexRoute = createRoute({
     }
   },
   component: lazyRouteComponent(() => import("./login/Login")),
-  notFoundComponent: () => {
-    return;
-  },
 });
 
 const forgotPasswordRoute = createRoute({
