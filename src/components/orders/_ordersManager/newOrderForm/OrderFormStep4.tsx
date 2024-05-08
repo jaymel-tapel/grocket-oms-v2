@@ -21,7 +21,7 @@ type FormProps = {
 };
 
 const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
-  const { setStep, reviews, setReviews, company } = useOrderForm();
+  const { setStep, client, reviews, setReviews, company } = useOrderForm();
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
     "Manually Add Review"
   );
@@ -41,6 +41,14 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
     );
     return _filteredCompanyReviews;
   }, [companyReviews, reviews]);
+
+  const reviewsCount = useMemo(() => {
+    const manualReviews = reviews.filter((item) => !item.google_review_id);
+    const manual = manualReviews.length;
+    const selected = reviews.length - manual;
+
+    return { manual, selected };
+  }, [reviews]);
 
   const handleGetReviews = () => {
     getCompanyReviews({ url: company.url, quantity: noOfReviews });
@@ -95,6 +103,20 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
           reviews={reviews}
           handleDeleteLocal={handleDeleteReview}
         />
+        <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-row sm:justify-end gap-y-2 sm:gap-x-8">
+          <span className="font-semibold text-sm">
+            Selected Reviews: {reviewsCount.selected}
+          </span>
+          <span className="font-semibold text-sm">
+            Manual Reviews: {reviewsCount.manual}
+          </span>
+          <span className="font-semibold text-sm">
+            Total Reviews: {reviews.length}
+          </span>
+          <span className="font-semibold text-sm">
+            Total Cost: {reviews.length * client.unit_cost}
+          </span>
+        </div>
       </div>
 
       <div className="mt-8 p-3 inline-flex flex-wrap gap-3 border border-grGray-dark shrink-0">
@@ -164,15 +186,15 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
           }`}
         >
           {selectedMethod === "Manually Add Review" && (
-            <div className="flex gap-4 items-end">
-              <div>
+            <div className="flex gap-4 items-end flex-wrap w-full">
+              <div className="sm:max-w-[20rem] w-full">
                 <label
                   htmlFor="reviewer_name"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Name
                 </label>
-                <div className="w-[20rem] mt-2">
+                <div className="mt-2">
                   <input
                     type="text"
                     id="reviewer_name"
@@ -186,6 +208,7 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
                 type="button"
                 variant="black"
                 onClick={() => handleAddReview()}
+                className="max-sm:w-full"
               >
                 Add Review
               </Button>
