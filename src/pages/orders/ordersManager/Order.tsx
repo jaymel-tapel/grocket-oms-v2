@@ -214,10 +214,12 @@ const Order: React.FC = () => {
   useEffect(() => {
     if (order && !order.company) {
       if (order?.client.companies.length > 0) {
+        setNewCompanyId(order.client.companies[0].id);
         setNewCompanies(order.client.companies);
         setSelectedCompany(order.client.companies[0]);
       }
     } else if (order && order.company) {
+      setNewCompanyId(order.client.companies[0].id);
       setNewCompanies(order.client.companies);
       setSelectedCompany(order.client.companies[0]);
     }
