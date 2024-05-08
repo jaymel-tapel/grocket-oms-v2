@@ -145,126 +145,132 @@ const OrderReviewsTable: React.FC<Props> = ({
 
   return (
     <div>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {!isNewOrder && (
-              <TableHeadCell>
-                <input
-                  id={"all"}
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
-                  checked={areAllReviewsChecked}
-                  onChange={handleCheckAllReviews}
-                />
-              </TableHeadCell>
-            )}
-            {COLUMNS.map((col, index) => {
-              if (isNewOrder && index === 0) return;
-              return <TableHeadCell key={index}>{col}</TableHeadCell>;
-            })}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {reviews.length === 0 && (
+      <div className="max-h-[209.6px] overflow-y-auto">
+        <Table>
+          <TableHead>
             <TableRow>
-              <TableBodyCell className="text-center" colSpan={6}>
-                <p className="text-sm text-gray-400">No data found.</p>
-                <p className="text-sm text-gray-400">
-                  Add a review to continue.
-                </p>
-              </TableBodyCell>
+              {!isNewOrder && (
+                <TableHeadCell>
+                  <input
+                    id={"all"}
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
+                    checked={areAllReviewsChecked}
+                    onChange={handleCheckAllReviews}
+                  />
+                </TableHeadCell>
+              )}
+              {COLUMNS.map((col, index) => {
+                if (isNewOrder && index === 0) return;
+                return <TableHeadCell key={index}>{col}</TableHeadCell>;
+              })}
             </TableRow>
-          )}
-
-          {reviews.map((review, reviewIndex) => {
-            const isChecked = checkBoxes[reviewIndex]?.checked || false;
-            return (
-              <TableRow key={reviewIndex}>
-                {!isNewOrder && (
-                  <>
-                    <TableBodyCell>
-                      {review.id && (
-                        <input
-                          id={review.name}
-                          type="checkbox"
-                          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
-                          checked={isChecked}
-                          onChange={() => handleCheckReview(review.id)}
-                        />
-                      )}
-                    </TableBodyCell>
-                    <TableBodyCell>{review.id}</TableBodyCell>
-                  </>
-                )}
-                <TableBodyCell>{review.name}</TableBodyCell>
-                <TableBodyCell>
-                  {!review.id ? (
-                    <span>{review.status}</span>
-                  ) : isUpdating && identifier === review.id ? (
-                    <span className="flex items-center gap-2">
-                      <Spinner />
-                      {review.status}
-                    </span>
-                  ) : (
-                    <Popover>
-                      <PopoverAnchor asChild>
-                        <PopoverTrigger asChild>
-                          <span className="cursor-pointer flex items-center gap-2">
-                            {review.status}
-                            <ChevronDown className="h-4 w-4" />
-                          </span>
-                        </PopoverTrigger>
-                      </PopoverAnchor>
-                      <PopoverContent className="max-w-80" align="start">
-                        <div className="flex flex-wrap gap-4">
-                          {REVIEW_STATUS.map((status, statusIndex) => {
-                            const isActiveStatus =
-                              status.payload === review.status;
-                            return (
-                              <Pill
-                                key={statusIndex}
-                                bgColor={status.color}
-                                variant={isActiveStatus ? "default" : "outline"}
-                                className="cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleReviewStatusChange(
-                                    status.payload,
-                                    review
-                                  );
-                                }}
-                              >
-                                {status.label}
-                              </Pill>
-                            );
-                          })}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                </TableBodyCell>
-                <TableBodyCell>
-                  {review?.google_review_id ? "Selected" : "Manual"}
-                </TableBodyCell>
-                <TableBodyCell
-                  className="text-[#DC3545] cursor-pointer font-medium whitespace-nowrap"
-                  onClick={() => handleDeleteClick(review.id, reviewIndex)}
-                >
-                  {identifier === review.id && isPending ? (
-                    <Spinner />
-                  ) : (
-                    <TrashIcon
-                      className="h-4 w-4 text-red-500 cursor-pointer"
-                      onClick={() => handleDeleteClick(review.id, reviewIndex)}
-                    />
-                  )}
+          </TableHead>
+          <TableBody>
+            {reviews.length === 0 && (
+              <TableRow>
+                <TableBodyCell className="text-center" colSpan={6}>
+                  <p className="text-sm text-gray-400">No data found.</p>
+                  <p className="text-sm text-gray-400">
+                    Add a review to continue.
+                  </p>
                 </TableBodyCell>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            )}
+
+            {reviews.map((review, reviewIndex) => {
+              const isChecked = checkBoxes[reviewIndex]?.checked || false;
+              return (
+                <TableRow key={reviewIndex}>
+                  {!isNewOrder && (
+                    <>
+                      <TableBodyCell>
+                        {review.id && (
+                          <input
+                            id={review.name}
+                            type="checkbox"
+                            className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
+                            checked={isChecked}
+                            onChange={() => handleCheckReview(review.id)}
+                          />
+                        )}
+                      </TableBodyCell>
+                      <TableBodyCell>{review.id}</TableBodyCell>
+                    </>
+                  )}
+                  <TableBodyCell>{review.name}</TableBodyCell>
+                  <TableBodyCell>
+                    {!review.id ? (
+                      <span>{review.status}</span>
+                    ) : isUpdating && identifier === review.id ? (
+                      <span className="flex items-center gap-2">
+                        <Spinner />
+                        {review.status}
+                      </span>
+                    ) : (
+                      <Popover>
+                        <PopoverAnchor asChild>
+                          <PopoverTrigger asChild>
+                            <span className="cursor-pointer flex items-center gap-2">
+                              {review.status}
+                              <ChevronDown className="h-4 w-4" />
+                            </span>
+                          </PopoverTrigger>
+                        </PopoverAnchor>
+                        <PopoverContent className="max-w-80" align="start">
+                          <div className="flex flex-wrap gap-4">
+                            {REVIEW_STATUS.map((status, statusIndex) => {
+                              const isActiveStatus =
+                                status.payload === review.status;
+                              return (
+                                <Pill
+                                  key={statusIndex}
+                                  bgColor={status.color}
+                                  variant={
+                                    isActiveStatus ? "default" : "outline"
+                                  }
+                                  className="cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReviewStatusChange(
+                                      status.payload,
+                                      review
+                                    );
+                                  }}
+                                >
+                                  {status.label}
+                                </Pill>
+                              );
+                            })}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </TableBodyCell>
+                  <TableBodyCell>
+                    {review?.google_review_id ? "Selected" : "Manual"}
+                  </TableBodyCell>
+                  <TableBodyCell
+                    className="text-[#DC3545] cursor-pointer font-medium whitespace-nowrap"
+                    onClick={() => handleDeleteClick(review.id, reviewIndex)}
+                  >
+                    {identifier === review.id && isPending ? (
+                      <Spinner />
+                    ) : (
+                      <TrashIcon
+                        className="h-4 w-4 text-red-500 cursor-pointer"
+                        onClick={() =>
+                          handleDeleteClick(review.id, reviewIndex)
+                        }
+                      />
+                    )}
+                  </TableBodyCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
 
       {isOneReviewChecked && (
         <div className="my-8 flex justify-between">
