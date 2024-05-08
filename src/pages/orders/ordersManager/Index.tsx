@@ -245,7 +245,7 @@ const Index = () => {
               label="Start Date:"
               value={dateValue.from}
               onChange={(date) => {
-                toast.error(date, { duration: 10 });
+                toast.success(date);
                 handleDateChange("from", date);
               }}
             />
@@ -253,7 +253,7 @@ const Index = () => {
               label="End Date:"
               value={dateValue.to}
               onChange={(date) => {
-                toast.error(date, { duration: 10 });
+                toast.success(date);
                 handleDateChange("to", date);
               }}
             />
