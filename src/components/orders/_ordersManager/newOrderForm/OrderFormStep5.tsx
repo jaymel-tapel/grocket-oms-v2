@@ -177,6 +177,13 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
           <span className="font-medium">Manual Reviews</span>
           <span>{reviewsAmount.manual}</span>
         </div>
+
+        <div className="mt-4 pt-4 flex flex-col sm:flex-row sm:justify-end sm:col-span-6 gap-4 sm:text-right border-t">
+          <span className="font-semibold">Total Reviews: {reviews.length}</span>
+          <span className="font-semibold">
+            Total Cost: {reviews.length * client.unit_cost}
+          </span>
+        </div>
       </div>
 
       <div className="my-8 grid grid-cols-2 sm:grid-cols-6 gap-4">
@@ -232,14 +239,6 @@ const OrderFormStep5: React.FC<FormProps> = ({ children }) => {
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
             />
           </div>
-        </div>
-
-        <div className="max-sm:mt-4 sm:text-right">
-          <span className="font-bold">Total</span>
-        </div>
-
-        <div className="max-sm:mt-4 text-right pr-4">
-          <span>{reviews.length}</span>
         </div>
       </div>
 
