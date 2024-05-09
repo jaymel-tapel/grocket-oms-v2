@@ -30,8 +30,8 @@ const DashboardAdmin: React.FC = () => {
 
   const dateValue = useMemo(() => {
     return {
-      from: startRange ? new Date(startRange) : null,
-      to: endRange ? new Date(endRange) : null,
+      from: startRange ? new Date(startRange.replace(/-/g, "/")) : null,
+      to: endRange ? new Date(endRange.replace(/-/g, "/")) : null,
     };
   }, [startRange, endRange]);
 
