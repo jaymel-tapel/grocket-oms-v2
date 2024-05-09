@@ -16,22 +16,22 @@ import CustomDatePicker from "../../components/tools/customDatePicker/CustomDate
 dayjs.extend(utc);
 
 const DashboardSeller: React.FC = () => {
-  const today = dayjs().format("YYYY-MM-DD");
-  const thirtyDaysAgo = dayjs().subtract(7, "day").format("YYYY-MM-DD");
+  const today = dayjs().format("MM/DD/YYYY");
+  const thirtyDaysAgo = dayjs().subtract(7, "day").format("MM/DD/YYYY");
 
   const [selectedBrand] = useAtom(brandAtom);
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
   const [endRange, setEndRange] = useState(today);
   const { statsData, graphData } = useGetSellerDashboard({
-    startRange: dayjs(startRange).format("MM-DD-YYYY"),
-    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    startRange,
+    endRange,
     code: selectedBrand?.code,
   });
 
   const dateValue = useMemo(() => {
     return {
-      from: startRange ? new Date(startRange) : null,
-      to: endRange ? new Date(endRange) : null,
+      from: startRange ? new Date(startRange.replace(/-/g, "/")) : null,
+      to: endRange ? new Date(endRange.replace(/-/g, "/")) : null,
     };
   }, [startRange, endRange]);
 

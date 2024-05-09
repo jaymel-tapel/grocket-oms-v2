@@ -16,20 +16,9 @@ import CustomDatePicker from "../../components/tools/customDatePicker/CustomDate
 
 dayjs.extend(utc);
 
-// const filtersList = [
-//   { id: "currentWeek", label: "Current Week" },
-//   { id: "currentMonth", label: "Current Month" },
-//   { id: "last90days", label: "Last 90 days" },
-//   { id: "custom", label: "Custom" },
-// ];
-
 const OrdersReports = () => {
-  // const [searchFilter, setSearchFilter] = useState({
-  //   id: "currentWeek",
-  //   label: "Current Week",
-  // });
-  const today = dayjs().format("YYYY-MM-DD");
-  const thirtyDaysAgo = dayjs().subtract(30, "day").format("YYYY-MM-DD");
+  const today = dayjs().format("MM/DD/YYYY");
+  const thirtyDaysAgo = dayjs().subtract(7, "day").format("MM/DD/YYYY");
 
   const [selectedBrand] = useAtom(brandAtom);
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
@@ -37,14 +26,14 @@ const OrdersReports = () => {
 
   const { data: reportData } = useGetOrderReport({
     code: selectedBrand?.code,
-    startRange: dayjs(startRange).format("MM-DD-YYYY"),
-    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    startRange,
+    endRange,
   });
 
   const { data: orderGraph } = useGetOrderGraph({
     code: selectedBrand?.code,
-    startRange: dayjs(startRange).format("MM-DD-YYYY"),
-    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    startRange,
+    endRange,
   });
 
   // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
@@ -53,8 +42,8 @@ const OrdersReports = () => {
 
   const dateValue = useMemo(() => {
     return {
-      from: startRange ? new Date(startRange) : null,
-      to: endRange ? new Date(endRange) : null,
+      from: startRange ? new Date(startRange.replace(/-/g, "/")) : null,
+      to: endRange ? new Date(endRange.replace(/-/g, "/")) : null,
     };
   }, [startRange, endRange]);
 
