@@ -13,7 +13,6 @@ import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomDatePicker from "../../../components/tools/customDatePicker/CustomDatePicker";
-import toast from "react-hot-toast";
 
 const PAYMENT_STATUS = [
   { label: "New", payload: "NEW" },
@@ -244,18 +243,12 @@ const Index = () => {
             <CustomDatePicker
               label="Start Date:"
               value={dateValue.from}
-              onChange={(date) => {
-                toast.success(date);
-                handleDateChange("from", date);
-              }}
+              onChange={(date) => handleDateChange("from", date)}
             />
             <CustomDatePicker
               label="End Date:"
               value={dateValue.to}
-              onChange={(date) => {
-                toast.success(date);
-                handleDateChange("to", date);
-              }}
+              onChange={(date) => handleDateChange("to", date)}
             />
           </div>
         </div>
