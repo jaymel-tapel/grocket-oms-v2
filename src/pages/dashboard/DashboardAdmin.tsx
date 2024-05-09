@@ -16,15 +16,15 @@ import CustomDatePicker from "../../components/tools/customDatePicker/CustomDate
 dayjs.extend(utc);
 
 const DashboardAdmin: React.FC = () => {
-  const today = dayjs().format("YYYY-MM-DD");
-  const thirtyDaysAgo = dayjs().subtract(7, "day").format("YYYY-MM-DD");
+  const today = dayjs().format("MM-DD-YYYY");
+  const thirtyDaysAgo = dayjs().subtract(7, "day").format("MM-DD-YYYY");
 
   const [selectedBrand] = useAtom(brandAtom);
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
   const [endRange, setEndRange] = useState(today);
   const { statsData, graphData } = useGetAdminDashboard({
-    startRange: dayjs(startRange).format("MM/DD/YYYY"),
-    endRange: dayjs(endRange).format("MM/DD/YYYY"),
+    startRange: dayjs(startRange).format("MM-DD-YYYY"),
+    endRange: dayjs(endRange).format("MM-DD-YYYY"),
     code: selectedBrand?.code,
   });
 
