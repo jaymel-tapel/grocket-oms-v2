@@ -16,8 +16,8 @@ import CustomDatePicker from "../../components/tools/customDatePicker/CustomDate
 dayjs.extend(utc);
 
 const SellerReports: React.FC = () => {
-  const today = dayjs().format("YYYY-MM-DD");
-  const thirtyDaysAgo = dayjs().subtract(30, "day").format("YYYY-MM-DD");
+  const today = dayjs().format("MM/DD/YYYY");
+  const thirtyDaysAgo = dayjs().subtract(7, "day").format("MM/DD/YYYY");
 
   const [selectedBrand] = useAtom(brandAtom);
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
@@ -25,14 +25,14 @@ const SellerReports: React.FC = () => {
 
   const { data: statsData } = useGetSellerStats({
     code: selectedBrand?.code,
-    startRange: dayjs(startRange).format("MM-DD-YYYY"),
-    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    startRange,
+    endRange,
   });
 
   const { data: reportData } = useGetSellerReport({
     code: selectedBrand?.code,
-    startRange: dayjs(startRange).format("MM-DD-YYYY"),
-    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    startRange,
+    endRange,
   });
 
   // const handleChangeFilter = (newFilter: (typeof filtersList)[number]) => {
@@ -41,8 +41,8 @@ const SellerReports: React.FC = () => {
 
   const dateValue = useMemo(() => {
     return {
-      from: startRange ? new Date(startRange) : null,
-      to: endRange ? new Date(endRange) : null,
+      from: startRange ? new Date(startRange.replace(/-/g, "/")) : null,
+      to: endRange ? new Date(endRange.replace(/-/g, "/")) : null,
     };
   }, [startRange, endRange]);
 

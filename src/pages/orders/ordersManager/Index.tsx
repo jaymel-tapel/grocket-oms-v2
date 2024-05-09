@@ -67,8 +67,8 @@ const Index = () => {
 
   const dateValue = useMemo(() => {
     return {
-      from: dateFrom ? new Date(dateFrom) : null,
-      to: dateTo ? new Date(dateTo) : null,
+      from: dateFrom ? new Date(dateFrom.replace(/-/g, "/")) : null,
+      to: dateTo ? new Date(dateTo.replace(/-/g, "/")) : null,
     };
   }, [dateFrom, dateTo]);
 
