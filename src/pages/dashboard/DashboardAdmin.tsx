@@ -12,7 +12,6 @@ import utc from "dayjs/plugin/utc";
 import { useAtom } from "jotai/react";
 import { brandAtom } from "../../services/queries/brandsQueries";
 import CustomDatePicker from "../../components/tools/customDatePicker/CustomDatePicker";
-import toast from "react-hot-toast";
 
 dayjs.extend(utc);
 
@@ -24,12 +23,10 @@ const DashboardAdmin: React.FC = () => {
   const [startRange, setStartRange] = useState(thirtyDaysAgo);
   const [endRange, setEndRange] = useState(today);
   const { statsData, graphData } = useGetAdminDashboard({
-    startRange: dayjs(startRange).format("MM-DD-YYYY"),
-    endRange: dayjs(endRange).format("MM-DD-YYYY"),
+    startRange: dayjs(startRange).format("MM/DD/YYYY"),
+    endRange: dayjs(endRange).format("MM/DD/YYYY"),
     code: selectedBrand?.code,
   });
-
-  toast.success(startRange);
 
   const dateValue = useMemo(() => {
     return {
