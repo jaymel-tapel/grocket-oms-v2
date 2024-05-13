@@ -3,7 +3,11 @@ import { debounce } from "lodash";
 import { ordersManagerIndexRoute } from "../../routeTree";
 import { useGetAllOrders } from "../../../services/queries/orderQueries";
 import { useNavigate } from "@tanstack/react-router";
-import { OrdersFiltersType, ordersFilters } from "../../routeFilters";
+import {
+  OrdersFiltersType,
+  ordersFilters,
+  ordersFiltersSeller,
+} from "../../routeFilters";
 import OrdersManagerTable from "../../../components/orders/_ordersManager/OrdersManagerTable";
 import FiltersButton from "../../../components/tools/buttons/FiltersButton";
 import SearchInput from "../../../components/tools/searchInput/SearchInput";
@@ -13,6 +17,16 @@ import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomDatePicker from "../../../components/tools/customDatePicker/CustomDatePicker";
+import AutoComplete from "../../../components/tools/autoComplete/AutoComplete";
+import {
+  Seller,
+  useGetAllSellers,
+} from "../../../services/queries/sellerQueries";
+import { useUserAuthContext } from "../../../context/UserAuthContext";
+// import {
+//   Client,
+//   useGetClientBySellers,
+// } from "../../../services/queries/clientsQueries";
 
 const PAYMENT_STATUS = [
   { label: "New", payload: "NEW" },
@@ -35,6 +49,8 @@ const REVIEW_STATUS = [
 const Index = () => {
   const navigate = useNavigate();
   const searchOrders = ordersManagerIndexRoute.useSearch();
+  const { user } = useUserAuthContext();
+  const { data: sellers } = useGetAllSellers();
   const { data, isLoading, isFetching } = useGetAllOrders(searchOrders);
 
   const keyword = searchOrders?.keyword;
@@ -44,6 +60,8 @@ const Index = () => {
 
   const [selectedBrand] = useAtom(brandAtom);
   const [keywordDraft, setKeywordDraft] = useState(keyword ?? "");
+
+  // const { data: clients } = useGetClientBySellers({});
 
   const orders = useMemo(() => {
     if (!data)
@@ -197,37 +215,21 @@ const Index = () => {
       <div className="bg-white">
         <div className="p-8 gap-y-4 flex justify-between items-end max-md:flex-col">
           <div className="flex gap-4 items-center">
-            {filter === "payment_status" || filter === "review_status" ? (
-              <select
-                onChange={(e) => handleSelectDropdown(e.target.value)}
-                className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-              >
-                {filter === "payment_status" &&
-                  PAYMENT_STATUS.map((status, index) => (
-                    <option value={status.payload} key={index}>
-                      {status.label}
-                    </option>
-                  ))}
-                {filter === "review_status" &&
-                  REVIEW_STATUS.map((status, index) => (
-                    <option value={status.payload} key={index}>
-                      {status.label}
-                    </option>
-                  ))}
-              </select>
-            ) : (
-              <SearchInput
-                placeholder="Search here..."
-                className="w-full min-md:max-w-[20rem]"
-                grayBg={true}
-                value={keywordDraft}
-                onChange={(e) => setKeywordDraft(e.target.value)}
-              />
-            )}
+            <FilterInput
+              filter={filter}
+              handleSelectDropdown={handleSelectDropdown}
+              sellers={sellers}
+              keywordDraft={keywordDraft}
+              setKeywordDraft={setKeywordDraft}
+            />
             <FiltersButton
               activeFilter={filter}
               label={activeFilterLabel}
-              filterOptions={ordersFilters}
+              filterOptions={
+                user && user.role === "SELLER"
+                  ? ordersFiltersSeller
+                  : ordersFilters
+              }
               handleChange={handleFilterChange}
             />
             <Button
@@ -283,6 +285,88 @@ const Index = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+type FilterProps = {
+  filter?: OrdersFiltersType;
+  handleSelectDropdown: (string) => void;
+  setKeywordDraft: (string) => void;
+  sellers?: Seller[];
+  // clients?: Client[];
+  keywordDraft: string;
+};
+
+const FilterInput = ({
+  filter,
+  handleSelectDropdown = () => {
+    return;
+  },
+  sellers = [],
+  // clients = [],
+  keywordDraft,
+  setKeywordDraft,
+}: FilterProps) => {
+  const showInput = useMemo(() => {
+    if (filter === "payment_status" || filter === "review_status") {
+      return "select";
+    } else if (filter === "seller") {
+      return "autocomplete";
+    } else return "";
+  }, [filter]);
+
+  return (
+    <>
+      {showInput === "select" && (
+        <select
+          onChange={(e) => handleSelectDropdown(e.target.value)}
+          className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+        >
+          {filter === "payment_status" &&
+            PAYMENT_STATUS.map((status, index) => (
+              <option value={status.payload} key={index}>
+                {status.label}
+              </option>
+            ))}
+          {filter === "review_status" &&
+            REVIEW_STATUS.map((status, index) => (
+              <option value={status.payload} key={index}>
+                {status.label}
+              </option>
+            ))}
+        </select>
+      )}
+
+      {showInput === "autocomplete" && filter === "seller" && (
+        <AutoComplete
+          suggestions={sellers?.map((seller) => seller.email ?? "") ?? []}
+          type="email"
+          value={keywordDraft}
+          handleChange={(value) => setKeywordDraft(value)}
+          handleSelect={(value) => setKeywordDraft(value)}
+        />
+      )}
+
+      {/* {showInput === "autocomplete" && filter === "client" && (
+        <AutoComplete
+          suggestions={clients?.map((client) => client.email ?? "") ?? []}
+          type="email"
+          value={keywordDraft}
+          handleChange={(value) => setKeywordDraft(value)}
+          handleSelect={(value) => setKeywordDraft(value)}
+        />
+      )} */}
+
+      {showInput === "" && (
+        <SearchInput
+          placeholder="Search here..."
+          className="w-full min-md:max-w-[20rem]"
+          grayBg={true}
+          value={keywordDraft}
+          onChange={(e) => setKeywordDraft(e.target.value)}
+        />
+      )}
+    </>
   );
 };
 
