@@ -23,7 +23,6 @@ export const ordersSearchSchema = z
         "payment_status",
         "review_status",
         "reviewer_name",
-        "client",
         "seller",
         "remarks",
       ])
