@@ -13,8 +13,8 @@ import { useEffect } from "react";
 
 const TaskSchema = z.object({
   name: z.string(),
-  task_date: z.string().nullable(),
-  email: z.string().nullable(),
+  task_date: z.string().min(1, { message: "Date required" }).nullable(),
+  client_email: z.string().optional().nullable(),
   title: z.string().min(1, { message: "Task name required" }),
   remarks: z.string().optional().nullable(),
   description: z.string(),
@@ -61,13 +61,13 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
             : null,
         note: tasks?.taskNotes[0]?.note || "",
         orderId: tasks?.orderId,
-        email: tasks?.client.email,
-        name: tasks?.order.company.name
+        client_email: tasks?.client?.email,
+        name: tasks?.order?.company?.name
       }
       : orderParams
         ? {
           orderId: orderParams.orderId,
-          email: orderParams.clientEmail ?? "",
+          client_email: orderParams.clientEmail ?? "",
           name: orderParams.clientCompanyName ?? "",
         }
         : undefined,
@@ -85,8 +85,8 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
             : null,
         note: tasks?.taskNotes[0]?.note || "",
         orderId: tasks?.orderId,
-        email: tasks.client.email,
-        name: tasks?.order.company.name
+        client_email: tasks?.client?.email || "",
+        name: tasks?.order?.company?.name || "",
       });
     }
   }, [taskId, tasks, reset]);
@@ -97,6 +97,11 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
     if (!data.orderId) {
       delete payload.orderId;
     }
+
+    if (!data.client_email) {
+      delete payload.client_email
+    }
+
 
     try {
       const response = taskId
@@ -180,6 +185,7 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
                     type="text"
                     id="taskName"
                     {...register("name")}
+                    disabled
                     className={`block w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
                   />
                 </div>
@@ -195,7 +201,7 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
                   <input
                     type="text"
                     id="taskEmail"
-                    {...register("email")}
+                    {...register("client_email")}
 
                     className={`block w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
                   />
