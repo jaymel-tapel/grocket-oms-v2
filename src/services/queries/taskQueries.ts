@@ -22,7 +22,7 @@ export type Tasks = {
   title: string;
   description: string;
   remarks?: string;
-  email: string;
+  client_email: string;
   status: string;
   note: string;
   taskNotes: { note: string } /* taskNote here is for taskForm */;

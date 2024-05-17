@@ -316,11 +316,11 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
                   </div>
                   <div className="flex gap-2 mt-4">
                     {LinkIcon}
-                    <p className="text-black">Order {task.task.orderId}</p>
+                    <p className="text-black">Order {task.task?.orderId}</p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     {BuildingIcon}
-                    <p className="text-black">{task.task.order.company.name}</p>
+                    <p className="text-black">{task.task.order?.company?.name}</p>
                   </div>
 
                 </div>
