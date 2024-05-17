@@ -9,6 +9,7 @@ export const taskDashboardSchema = z.object({
 export const taskSearchParams = z.object({
   orderId: z.coerce.number().optional(),
   clientEmail: z.string().optional(),
+  clientCompanyName: z.string().optional(),
 }).parse;
 
 export const ordersSearchSchema = z

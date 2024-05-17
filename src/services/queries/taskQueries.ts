@@ -18,22 +18,31 @@ export type Tasks = {
   taskId: number;
   orderId: number;
   name: string;
-  task_date: string;
+  task_date?: string;
   title: string;
   description: string;
-  remarks: string;
+  remarks?: string;
   email: string;
   status: string;
   note: string;
   taskNotes: { note: string } /* taskNote here is for taskForm */;
-  task: { taskNotes: { note: string } } /* This one is for dashboard */;
+  task: {
+    taskNotes: { note: string };
+    orderId: string;
+    order: {
+      company: {
+        name: string;
+        url: string;
+      };
+    };
+  } /* This one is for dashboard */;
   taskAccountant: {
     taskId: number;
     orderId: number;
     description: string;
     email: string;
-    remarks: string;
-    task_date: string;
+    remarks?: string;
+    task_date?: string;
     status: string;
     title: string;
   } | null;
@@ -42,11 +51,19 @@ export type Tasks = {
     orderId: number;
     description: string;
     email: string;
-    remarks: string;
+    remarks?: string;
     status: string;
-    task_date: string;
+    task_date?: string;
     title: string;
   } | null;
+  client: {
+    email: string;
+  };
+  order: {
+    company: {
+      name: string;
+    };
+  };
 };
 
 type TaskResponse = {

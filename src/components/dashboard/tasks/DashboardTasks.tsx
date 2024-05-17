@@ -237,9 +237,8 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
           {tasksToDisplay.map((task, i) => (
             <div
               key={i}
-              className={` ${
-                hiddenTasks.includes(task.taskId) ? "hidden" : ""
-              }  flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border  border-stroke hover:shadow-lg shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1 `}
+              className={` ${hiddenTasks.includes(task.taskId) ? "hidden" : ""
+                }  flex overflow-hidden justify-between gap-96 h-auto rounded-sm mt-9 border  border-stroke hover:shadow-lg shadow-default max-md:p-6 md:p-6 xl:p-9 bg-white max-lg:grid max-lg:grid-cols-1  max-lg:gap-2 max-md:grip-cols-1 `}
             >
               <div className="grid grid-cols-2 gap-56  max-lg:grid-cols-1 max-lg:gap-0 ">
                 <div className="max-lg:gap-0">
@@ -292,8 +291,8 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
                               icon === EnvelopeIcon
                                 ? "/inbox"
                                 : icon === PaperAirplaneIcon
-                                ? "/inbox"
-                                : undefined
+                                  ? "/inbox"
+                                  : undefined
                             }
                             params={{ taskId: task.taskId }}
                             className="mt-2"
@@ -308,21 +307,22 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
                   </div>
                 </div>
 
-                <div className="w-96 ml-72 max-lg:ml-0 max-md:gap-10 max-lg:pb-10">
+                <div className="w-96 ml-36 max-lg:ml-0 max-md:gap-10 max-lg:pb-10">
                   <div className="flex gap-2 ">
                     {CalendarIcon}
                     <p className="text-black">
-                      {dayjs(task.task_date).format("YYYY-DD-MM")}
+                      {task.task_date ? dayjs(task.task_date).format("YYYY-DD-MM") : ' '}
                     </p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     {LinkIcon}
-                    <p className="text-black">Order {task.taskId}</p>
+                    <p className="text-black">Order {task.task.orderId}</p>
                   </div>
                   <div className="flex gap-2 mt-4">
                     {BuildingIcon}
-                    <p className="text-black">{task.name}</p>
+                    <p className="text-black">{task.task.order.company.name}</p>
                   </div>
+
                 </div>
               </div>
               {task.task.taskNotes[0]?.note && (

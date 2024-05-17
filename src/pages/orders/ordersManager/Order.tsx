@@ -186,6 +186,7 @@ const Order: React.FC = () => {
       search: {
         orderId: order?.id,
         clientEmail: order?.client?.email,
+        clientCompanyName: order?.company.name,
       },
     });
   };
@@ -199,8 +200,8 @@ const Order: React.FC = () => {
         companyId: newCompanyId
           ? newCompanyId
           : order.companyId
-          ? order.companyId
-          : order.client.companies[0].id,
+            ? order.companyId
+            : order.client.companies[0].id,
         brandId: order.brandId,
       },
       orderId,
