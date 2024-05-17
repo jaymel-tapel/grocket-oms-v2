@@ -328,18 +328,21 @@ const DashboardTasks: React.FC<tasksProps> = ({ pagination, completed }) => {
               {task.task.taskNotes[0]?.note && (
                 <div className="bg-grYellow-base m-[-2.3rem] max-lg:m-[-2.3rem] max-lg:mb-[-1.5rem] max-lg:pl-5 max-lg:pb-5 ">
                   <div className="text-black text-base text mt-9 w-56 ml-4 ">
-                    <p>
-                      <label className="text-grYellow-dark">Remarks: </label>
-                      {task.remarks}
-                    </p>
-                    <p className="mt-6 ">
-                      <label className="text-grYellow-dark">
+                    <div>
+                      <p className="text-grYellow-dark">Remarks: </p>
+                      <label>{task.remarks}</label>
+
+                    </div>
+                    <div className="mt-6 ">
+                      <p className="text-grYellow-dark">
                         Personal Note:{" "}
+                      </p>
+                      <label>
+                        {task.task.taskNotes[0]?.note.length > 55
+                          ? `${task.task.taskNotes[0]?.note.slice(0, 55)}...`
+                          : task.task.taskNotes[0]?.note}
                       </label>
-                      {task.task.taskNotes[0]?.note.length > 55
-                        ? `${task.task.taskNotes[0]?.note.slice(0, 55)}...`
-                        : task.task.taskNotes[0]?.note}
-                    </p>
+                    </div>
                   </div>
                 </div>
               )}
