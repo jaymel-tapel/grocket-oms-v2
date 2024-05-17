@@ -13,10 +13,10 @@ import { useEffect } from "react";
 
 const TaskSchema = z.object({
   name: z.string(),
-  task_date: z.string().min(1, { message: "Date required" }),
+  task_date: z.string().nullable(),
   email: z.string().nullable(),
   title: z.string().min(1, { message: "Task name required" }),
-  remarks: z.string(),
+  remarks: z.string().optional().nullable(),
   description: z.string(),
   note: z.string(),
   orderId: z.coerce.number().optional().nullable(),
@@ -29,11 +29,13 @@ type FormProps = {
   orderParams?: {
     orderId?: number;
     clientEmail?: string;
+    clientCompanyName?: string;
   };
 };
 
 const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
   const { data: tasks } = useGetTask(taskId);
+
 
   const navigate = useNavigate();
   const { mutateAsync: createTasks, isPending: isCreating } = useCreateTasks();
@@ -48,23 +50,27 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
     resolver: zodResolver(TaskSchema),
     defaultValues: taskId
       ? {
-          ...tasks?.taskAccountant,
-          ...tasks?.taskSeller,
-          task_date: tasks?.taskSeller?.task_date
-            ? new Date(tasks.taskSeller.task_date).toLocaleDateString("en-CA")
-            : tasks?.taskAccountant?.task_date
+        ...tasks?.taskAccountant,
+        ...tasks?.taskSeller,
+        task_date: tasks?.taskSeller?.task_date
+          ? new Date(tasks.taskSeller.task_date).toLocaleDateString("en-CA")
+          : tasks?.taskAccountant?.task_date
             ? new Date(tasks.taskAccountant.task_date).toLocaleDateString(
-                "en-CA"
-              )
-            : "",
-          note: tasks?.taskNotes[0]?.note || "",
-        }
+              "en-CA"
+            )
+            : null,
+        note: tasks?.taskNotes[0]?.note || "",
+        orderId: tasks?.orderId,
+        email: tasks?.client.email,
+        name: tasks?.order.company.name
+      }
       : orderParams
-      ? {
+        ? {
           orderId: orderParams.orderId,
           email: orderParams.clientEmail ?? "",
+          name: orderParams.clientCompanyName ?? "",
         }
-      : undefined,
+        : undefined,
   });
 
   useEffect(() => {
@@ -75,9 +81,12 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
         task_date: tasks?.taskSeller?.task_date
           ? new Date(tasks.taskSeller.task_date).toLocaleDateString("en-CA")
           : tasks?.taskAccountant?.task_date
-          ? new Date(tasks.taskAccountant.task_date).toLocaleDateString("en-CA")
-          : "",
+            ? new Date(tasks.taskAccountant.task_date).toLocaleDateString("en-CA")
+            : null,
         note: tasks?.taskNotes[0]?.note || "",
+        orderId: tasks?.orderId,
+        email: tasks.client.email,
+        name: tasks?.order.company.name
       });
     }
   }, [taskId, tasks, reset]);
@@ -137,7 +146,6 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
                     {...register("task_date")}
                     className={`block w-11/12 mb-4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
                   />
-
                   <span className="text-xs italic text-red-500 mt-2">
                     {errors.task_date?.message}
                   </span>
@@ -155,6 +163,7 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
                     type="text"
                     id="orderId"
                     {...register("orderId")}
+
                     className={`block w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
                   />
                 </div>
@@ -187,6 +196,7 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
                     type="text"
                     id="taskEmail"
                     {...register("email")}
+
                     className={`block w-10/12 max-sm:w-11/12 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 `}
                   />
                 </div>
