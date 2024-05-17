@@ -13,7 +13,7 @@ import { useEffect } from "react";
 
 const TaskSchema = z.object({
   name: z.string(),
-  task_date: z.string().nullable(),
+  task_date: z.string().min(1, { message: "Date required" }).nullable(),
   client_email: z.string().optional().nullable(),
   title: z.string().min(1, { message: "Task name required" }),
   remarks: z.string().optional().nullable(),
@@ -61,7 +61,7 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
             : null,
         note: tasks?.taskNotes[0]?.note || "",
         orderId: tasks?.orderId,
-        client_email: tasks?.client.email,
+        client_email: tasks?.client?.email,
         name: tasks?.order?.company?.name
       }
       : orderParams
@@ -85,7 +85,7 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
             : null,
         note: tasks?.taskNotes[0]?.note || "",
         orderId: tasks?.orderId,
-        client_email: tasks?.client.email || "",
+        client_email: tasks?.client?.email || "",
         name: tasks?.order?.company?.name || "",
       });
     }
@@ -98,9 +98,10 @@ const TaskForm: React.FC<FormProps> = ({ taskId = 0, orderParams }) => {
       delete payload.orderId;
     }
 
-    if (data.task_date) {
-      payload.task_date = null;
+    if (!data.client_email) {
+      delete payload.client_email
     }
+
 
     try {
       const response = taskId
