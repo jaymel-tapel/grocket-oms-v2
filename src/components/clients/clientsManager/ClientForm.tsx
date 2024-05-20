@@ -175,7 +175,12 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           </div>
         )} */}
         {activeTab === "Client Information" && (
-          <ClientFormInformation sellerEmail={client?.seller_email} register={register} errors={errors} />
+          <ClientFormInformation
+            user={user}
+            activeTab={activeTab}
+            sellerEmail={client?.seller_email}
+            register={register}
+            errors={errors} />
         )}
 
         {client && activeTab === "Companies" && (
