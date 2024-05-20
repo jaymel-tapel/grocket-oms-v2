@@ -213,15 +213,18 @@ const Order: React.FC = () => {
 
   useEffect(() => {
     if (order && !order.company) {
+      setNewCompanyId(null);
+      setNewCompanies([]);
+      setSelectedCompany(undefined);
       if (order?.client.companies.length > 0) {
-        setNewCompanyId(order.client.companies[0].id);
+        // setNewCompanyId(order.client.companies[0].id);
         setNewCompanies(order.client.companies);
-        setSelectedCompany(order.client.companies[0]);
+        // setSelectedCompany(order.client.companies[0]);
       }
     } else if (order && order.company) {
-      setNewCompanyId(order.client.companies[0].id);
+      setNewCompanyId(order.company.id);
       setNewCompanies(order.client.companies);
-      setSelectedCompany(order.client.companies[0]);
+      setSelectedCompany(order.company);
     }
   }, [order]);
 
