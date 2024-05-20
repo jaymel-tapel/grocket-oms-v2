@@ -43,6 +43,7 @@ export type Client = {
   updatedAt: string;
   deletedAt: undefined | string;
   seller: Seller;
+  seller_email: string;
 };
 
 export type Industry = {
