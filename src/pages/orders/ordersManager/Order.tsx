@@ -20,8 +20,14 @@ import { useGetClientBySellers } from "../../../services/queries/clientsQueries"
 import { useGetAllSellers } from "../../../services/queries/sellerQueries";
 import { Company } from "../../../services/queries/companyQueries";
 import { useGetUserProfile } from "../../../services/queries/userQueries";
+import OrderLogs from "../../../components/orders/_ordersManager/orderInformation/OrderLogs";
 
-const VIEWS = ["Order Information", "Companies", "Reviews"] as const;
+const VIEWS = [
+  "Order Information",
+  "Companies",
+  "Reviews",
+  "Order Logs",
+] as const;
 type View = (typeof VIEWS)[number];
 
 const orderInformationSchema = z.object({
@@ -299,6 +305,10 @@ const Order: React.FC = () => {
               reviews={order.orderReviews}
               company={selectedCompany}
             />
+          )}
+
+          {activeTab === "Order Logs" && order && (
+            <OrderLogs logs={order.orderLogs} />
           )}
 
           <div className="mt-4 flex gap-4 flex-col md:flex-row justify-between">
