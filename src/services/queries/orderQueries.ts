@@ -17,6 +17,17 @@ const API_URL = import.meta.env.VITE_API_URL;
 const ORDERS_URL = API_URL + "/orders";
 const REVIEWS_URL = API_URL + "/order-reviews";
 
+export type OrderLog = {
+  id: number;
+  orderId: number;
+  by: string;
+  action: string;
+  email_type: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
+};
+
 export type Order = {
   id: number;
   client: Client;
@@ -41,6 +52,7 @@ export type Order = {
   invoice_image: string | null;
   orderReviewCount: number;
   orderReviews: PendingReview[];
+  orderLogs: OrderLog[];
   company: Company;
 };
 
