@@ -85,7 +85,7 @@ function ClientFormInformation(props) {
               )}
             </div>
           </div>
-          {props.activeTab === "Client Information" && props.user?.role !== "SELLER" && (
+          {props.activeTab === "Client Information" && (
             <div>
               <label
                 htmlFor="sellerEmail"
