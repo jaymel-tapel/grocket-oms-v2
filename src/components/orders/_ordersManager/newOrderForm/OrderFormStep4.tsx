@@ -163,6 +163,7 @@ const OrderFormStep4: React.FC<FormProps> = ({ children }) => {
                 type="button"
                 className="self-end"
                 onClick={handleGetReviews}
+                disabled={isFetchingCompanyReviews}
               >
                 Get Reviews
               </Button>
