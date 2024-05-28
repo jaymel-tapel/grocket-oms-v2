@@ -146,6 +146,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
                 variant="black"
                 type="button"
                 className="self-end"
+                disabled={isFetchingCompanyReviews}
                 onClick={handleGetReviews}
               >
                 Get Reviews
