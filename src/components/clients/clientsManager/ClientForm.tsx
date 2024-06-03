@@ -77,8 +77,8 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
       ? {
           name: client.name,
           email: client.email,
-          industryId: client.clientInfo.industryId,
-          sourceId: client.clientInfo.sourceId,
+          industryId: client.clientInfo.industryId ?? 41,
+          sourceId: client.clientInfo.sourceId ?? 1,
           default_unit_cost: client.clientInfo.default_unit_cost,
           phone: client.clientInfo.phone,
           thirdPartyId: client.clientInfo.thirdPartyId,
@@ -156,7 +156,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
   useEffect(() => {
     if (client) {
-      setSellerDraft(client.seller_email);
+      setSellerDraft(client.seller_email ?? client.seller.email);
     } else {
       setSellerDraft(user?.email ?? "");
     }
