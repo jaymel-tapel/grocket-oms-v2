@@ -172,9 +172,11 @@ const ClientsManagersTable: React.FC<TableProps> = ({
                       name={`client-${client.id}`}
                       type="checkbox"
                       checked={isChecked(client.id)}
+                      onChange={() => {
+                        handleCheck(client);
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleCheck(client);
                       }}
                       className="h-4 w-4 rounded border-gray-300 text-[#13C296] focus:ring-[#13C296]"
                     />

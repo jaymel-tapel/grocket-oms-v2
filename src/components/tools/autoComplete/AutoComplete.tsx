@@ -28,7 +28,7 @@ const AutoComplete: React.FC<Props> = (props) => {
     count: filteredSuggestions.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 41.6,
-    overscan: 5,
+    overscan: 100,
   });
 
   const virtualOptions = virtualizer.getVirtualItems();
@@ -87,7 +87,7 @@ const AutoComplete: React.FC<Props> = (props) => {
   };
 
   return (
-    <div ref={parentRef} className="w-full relative">
+    <div className="w-full relative">
       <input
         {...inputProps}
         autoComplete="off"
@@ -109,6 +109,7 @@ const AutoComplete: React.FC<Props> = (props) => {
       />
       {showSuggestions && (
         <ul
+          ref={parentRef}
           className="absolute z-10 left-0 right-0 max-h-48 overflow-auto border border-gray-300 bg-white"
           style={{
             height: `${virtualizer.getTotalSize()}px`,
