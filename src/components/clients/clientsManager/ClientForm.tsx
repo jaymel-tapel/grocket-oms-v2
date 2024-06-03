@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../tools/buttons/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ClientFormInformation from "./ClientFormInformation";
 import ClientFormCompanies from "./ClientFormCompanies";
 import {
@@ -27,6 +27,7 @@ import {
   DialogTrigger,
 } from "../../tools/dialog/Dialog";
 import Spinner from "../../tools/spinner/Spinner";
+import { useGetAllSellers } from "../../../services/queries/sellerQueries";
 
 const VIEWS = ["Client Information", "Companies", "Order History"] as const;
 type View = (typeof VIEWS)[number];
@@ -58,9 +59,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const [open, setOpen] = useState(false);
   const { user } = useUserAuthContext();
   const [selectedBrand] = useAtom(brandAtom);
+  const [sellerDraft, setSellerDraft] = useState("");
 
-
-
+  const { data: sellers } = useGetAllSellers();
   const { mutateAsync: createClient } = useCreateClient();
   const { mutateAsync: updateClient } = useUpdateClient();
 
@@ -72,21 +73,20 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     resolver: zodResolver(clientFormSchema),
     values: client
       ? {
-        name: client.name,
-        email: client.email,
-        industryId: client.clientInfo.industryId,
-        sourceId: client.clientInfo.sourceId,
-        default_unit_cost: client.clientInfo.default_unit_cost,
-        phone: client.clientInfo.phone,
-        thirdPartyId: client.clientInfo.thirdPartyId,
-      }
+          name: client.name,
+          email: client.email,
+          industryId: client.clientInfo.industryId,
+          sourceId: client.clientInfo.sourceId,
+          default_unit_cost: client.clientInfo.default_unit_cost,
+          phone: client.clientInfo.phone,
+          thirdPartyId: client.clientInfo.thirdPartyId,
+        }
       : undefined,
   });
 
   const handleTabClick = (view: View) => {
     setActiveTab(view);
   };
-
 
   const handleCreateTask = () => {
     navigate({ to: "/tasks/new", search: { clientEmail: client?.email } });
@@ -102,16 +102,24 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     });
   };
 
-  const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
-    if (!selectedBrand || !user || !client) return;
+  const handleSellerSelect = (email: string) => {
+    const seller = sellers?.find((seller) => seller.email === email);
+    if (!seller) return;
 
-    const sellerId = client?.seller.id
+    setSellerDraft(seller.email);
+  };
+
+  const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
+    const seller = sellers?.find((seller) => seller.email === sellerDraft);
+    if (!selectedBrand || !user || !client || !seller) return;
+
+    const sellerId = seller.id;
 
     const response = client?.id
       ? await updateClient({
-        id: client.id,
-        payload: { ...data, brandId: selectedBrand.id, sellerId },
-      })
+          id: client.id,
+          payload: { ...data, brandId: selectedBrand.id, sellerId },
+        })
       : await createClient({ ...data, brandId: selectedBrand.id, sellerId });
 
     if (response.status === 200 || response.status === 201) {
@@ -136,7 +144,11 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     );
   };
 
-
+  useEffect(() => {
+    if (client) {
+      setSellerDraft(client.seller_email);
+    }
+  }, [client]);
 
   return (
     <div className="bg-white shadow-sm p-8">
@@ -157,30 +169,18 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         })}
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
-        {/* {activeTab === "Client Information" && user?.role !== "SELLER" && (
-          <div className="mb-8 grid sm:grid-cols-2 gap-12">
-            <div>
-              <label
-                htmlFor="sellerEmail"
-                className="mb-2 block text-sm font-medium leading-6 text-gray-900"
-              >
-                Seller Email
-              </label>
-              <input
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6  `}
-                type='email'
-                value={client?.seller_email}
-                readOnly />
-            </div>
-          </div>
-        )} */}
         {activeTab === "Client Information" && (
           <ClientFormInformation
             user={user}
             activeTab={activeTab}
-            sellerEmail={client?.seller_email}
             register={register}
-            errors={errors} />
+            errors={errors}
+            sellers={sellers ?? []}
+            sellerDraft={sellerDraft}
+            role={user?.role}
+            handleSellerChange={(sellerInput) => setSellerDraft(sellerInput)}
+            handleSellerSelect={handleSellerSelect}
+          />
         )}
 
         {client && activeTab === "Companies" && (
@@ -222,14 +222,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
         )}
 
         <div className="pt-8 flex justify-between gap-4 border-t border-t-gray-300">
-          <div>
-            {/* {user.role === "ADMIN" && (
-              <Button type="button" variant={"lightBlue"} onClick={handleLoginToClient}>
-                Login to Client
-              </Button>
-            )} */}
-          </div>
-
+          <div />
           <div className="flex justify-end gap-4">
             <Button
               type="button"
