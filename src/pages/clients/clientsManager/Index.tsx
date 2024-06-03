@@ -22,7 +22,7 @@ import CustomDatePicker from "../../../components/tools/customDatePicker/CustomD
 const Index = () => {
   const navigate = useNavigate();
   const searchClients = clientsManagerIndexRoute.useSearch();
-  const { data } = useGetAllClients(searchClients);
+  const { data, isLoading } = useGetAllClients(searchClients);
   const { user } = useUserAuthContext();
 
   const keyword = searchClients?.keyword;
@@ -208,6 +208,7 @@ const Index = () => {
         </div>
         <ClientsManagersTable
           page={searchClients.page}
+          isSearching={isLoading}
           isAdmin={user?.role === "ADMIN" ?? false}
           clients={clients.data}
           pagination={clients.pagination}

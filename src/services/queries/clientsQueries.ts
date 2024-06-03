@@ -59,6 +59,7 @@ export type Origin = {
 type CreateClientPayload = ClientFormSchema & {
   brandId: number;
   sellerId: number;
+  seller_email: string;
 };
 
 type ClientsResponse = {
@@ -206,6 +207,9 @@ export const useCreateClient = () => {
     mutationFn: async (payload: CreateClientPayload) => {
       return await axios.post(CLIENTS_URL, payload, { headers: getHeaders() });
     },
+    onSuccess: () => {
+      toast.success("Client has been created");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },
@@ -279,6 +283,9 @@ export const useUpdateClient = () => {
       return await axios.patch(CLIENTS_URL + `/${arg.id}`, arg.payload, {
         headers: getHeaders(),
       });
+    },
+    onSuccess: () => {
+      toast.success("Client has been updated");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
