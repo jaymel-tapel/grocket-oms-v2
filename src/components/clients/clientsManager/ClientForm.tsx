@@ -62,8 +62,10 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const [sellerDraft, setSellerDraft] = useState("");
 
   const { data: sellers } = useGetAllSellers();
-  const { mutateAsync: createClient } = useCreateClient();
-  const { mutateAsync: updateClient } = useUpdateClient();
+  const { mutateAsync: createClient, isPending: isCreating } =
+    useCreateClient();
+  const { mutateAsync: updateClient, isPending: isUpdating } =
+    useUpdateClient();
 
   const {
     register,
@@ -113,14 +115,22 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     const seller = sellers?.find((seller) => seller.email === sellerDraft);
     if (!selectedBrand || !user || !client || !seller) return;
 
-    const sellerId = seller.id;
-
     const response = client?.id
       ? await updateClient({
           id: client.id,
-          payload: { ...data, brandId: selectedBrand.id, sellerId },
+          payload: {
+            ...data,
+            brandId: selectedBrand.id,
+            sellerId: seller.id,
+            seller_email: seller.email,
+          },
         })
-      : await createClient({ ...data, brandId: selectedBrand.id, sellerId });
+      : await createClient({
+          ...data,
+          brandId: selectedBrand.id,
+          sellerId: seller.id,
+          seller_email: seller.email,
+        });
 
     if (response.status === 200 || response.status === 201) {
       navigate({ to: "/clients/clients-manager" });
@@ -147,8 +157,10 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   useEffect(() => {
     if (client) {
       setSellerDraft(client.seller_email);
+    } else {
+      setSellerDraft(user?.email ?? "");
     }
-  }, [client]);
+  }, [client, user]);
 
   return (
     <div className="bg-white shadow-sm p-8">
@@ -231,7 +243,15 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
             >
               Cancel
             </Button>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={isCreating || isUpdating}>
+              {isCreating || isUpdating ? (
+                <>
+                  <Spinner /> Submitting
+                </>
+              ) : (
+                "Submit"
+              )}
+            </Button>
           </div>
         </div>
       </form>

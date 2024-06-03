@@ -14,6 +14,7 @@ import { Client } from "../../../services/queries/clientsQueries";
 import TablePagination, {
   PaginationNavs,
 } from "../../tools/table/TablePagination";
+import Spinner from "../../tools/spinner/Spinner";
 
 dayjs.extend(utc);
 
@@ -31,6 +32,7 @@ const itemsPerPage = 10;
 
 type TableProps = {
   isAdmin: boolean;
+  isSearching: boolean;
   clients: Client[];
   pagination: Pagination;
   selectedClients: Client[];
@@ -44,6 +46,7 @@ const ClientsManagersTable: React.FC<TableProps> = ({
   selectedClients,
   setSelectedClients,
   isAdmin,
+  isSearching,
   page,
 }) => {
   const navigate = useNavigate();
@@ -150,12 +153,23 @@ const ClientsManagersTable: React.FC<TableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {clients.length === 0 && (
+          {isSearching ? (
             <TableRow>
-              <TableBodyCell className="text-center text-gray-500" colSpan={6}>
-                No data found.
+              <TableBodyCell className="text-center text-gray-500" colSpan={7}>
+                <Spinner className="h-12 w-12 mx-auto" />
               </TableBodyCell>
             </TableRow>
+          ) : (
+            clients.length === 0 && (
+              <TableRow>
+                <TableBodyCell
+                  className="text-center text-gray-500"
+                  colSpan={6}
+                >
+                  No data found.
+                </TableBodyCell>
+              </TableRow>
+            )
           )}
           {clients.map((client, index) => {
             return (
