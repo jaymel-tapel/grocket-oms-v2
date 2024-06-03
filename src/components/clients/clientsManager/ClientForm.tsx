@@ -120,6 +120,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
   const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
     const seller = sellers?.find((seller) => seller.email === sellerDraft);
+
     const sellerId =
       user?.role === "SELLER"
         ? user?.id
