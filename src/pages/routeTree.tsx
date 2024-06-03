@@ -8,13 +8,7 @@ import {
 } from "@tanstack/react-router";
 import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
-import {
-  UserLocalInfo,
-  cleanAuthorization,
-  getUserInfo,
-  isAuth,
-  isMoreThanDaysAgo,
-} from "../utils/utils";
+import { UserLocalInfo, getUserInfo, isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
 import { getOrderOption } from "../services/queries/orderQueries";
 import {
@@ -93,13 +87,8 @@ const protectedRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "logged",
   beforeLoad: async () => {
-    const shouldRefreshLogin = isMoreThanDaysAgo(14);
-
     if (!isAuth()) {
       throw redirect({ to: "/" });
-    } else if (shouldRefreshLogin) {
-      cleanAuthorization();
-      throw redirect({ to: "/", search: { login: "expired" } });
     }
   },
 });
