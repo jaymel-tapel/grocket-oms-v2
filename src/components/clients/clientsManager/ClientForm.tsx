@@ -27,7 +27,10 @@ import {
   DialogTrigger,
 } from "../../tools/dialog/Dialog";
 import Spinner from "../../tools/spinner/Spinner";
-import { useGetAllSellers } from "../../../services/queries/sellerQueries";
+import {
+  Seller,
+  useGetAllSellers,
+} from "../../../services/queries/sellerQueries";
 
 const VIEWS = ["Client Information", "Companies", "Order History"] as const;
 type View = (typeof VIEWS)[number];
@@ -59,6 +62,9 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
   const [open, setOpen] = useState(false);
   const { user } = useUserAuthContext();
   const [selectedBrand] = useAtom(brandAtom);
+  const [selectedSeller, setSelectedSeller] = useState<Seller | undefined>(
+    undefined
+  );
   const [sellerDraft, setSellerDraft] = useState("");
 
   const { data: sellers } = useGetAllSellers();
@@ -77,8 +83,8 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
       ? {
           name: client.name,
           email: client.email,
-          industryId: client.clientInfo.industryId,
-          sourceId: client.clientInfo.sourceId,
+          industryId: client.clientInfo.industryId ?? 41,
+          sourceId: client.clientInfo.sourceId ?? 1,
           default_unit_cost: client.clientInfo.default_unit_cost,
           phone: client.clientInfo.phone,
           thirdPartyId: client.clientInfo.thirdPartyId,
@@ -108,12 +114,20 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
     const seller = sellers?.find((seller) => seller.email === email);
     if (!seller) return;
 
+    setSelectedSeller(seller);
     setSellerDraft(seller.email);
   };
 
   const onSubmit: SubmitHandler<ClientFormSchema> = async (data) => {
     const seller = sellers?.find((seller) => seller.email === sellerDraft);
-    if (!selectedBrand || !user || !client || !seller) return;
+    const sellerId =
+      user?.role === "SELLER"
+        ? user?.id
+        : selectedSeller
+        ? selectedSeller.id
+        : seller?.id ?? client?.sellerId;
+
+    if (!selectedBrand || !user || !sellerId) return;
 
     const response = client?.id
       ? await updateClient({
@@ -121,15 +135,15 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
           payload: {
             ...data,
             brandId: selectedBrand.id,
-            sellerId: seller.id,
-            seller_email: seller.email,
+            sellerId: sellerId,
+            seller_email: sellerDraft,
           },
         })
       : await createClient({
           ...data,
           brandId: selectedBrand.id,
-          sellerId: seller.id,
-          seller_email: seller.email,
+          sellerId: sellerId,
+          seller_email: sellerDraft,
         });
 
     if (response.status === 200 || response.status === 201) {
@@ -156,7 +170,7 @@ const ClientForm: React.FC<FormProps> = ({ client }) => {
 
   useEffect(() => {
     if (client) {
-      setSellerDraft(client.seller_email);
+      setSellerDraft(client.seller_email ?? client.seller.email);
     } else {
       setSellerDraft(user?.email ?? "");
     }
