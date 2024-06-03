@@ -25,12 +25,22 @@ export const isAuth = () => {
   } catch (e) {
     return false;
   }
-
-  // uncomment later above code
-  // const test = 1 + 1;
-  // if (test === 2) return false;
-  // return false;
 };
+
+// export const isMoreThanDaysAgo = (days: number): boolean => {
+//   const _lastLoggedIn = localStorage.getItem("lastLogin");
+
+//   if (!_lastLoggedIn) {
+//     return true;
+//   }
+
+//   const today = dayjs();
+//   const lastLoggedIn = dayjs(_lastLoggedIn);
+//   const differenceInDays = today.diff(lastLoggedIn, "day");
+
+//   // Check if the difference is greater than x days
+//   return differenceInDays > days;
+// };
 
 export const cn = (...inputs: ClassValue[]) => {
   // return inputs.filter(Boolean).join(" ");

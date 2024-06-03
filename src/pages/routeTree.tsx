@@ -47,7 +47,7 @@ const indexRoute = createRoute({
       throw redirect({ to: "/dashboard" });
     } else {
       if ("login" in search && search.login === "expired") {
-        toast.error("Login has expired");
+        toast("Login has expired");
       }
       queryClient.clear();
     }
