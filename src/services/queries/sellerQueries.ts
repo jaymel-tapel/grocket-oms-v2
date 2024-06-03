@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pagination } from "./accountsQueries";
+import { AlternateEmail, Pagination } from "./accountsQueries";
 import { getHeaders } from "../../utils/utils";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -56,14 +56,35 @@ export const useGetSellers = (search?: SellersParams) => {
   return useQuery(getSellersOptions(search));
 };
 
+type SellerWithAltEmails = Seller & {
+  alternateEmails: AlternateEmail[];
+};
+
 export const useGetAllSellers = () => {
   return useQuery({
     queryKey: ["sellers"],
-    queryFn: async (): Promise<Seller[]> => {
+    queryFn: async (): Promise<SellerWithAltEmails[]> => {
       const response = await axios.get(SELLERS_URL + "/all", {
         headers: getHeaders(),
       });
-      return response.data;
+
+      const sellersWithAlternateEmails = response.data.flatMap((seller) => {
+        // Main email object
+        const mainSeller = { ...seller };
+
+        // Alternate emails objects
+        const alternateEmailSellers = seller.alternateEmails.map(
+          (altEmail) => ({
+            ...seller,
+            email: altEmail.email,
+          })
+        );
+
+        // Combine main email object with alternate emails objects
+        return [mainSeller, ...alternateEmailSellers];
+      });
+
+      return sellersWithAlternateEmails;
     },
   });
 };

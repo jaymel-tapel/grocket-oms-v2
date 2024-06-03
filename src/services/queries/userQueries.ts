@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { User } from "./accountsQueries";
 import { UserFormSchema } from "../../components/accounts/usersManager/UserForm";
 import { useUserAuthContext } from "../../context/UserAuthContext";
+import dayjs from "dayjs";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const loginUrl = API_URL + "/auth/login";
@@ -103,6 +104,7 @@ export const useLogin = () => {
     onSuccess: ({ data }) => {
       setAuthorization(data.access_token);
       localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("lastLogin", dayjs().format("MM/DD/YYYY"));
       setUser(data);
     },
   });
