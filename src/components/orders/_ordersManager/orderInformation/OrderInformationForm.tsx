@@ -34,6 +34,7 @@ type OrderInformationFormProps = {
   handleEmailChange: (arg: { isSeller: boolean; value: string }) => void;
   handleSellerEmailSelect: (email: string) => void;
   handleClientEmailSelect: (email: string) => void;
+  disableEdit?: boolean;
 };
 
 const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
@@ -49,6 +50,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
   handleEmailChange,
   handleSellerEmailSelect,
   handleClientEmailSelect,
+  disableEdit = false,
 }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
 
@@ -106,6 +108,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                       handleEmailChange({ isSeller: true, value })
                     }
                     handleSelect={(value) => handleSellerEmailSelect(value)}
+                    disabled={disableEdit}
                   />
                 )}
 
@@ -114,6 +117,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                     id="sellerEmails"
                     autoComplete="off"
                     value={sellerEmail}
+                    disabled={disableEdit}
                     onChange={(e) => handleSellerEmailSelect(e.target.value)}
                     className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                   >
@@ -182,7 +186,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
             <button
               type="button"
               className="cursor-pointer flex gap-2 items-center text-xs text-green-500"
-              disabled={isFetching}
+              disabled={isFetching || disableEdit}
               onClick={handleGenerateInvoice}
             >
               {isFetching ? (
@@ -213,10 +217,11 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="client_name"
                   control={control}
+                  disabled={disableEdit}
                   render={({ field }) => (
                     <input
                       type="text"
-                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                         errors.client_name && "border-red-500"
                       }`}
                       {...field}
@@ -245,6 +250,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                   }
                   type="email"
                   value={clientEmail}
+                  disabled={disableEdit}
                   handleChange={(value) =>
                     handleEmailChange({ isSeller: false, value })
                   }
@@ -269,10 +275,11 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="phone"
                   control={control}
+                  disabled={disableEdit}
                   render={({ field }) => (
                     <input
                       type="text"
-                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                         errors.phone && "border-red-500"
                       }`}
                       {...field}
@@ -298,6 +305,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="sourceId"
                   control={control}
+                  disabled={disableEdit}
                   render={({ field }) => (
                     <select
                       id="origin"
@@ -337,6 +345,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="industryId"
                   control={control}
+                  disabled={disableEdit}
                   render={({ field }) => (
                     <select
                       id="industry"
@@ -376,10 +385,11 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="unit_cost"
                   control={control}
+                  disabled={disableEdit}
                   render={({ field }) => (
                     <input
                       type="number"
-                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                         errors.phone && "border-red-500"
                       }`}
                       {...field}
@@ -405,10 +415,11 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
                 <Controller
                   name="thirdPartyId"
                   control={control}
+                  disabled={disableEdit}
                   render={({ field }) => (
                     <input
                       type="text"
-                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 disabled:bg-gray-100 ${
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                         errors.thirdPartyId && "border-red-500"
                       }`}
                       {...field}
@@ -429,6 +440,7 @@ const OrderInformationForm: React.FC<OrderInformationFormProps> = ({
               <Controller
                 name="remarks"
                 control={control}
+                disabled={disableEdit}
                 render={({ field }) => (
                   <textarea
                     rows={3}

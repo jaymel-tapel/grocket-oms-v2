@@ -21,9 +21,14 @@ type AddReviewMethods = (typeof ADD_REVIEW_METHODS)[number];
 type Props = {
   company?: Company;
   reviews: PendingReview[];
+  disableEdit?: boolean;
 };
 
-const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
+const OrderInformationReviews: React.FC<Props> = ({
+  company,
+  reviews,
+  disableEdit = false,
+}) => {
   const { orderId } = orderRoute.useParams();
 
   const [selectedMethod, setMethod] = useState<AddReviewMethods>(
@@ -91,6 +96,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
     <div className="border-b border-grGray-dark">
       <div className="mt-4">
         <OrderReviewsTable
+          disableEdit={disableEdit}
           orderId={orderId}
           reviews={reviews.sort((a, b) => {
             // Handle undefined 'id'
@@ -113,6 +119,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
               type="button"
               variant={isActive ? "default" : "inactive"}
               onClick={() => handleTabClick(method)}
+              disabled={disableEdit}
             >
               {method}
             </Button>
@@ -137,6 +144,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
                     id="no_of_reviews"
                     value={noOfReviews}
                     min={0}
+                    disabled={disableEdit}
                     onChange={(e) => setNoOfReviews(parseInt(e.target.value))}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                   />
@@ -146,7 +154,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
                 variant="black"
                 type="button"
                 className="self-end"
-                disabled={isFetchingCompanyReviews}
+                disabled={isFetchingCompanyReviews || disableEdit}
                 onClick={handleGetReviews}
               >
                 Get Reviews
@@ -185,6 +193,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
                     type="text"
                     id="reviewer_name"
                     value={name}
+                    disabled={disableEdit}
                     onChange={(e) => setName(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                   />
@@ -193,7 +202,7 @@ const OrderInformationReviews: React.FC<Props> = ({ company, reviews }) => {
               <Button
                 type="button"
                 variant="black"
-                disabled={isAddingReview}
+                disabled={isAddingReview || disableEdit}
                 onClick={() => handleAddReview()}
               >
                 {isAddingReview ? (

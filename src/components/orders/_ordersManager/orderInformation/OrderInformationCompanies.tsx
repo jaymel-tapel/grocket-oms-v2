@@ -25,6 +25,7 @@ type Props = {
   companies: Company[];
   company?: Company;
   handleSetCompanyValues: (company: { name: string; url: string }) => void;
+  disableEdit?: boolean;
 };
 
 const OrderInformationCompanies: React.FC<Props> = ({
@@ -34,6 +35,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
   clientEmail,
   clientId,
   errors,
+  disableEdit = false,
 }) => {
   const [showNewCompanyErrors, setShowErrors] = useState(false);
   const [newCompany, setNewCompany] = useState({
@@ -106,8 +108,6 @@ const OrderInformationCompanies: React.FC<Props> = ({
     });
   };
 
-  console.log(company);
-
   return (
     <div className="border-b border-grGray-dark">
       <div className="py-4">
@@ -124,6 +124,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 id="company"
                 autoComplete="off"
                 value={company?.name ?? ""}
+                disabled={disableEdit}
                 onChange={(e) => handleSelectCompany(e.target.value)}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   errors.company_name && "border-red-500"
@@ -203,7 +204,13 @@ const OrderInformationCompanies: React.FC<Props> = ({
 
       <div className="flex flex-col gap-4">
         <span className="font-medium">Client Links</span>
-        <CompanyLinksTable companies={companies} keyword={clientEmail ?? ""} />
+        <div className="max-h-[261.6px] overflow-y-auto">
+          <CompanyLinksTable
+            companies={companies}
+            keyword={clientEmail ?? ""}
+            disableEdit={disableEdit}
+          />
+        </div>
       </div>
 
       <div className="my-8">
@@ -221,6 +228,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 type="text"
                 id="new_company_name"
                 value={newCompany.name}
+                disabled={disableEdit}
                 onChange={(e) => handleChange("name", e.target.value)}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   newCompanyErrors.name && "border-red-500"
@@ -245,6 +253,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
                 type="text"
                 id="new_company_url"
                 value={newCompany.url}
+                disabled={disableEdit}
                 onChange={(e) => handleChange("url", e.target.value)}
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
                   newCompanyErrors.url && "border-red-500"
@@ -263,7 +272,7 @@ const OrderInformationCompanies: React.FC<Props> = ({
             type="button"
             onClick={handleAddCompany}
             variant="black"
-            disabled={isAddingCompany}
+            disabled={isAddingCompany || disableEdit}
           >
             {isAddingCompany ? (
               <>
