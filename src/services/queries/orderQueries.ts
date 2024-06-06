@@ -364,7 +364,7 @@ export const useUpdateReviewStatus = () => {
 
 export const useDeleteOrder = () => {
   const queryClient = useQueryClient();
-  const routeApi = getRouteApi("/logged/orders/orders-manager/");
+  const routeApi = getRouteApi("/logged/orders/orders-manager/$orderId");
   const search = routeApi.useSearch();
 
   return useMutation({
