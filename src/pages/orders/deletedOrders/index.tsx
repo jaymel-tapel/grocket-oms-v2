@@ -1,16 +1,16 @@
 import { useEffect, useMemo } from "react";
-import DeletedOrdersTable from "../../components/orders/deletedOrders/DeletedOrdersTable";
-import { deletedOrdersRoute } from "../routeTree";
-import { useGetDeletedOrders } from "../../services/queries/orderQueries";
+import DeletedOrdersTable from "../../../components/orders/deletedOrders/DeletedOrdersTable";
+import { deletedOrdersIndexRoute } from "../../routeTree";
+import { useGetDeletedOrders } from "../../../services/queries/orderQueries";
 import { useAtom } from "jotai/react";
-import { brandAtom } from "../../services/queries/brandsQueries";
+import { brandAtom } from "../../../services/queries/brandsQueries";
 import { useNavigate } from "@tanstack/react-router";
 
 const DeletedOrders: React.FC = () => {
   const navigate = useNavigate();
   const [selectedBrand] = useAtom(brandAtom);
-  const searchDeletedOrders = deletedOrdersRoute.useSearch();
-  const { data } = useGetDeletedOrders(searchDeletedOrders);
+  const searchDeletedOrders = deletedOrdersIndexRoute.useSearch();
+  const { data, isLoading } = useGetDeletedOrders(searchDeletedOrders);
 
   const deletedOrders = useMemo(() => {
     if (!data)
@@ -54,6 +54,7 @@ const DeletedOrders: React.FC = () => {
       <DeletedOrdersTable
         orders={deletedOrders.data}
         pagination={deletedOrders.pagination}
+        isSearching={isLoading}
       />
     </div>
   );

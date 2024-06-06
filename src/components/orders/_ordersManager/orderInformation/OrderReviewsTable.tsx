@@ -48,6 +48,7 @@ type Props = {
   isNewOrder?: boolean;
   handleDeleteLocal?: (index: number) => void;
   orderId?: number;
+  disableEdit?: boolean;
 };
 
 const OrderReviewsTable: React.FC<Props> = ({
@@ -55,6 +56,7 @@ const OrderReviewsTable: React.FC<Props> = ({
   reviews,
   orderId,
   handleDeleteLocal,
+  disableEdit = false,
 }) => {
   const [identifier, setIdentifier] = useState<number | null>(null);
   const [checkBoxes, setCheckBoxes] = useState<Checkbox[]>([]);
@@ -117,6 +119,7 @@ const OrderReviewsTable: React.FC<Props> = ({
   };
 
   const handleDeleteClick = async (id: number | undefined, index: number) => {
+    if (disableEdit) return;
     if (!window.confirm("Do you wish to delete this review?")) return;
     if (id === undefined) {
       if (!handleDeleteLocal) return;
@@ -157,6 +160,7 @@ const OrderReviewsTable: React.FC<Props> = ({
                     className="h-4 w-4 cursor-pointer rounded border-gray-300 text-grGreen-base focus:ring-grGreen-base"
                     checked={areAllReviewsChecked}
                     onChange={handleCheckAllReviews}
+                    disabled={disableEdit}
                   />
                 </TableHeadCell>
               )}
@@ -208,9 +212,9 @@ const OrderReviewsTable: React.FC<Props> = ({
                         {review.status}
                       </span>
                     ) : (
-                      <Popover>
+                      <Popover open={disableEdit ? false : undefined}>
                         <PopoverAnchor asChild>
-                          <PopoverTrigger asChild>
+                          <PopoverTrigger asChild disabled={disableEdit}>
                             <span className="cursor-pointer flex items-center gap-2">
                               {review.status}
                               <ChevronDown className="h-4 w-4" />

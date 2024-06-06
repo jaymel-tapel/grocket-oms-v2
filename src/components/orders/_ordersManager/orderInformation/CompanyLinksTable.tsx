@@ -21,12 +21,14 @@ type CompanyLinksTableProps = {
   }[];
   handleDeleteLocal?: (index: number) => void;
   keyword: string;
+  disableEdit?: boolean;
 };
 
 const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
   companies,
   handleDeleteLocal,
   keyword,
+  disableEdit = false,
 }) => {
   const [identifier, setIdentifier] = useState<number | null>(null);
 
@@ -36,6 +38,7 @@ const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
     companyId: number | undefined,
     index: number
   ) => {
+    if (disableEdit) return;
     if (!window.confirm("Delete this company from client?")) return;
 
     if (companyId === undefined) {
@@ -76,7 +79,9 @@ const CompanyLinksTable: React.FC<CompanyLinksTableProps> = ({
                     <Spinner />
                   ) : (
                     <TrashIcon
-                      className="h-4 w-4 text-red-500 cursor-pointer"
+                      className={`h-4 w-4 text-red-500 ${
+                        disableEdit && "cursor-pointer"
+                      }}`}
                       onClick={() => handleDeleteClick(company.id, index)}
                     />
                   )}

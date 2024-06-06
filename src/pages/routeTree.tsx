@@ -10,7 +10,10 @@ import Root from "./RootRoute";
 import { queryClient } from "../services/queries";
 import { UserLocalInfo, getUserInfo, isAuth } from "../utils/utils";
 import { getTaskOption } from "../services/queries/taskQueries";
-import { getOrderOption } from "../services/queries/orderQueries";
+import {
+  getDeletedOrderOption,
+  getOrderOption,
+} from "../services/queries/orderQueries";
 import {
   getAllUsersOptions,
   getUserOption,
@@ -277,7 +280,28 @@ export const deletedOrdersRoute = createRoute({
       showDeleted: true,
     }),
   ],
-  component: lazyRouteComponent(() => import("./orders/DeletedOrders")),
+  component: lazyRouteComponent(
+    () => import("./orders/deletedOrders/DeletedOrdersManager")
+  ),
+});
+
+export const deletedOrdersIndexRoute = createRoute({
+  getParentRoute: () => deletedOrdersRoute,
+  path: "/",
+  component: lazyRouteComponent(() => import("./orders/deletedOrders/index")),
+});
+
+export const deletedOrderRoute = createRoute({
+  getParentRoute: () => deletedOrdersRoute,
+  path: "$orderId",
+  parseParams: ({ orderId }) => ({ orderId: Number(orderId) }),
+  stringifyParams: ({ orderId }) => ({ orderId: `${orderId}` }),
+  loader: async ({ context: { queryClient }, params: { orderId } }) => {
+    queryClient.ensureQueryData(getDeletedOrderOption(orderId));
+  },
+  component: lazyRouteComponent(
+    () => import("./orders/deletedOrders/DeletedOrder")
+  ),
 });
 
 const clientsRoute = createRoute({
@@ -568,6 +592,8 @@ const routeTree = rootRoute.addChildren([
       newOrderRoute,
       orderRoute,
       deletedOrdersRoute,
+      deletedOrdersIndexRoute,
+      deletedOrderRoute,
     ]),
 
     clientsRoute.addChildren([
