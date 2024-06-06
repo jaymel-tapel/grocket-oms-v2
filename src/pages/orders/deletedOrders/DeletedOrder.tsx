@@ -4,16 +4,14 @@ import OrderInformationForm from "../../../components/orders/_ordersManager/orde
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon } from "@heroicons/react/20/solid";
 import OrderInformationCompanies from "../../../components/orders/_ordersManager/orderInformation/OrderInformationCompanies";
 import OrderInformationReviews from "../../../components/orders/_ordersManager/orderInformation/OrderInformationReviews";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  useDeleteOrder,
-  useGetOrder,
-  useUpdateOrder,
+  useRestoreOrder,
+  useGetDeletedOrder,
 } from "../../../services/queries/orderQueries";
-import { orderRoute } from "../../routeTree";
+import { deletedOrderRoute } from "../../routeTree";
 import Spinner from "../../../components/tools/spinner/Spinner";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
 import { useGetClientBySellers } from "../../../services/queries/clientsQueries";
@@ -48,27 +46,25 @@ const orderInformationSchema = z.object({
 
 export type OrderInformationSchema = z.infer<typeof orderInformationSchema>;
 
-const Order: React.FC = () => {
+const DeletedOrder: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUserAuthContext();
   const [activeTab, setActiveTab] = useState<View>("Order Information");
-  const { orderId } = orderRoute.useParams();
-  const { data: order } = useGetOrder(orderId);
-  const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
-  const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder();
+  const { orderId } = deletedOrderRoute.useParams();
+  const { data: order } = useGetDeletedOrder(orderId);
+  // const { mutateAsync: updateOrder, isPending: isUpdating } = useUpdateOrder();
+  const { mutateAsync: restoreOrder, isPending: isRestoring } =
+    useRestoreOrder();
 
   const [selectedCompany, setSelectedCompany] = useState<Company | undefined>(
     undefined
   );
-  const [newCompanyId, setNewCompanyId] = useState<number | null>(null);
   const [newCompanies, setNewCompanies] = useState<Company[] | null>(null);
 
   const {
     control,
     handleSubmit,
-    setValue,
     watch,
-    trigger,
     formState: { errors },
   } = useForm<OrderInformationSchema>({
     resolver: zodResolver(orderInformationSchema),
@@ -110,65 +106,23 @@ const Order: React.FC = () => {
   }, [userProfile]);
 
   const handleEmailChange = (arg: { isSeller: boolean; value: string }) => {
-    if (arg.isSeller) {
-      setValue("seller_email", arg.value);
-    } else {
-      setValue("client_email", arg.value);
-    }
-  };
-
-  const manualSubmit = async () => {
-    const isValid = await trigger();
-
-    if (isValid) {
-      handleSubmit(onSubmit)();
-    }
+    console.log(arg);
+    return;
   };
 
   const handleSellerEmailSelect = (email: string) => {
-    if (user?.role === "SELLER") {
-      setValue("seller_email", email);
-    } else {
-      const seller = sellers?.find((seller) => seller.email === email);
-      if (!seller) return;
-
-      setValue("seller_email", seller.email);
-      setValue("seller_name", seller.name);
-      setValue("seller_id", seller.id);
-    }
+    console.log(email);
+    return;
   };
 
   const handleClientEmailSelect = (email: string) => {
-    const client = clients?.find((client) => client.email === email);
-    if (!client) return;
-
-    setValue("client_name", client.name);
-    setValue("client_email", client.email);
-    setValue("industryId", client.clientInfo.industryId ?? 41);
-    setValue("sourceId", client.clientInfo.sourceId ?? 1);
-    setValue("phone", client.clientInfo.phone ?? "");
-    setValue("unit_cost", client.clientInfo.default_unit_cost ?? 10);
-    setValue("thirdPartyId", client.clientInfo.thirdPartyId ?? "");
-
-    setNewCompanies(client.companies ? client.companies : null);
-    setNewCompanyId(client.companies ? client.companies[0].id : null);
-    setValue("company_name", client.companies ? client.companies[0].name : "");
-    setValue("company_url", client.companies ? client.companies[0].url : "");
-
-    manualSubmit();
+    console.log(email);
+    return;
   };
 
   const handleSetCompanyValues = (company: { name: string; url: string }) => {
-    const foundCompany = newCompanies?.find(
-      (item) => item.name === company.name
-    );
-
-    if (!foundCompany) return;
-
-    setValue("company_name", company.name);
-    setValue("company_url", company.url);
-    setSelectedCompany(foundCompany);
-    setNewCompanyId(foundCompany.id);
+    console.log(company);
+    return;
   };
 
   const handleTabClick = (view: View) => {
@@ -176,53 +130,25 @@ const Order: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate({ to: "/orders/orders-manager" });
+    navigate({ to: "/orders/deleted" });
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Delete this order?")) return;
+  const handleRestore = async () => {
+    if (!window.confirm("Restore this order?")) return;
 
-    const response = await deleteOrder(orderId);
+    const response = await restoreOrder(orderId);
+
     if (response.status === 200) {
       handleBack();
     }
   };
 
-  const handleCreateTask = () => {
-    navigate({
-      to: "/tasks/new",
-      search: {
-        orderId: order?.id,
-        clientEmail: order?.client?.email,
-        clientCompanyName: order?.company.name,
-      },
-    });
-  };
-
-  const onSubmit: SubmitHandler<OrderInformationSchema> = async (data) => {
-    if (!order) return;
-
-    const response = await updateOrder({
-      payload: {
-        ...data,
-        companyId: newCompanyId
-          ? newCompanyId
-          : order.companyId
-          ? order.companyId
-          : order.client.companies[0].id,
-        brandId: order.brandId,
-      },
-      orderId,
-    });
-
-    if (response.status === 200) {
-      handleBack();
-    }
+  const onSubmit: SubmitHandler<OrderInformationSchema> = async () => {
+    return;
   };
 
   useEffect(() => {
     if (order && !order.company) {
-      setNewCompanyId(null);
       setNewCompanies([]);
       setSelectedCompany(undefined);
       if (order?.client.companies.length > 0) {
@@ -231,7 +157,6 @@ const Order: React.FC = () => {
         // setSelectedCompany(order.client.companies[0]);
       }
     } else if (order && order.company) {
-      setNewCompanyId(order.company.id);
       setNewCompanies(order.client.companies);
       setSelectedCompany(order.company);
     }
@@ -266,6 +191,7 @@ const Order: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           {activeTab === "Order Information" && (
             <OrderInformationForm
+              disableEdit={true}
               role={user?.role ?? "SELLER"}
               control={control}
               errors={errors}
@@ -283,17 +209,11 @@ const Order: React.FC = () => {
 
           {activeTab === "Companies" && (
             <OrderInformationCompanies
+              disableEdit={true}
               clientEmail={clientEmail}
               clientId={order?.client?.id ?? undefined}
               control={control}
-              company={
-                // newCompanies
-                //   ? newCompanies[0]
-                //   : order && "company" in order
-                //   ? order.company
-                //   : undefined
-                selectedCompany
-              }
+              company={selectedCompany}
               companies={
                 newCompanies ? newCompanies : order?.client.companies ?? []
               }
@@ -304,6 +224,7 @@ const Order: React.FC = () => {
 
           {activeTab === "Reviews" && order && (
             <OrderInformationReviews
+              disableEdit={true}
               reviews={order.orderReviews}
               company={selectedCompany}
             />
@@ -314,39 +235,21 @@ const Order: React.FC = () => {
           )}
 
           <div className="mt-4 flex gap-4 flex-col md:flex-row justify-between">
-            <Button
-              type="button"
-              variant="delete"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? (
-                <>
-                  <Spinner />
-                  Deleting
-                </>
-              ) : (
-                "Delete"
-              )}
-            </Button>
+            <div />
             <div className="flex flex-col md:flex-row gap-4">
-              {user?.role !== "ADMIN" && (
-                <Button
-                  type="button"
-                  variant="green"
-                  onClick={handleCreateTask}
-                >
-                  <PlusIcon className="w-3 h-3 mr-1" /> Create Task
-                </Button>
-              )}
-              <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? (
+              <Button
+                type="button"
+                variant="green"
+                onClick={handleRestore}
+                disabled={isRestoring}
+              >
+                {isRestoring ? (
                   <>
                     <Spinner />
-                    Updating
+                    Restoring Order...
                   </>
                 ) : (
-                  "Update Order"
+                  "Restore Order"
                 )}
               </Button>
             </div>
@@ -357,4 +260,4 @@ const Order: React.FC = () => {
   );
 };
 
-export default Order;
+export default DeletedOrder;

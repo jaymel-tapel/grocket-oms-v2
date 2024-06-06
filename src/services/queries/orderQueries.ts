@@ -142,6 +142,13 @@ const getOrder = async (id: number): Promise<Order> => {
   return response.data;
 };
 
+const getDeletedOrder = async (id: number): Promise<Order> => {
+  const response = await axios.get(ORDERS_URL + `/deleted/${id}`, {
+    headers: getHeaders(),
+  });
+  return response.data;
+};
+
 export const getAllOrdersOptions = (search?: OrdersParams) => {
   return {
     enabled: search?.code !== undefined ? true : false,
@@ -153,16 +160,26 @@ export const getAllOrdersOptions = (search?: OrdersParams) => {
 export const getDeletedOrdersOptions = (search?: OrdersParams) => {
   return {
     enabled: search?.code !== undefined ? true : false,
-    queryKey: ["orders", search],
+    queryKey: ["deleted-orders", search],
     queryFn: () => getDeletedOrders(search),
   };
 };
 
 export const getOrderOption = (id: number) => {
   return queryOptions({
+    meta: { dontNotifyError: true },
     enabled: id ? !isNaN(id) : false,
     queryKey: ["orders", id],
     queryFn: () => getOrder(id),
+  });
+};
+
+export const getDeletedOrderOption = (id: number) => {
+  return queryOptions({
+    meta: { dontNotifyError: true },
+    enabled: id ? !isNaN(id) : false,
+    queryKey: ["orders", id],
+    queryFn: () => getDeletedOrder(id),
   });
 };
 
@@ -172,6 +189,10 @@ export const useGetAllOrders = (search?: OrdersParams) => {
 
 export const useGetOrder = (id: number) => {
   return useQuery(getOrderOption(id));
+};
+
+export const useGetDeletedOrder = (id: number) => {
+  return useQuery(getDeletedOrderOption(id));
 };
 
 export const useGetDeletedOrders = (search?: OrdersParams) => {
@@ -343,6 +364,8 @@ export const useUpdateReviewStatus = () => {
 
 export const useDeleteOrder = () => {
   const queryClient = useQueryClient();
+  const routeApi = getRouteApi("/logged/orders/orders-manager/");
+  const search = routeApi.useSearch();
 
   return useMutation({
     mutationFn: async (orderId: number) => {
@@ -352,7 +375,9 @@ export const useDeleteOrder = () => {
     },
     onSuccess: () => {
       toast.success("Order deleted!");
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({
+        queryKey: ["orders", search],
+      });
     },
   });
 };
@@ -396,6 +421,27 @@ export const useGenerateInvoicePDF = (orderId?: number) => {
       a.click();
 
       return true;
+    },
+  });
+};
+
+export const useRestoreOrder = () => {
+  const queryClient = useQueryClient();
+  const routeApi = getRouteApi("/logged/orders/deleted/$orderId");
+  const search = routeApi.useSearch();
+
+  return useMutation({
+    mutationFn: async (orderId: number) => {
+      return await axios.patch(ORDERS_URL + `/restore/${orderId}`, null, {
+        headers: getHeaders(),
+      });
+    },
+    onSuccess: () => {
+      console.log(search);
+      toast.success("Order has been restored!");
+      queryClient.invalidateQueries({
+        queryKey: ["deleted-orders", search],
+      });
     },
   });
 };
