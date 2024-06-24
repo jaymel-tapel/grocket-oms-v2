@@ -13,6 +13,7 @@ export const ordersRouteFilters = [
   "review_status",
   "reviewer_name",
   "seller",
+  "client",
   "remarks",
 ];
 export const ordersFilters = [
@@ -22,6 +23,7 @@ export const ordersFilters = [
   "review_status",
   "reviewer_name",
   "seller",
+  "client",
   "remarks",
 ] as const;
 export const ordersFiltersSeller = [
@@ -31,6 +33,7 @@ export const ordersFiltersSeller = [
   "review_status",
   "reviewer_name",
   // "seller",
+  "client",
   "remarks",
 ] as const;
 export type OrdersFiltersType =
@@ -40,4 +43,5 @@ export type OrdersFiltersType =
   | "review_status"
   | "reviewer_name"
   | "seller"
+  | "client"
   | "remarks";
