@@ -25,6 +25,7 @@ export const ordersSearchSchema = z
         "review_status",
         "reviewer_name",
         "seller",
+        "client",
         "remarks",
       ])
       .optional(),
