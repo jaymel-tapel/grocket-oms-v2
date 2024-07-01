@@ -17,11 +17,6 @@ import { useAtom } from "jotai/react";
 import { brandAtom } from "../../../services/queries/brandsQueries";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomDatePicker from "../../../components/tools/customDatePicker/CustomDatePicker";
-import AutoComplete from "../../../components/tools/autoComplete/AutoComplete";
-import {
-  Seller,
-  useGetAllSellers,
-} from "../../../services/queries/sellerQueries";
 import { useUserAuthContext } from "../../../context/UserAuthContext";
 // import {
 //   Client,
@@ -50,7 +45,6 @@ const Index = () => {
   const navigate = useNavigate();
   const searchOrders = ordersManagerIndexRoute.useSearch();
   const { user } = useUserAuthContext();
-  const { data: sellers } = useGetAllSellers();
   const { data, isLoading, isFetching } = useGetAllOrders(searchOrders);
 
   const keyword = searchOrders?.keyword;
@@ -218,7 +212,6 @@ const Index = () => {
             <FilterInput
               filter={filter}
               handleSelectDropdown={handleSelectDropdown}
-              sellers={sellers}
               keywordDraft={keywordDraft}
               setKeywordDraft={setKeywordDraft}
             />
@@ -292,7 +285,7 @@ type FilterProps = {
   filter?: OrdersFiltersType;
   handleSelectDropdown: (string) => void;
   setKeywordDraft: (string) => void;
-  sellers?: Seller[];
+  // sellers?: Seller[];
   // clients?: Client[];
   keywordDraft: string;
 };
@@ -302,7 +295,7 @@ const FilterInput = ({
   handleSelectDropdown = () => {
     return;
   },
-  sellers = [],
+  // sellers = [],
   // clients = [],
   keywordDraft,
   setKeywordDraft,
@@ -310,8 +303,6 @@ const FilterInput = ({
   const showInput = useMemo(() => {
     if (filter === "payment_status" || filter === "review_status") {
       return "select";
-    } else if (filter === "seller") {
-      return "autocomplete";
     } else return "";
   }, [filter]);
 
@@ -337,7 +328,7 @@ const FilterInput = ({
         </select>
       )}
 
-      {showInput === "autocomplete" && filter === "seller" && (
+      {/* {showInput === "autocomplete" && filter === "seller" && (
         <AutoComplete
           suggestions={sellers?.map((seller) => seller.email ?? "") ?? []}
           type="email"
@@ -345,7 +336,7 @@ const FilterInput = ({
           handleChange={(value) => setKeywordDraft(value)}
           handleSelect={(value) => setKeywordDraft(value)}
         />
-      )}
+      )}  */}
 
       {/* {showInput === "autocomplete" && filter === "client" && (
         <AutoComplete
